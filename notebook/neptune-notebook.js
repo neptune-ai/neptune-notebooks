@@ -43,7 +43,7 @@ define([
         $(buttonGroup.find("button")[1]).attr("id", "neptune-upload-btn")
 
         $(buttonGroup).find("#neptune-authorize-btn").find("i").removeClass("fa-check")
-        $(buttonGroup).find("#neptune-authorize-btn").css("background", "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAABHNCSVQICAgIfAhkiAAAAWZJREFUKJG9kLGKE2EUhb/zzx8iQjCNO6n0GRZM4xZbiRYuqw+RzGPERxBCAplKELRYC5sFYdFOQd3KzsZGkJCVxUhQkpn/XpvNMmC/pzz3nHvPPXDVEMBoNArz+fzIzHqS7pVl+QdgOBy2gDfAjXa7vTcej9dbYwBYLBb3zWxX0jXgoLH4kaQdd7++2WweNC8GADN7LOkV8FzS4Xbo7gfu/jLLsmfufvifEdgDPgOnZrZ/+Yd0FziV9FHSftMogKIozmOMu1VVnUlatlqt2ymlvymlc+Bmt9tdL5fLXzHGHYC6rt9GgCzLbk0mk9VFIV+qquoDK0nfZrPZT4DBYPC1ruu+JDezbgSYTqerRrz3KaV+jPG3mb1r8J+AO2ZWhxA+xKIojt3dy7J8eKE5kTROKa2zLBtdlhHCSUrpSQhhAzwNZla7e9oKer3ecQjhRwhhnuf56y2f5/mRpO9mdtbpdF5w5fgH5XKZA3MAa/gAAAAASUVORK5CYII=') 7px 4px no-repeat")
+        $(buttonGroup).find("#neptune-authorize-btn").css("background", "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAABHNCSVQICAgIfAhkiAAAAN5JREFUKJHF0K9Lw0EcxvGXc07ZEJTJBIOrBothJsHmLAOLMLQJ/lNGu0E2ozKDJoMIgqIOy0wiIiZ/MIOfLxzD7B74cHfvu+eezx3DUg4HOEMx4WM4xgXGBw1QxxIm0Ej2N1CJy9ZT40iMe3jFE5axFXwfN/jCAnYGW73GJlbQS/g91rCKh7/e+IJqtPSJOUyjjxlM4hvlqMt8GOfxHvMr1GLdxXPw2+B9TI0G/EjSFyOljDe0gtf8ft5sdv4I7cTYwGMkNBO+jbv4j104jMqUwzlOIyFTASfooOTf9QMT5SpplgZyIQAAAABJRU5ErkJggg==') 7px 4px no-repeat")
         $(buttonGroup).find("#neptune-authorize-btn").css("min-width", "30px")
         $(buttonGroup).find("#neptune-upload-btn").append(" Upload")
 
@@ -305,8 +305,11 @@ define([
             } catch(error) {
                 neptune_popup.find('#neptune-verify-btn i')
                     .removeClass()
-                    .addClass('fa fa-2x fa-times-circle')
-                    .css("color", "red")
+                if (apiToken != '') {
+                    neptune_popup.find('#neptune-verify-btn i')
+                        .addClass('fa fa-2x fa-times-circle')
+                        .css("color", "red")
+                }
                 $('#neptune_modal').find('.btn-primary')
                     .prop('disabled', true)
                 return false
