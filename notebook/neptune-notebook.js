@@ -249,9 +249,9 @@ define([
                             success: function(nbData) {
                                 console.debug(nbData)
                                 var jupyterPath = IPython.notebook.notebook_path
-                                if (nbData.owner == username) {
+                                if (nbData.entries && nbData.entries.length == 1 && nbData.entries[0].owner == username) {
                                     // same owner, check path
-                                    if (nbData.path == jupyterPath) {
+                                    if (nbData.entries[0].path == jupyterPath) {
                                         // same path - upload cp
                                         createCheckpoint(decodedToken.api_address, accessToken)
                                     } else {
