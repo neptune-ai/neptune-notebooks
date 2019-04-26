@@ -471,7 +471,7 @@ define([
           $('#neptune-project').val(currentProject)
           status.ok()
         } else {
-            if (!currentProject) {
+            if (currentProject) {
                 $('#neptune-project').append($('<option>', {
                     value: 'invalidProject',
                     text : "Undisclosed project"
