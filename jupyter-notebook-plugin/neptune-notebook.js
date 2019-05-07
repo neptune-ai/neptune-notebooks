@@ -222,7 +222,7 @@ define([
         if (metadata.neptune && metadata.neptune.notebookId) {
 
             $.ajax({
-                url: api_address + "/api/leaderboard/v1/notebooks?id=" + metadata.neptune.notebookId,
+                url: api_address + "/api/leaderboard/v1/notebooks/" + metadata.neptune.notebookId,
                 type: "GET",
                 beforeSend: function(xhr){
                     xhr.setRequestHeader('Authorization', "Bearer " + accessToken);
@@ -230,7 +230,7 @@ define([
                 success: function(nbData) {
                     console.debug(nbData)
                     var jupyterPath = IPython.notebook.notebook_path
-                    if (nbData.entries && nbData.entries.length == 1 && nbData.entries[0].owner == username) {
+                    if (nbData && nbData.owner == username) {
                         // user decided to upload a checkpoint - it doesnt matter if paths differ
                         createCheckpoint(status, api_address, accessToken)
                     } else {
@@ -462,17 +462,17 @@ define([
     function getNotebookData(status, apiAddress, accessToken, notebookId, username, continuation) {
             status && status.spin()
             $.ajax({
-                url: apiAddress + "/api/leaderboard/v1/notebooks?id=" + notebookId,
+                url: apiAddress + "/api/leaderboard/v1/notebooks/" + notebookId,
                 type: "GET",
                 beforeSend: function(xhr){
                     xhr.setRequestHeader('Authorization', "Bearer " + accessToken);
                 },
                 success: function(nbData) {
                     var jupyterPath = IPython.notebook.notebook_path
-                    if (nbData.entries && nbData.entries.length == 1) {
-                        if (nbData.entries[0].projectId == $("#neptune-project").val() || !($("#neptune-project").val())) {
-                          if (nbData.entries[0].owner == username) {
-                              if (nbData.entries[0].path == jupyterPath) {
+                    if (nbData) {
+                        if (nbData.projectId == $("#neptune-project").val() || !($("#neptune-project").val())) {
+                          if (nbData.owner == username) {
+                              if (nbData.path == jupyterPath) {
                                   status && status.ok()
                               } else {
                                   status && status.warn("Notebook was previously uploaded under different path")
@@ -483,7 +483,7 @@ define([
                         } else {
                           status && status.fail("You changed the project")
                         }
-                        continuation(nbData.entries[0])
+                        continuation(nbData)
                     }
                     return false
                 },
