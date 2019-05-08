@@ -1,0 +1,50 @@
+{
+  "name": "jupyterlab-neptune",
+  "version": "0.1.0",
+  "description": "A JupyterLab extension for Neptune",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension"
+  ],
+  "homepage": "https://github.com/neptune.ml/neptune-notebooks",
+  "bugs": {
+    "url": "https://github.com/neptune.ml/neptune-notebooks/issues"
+  },
+  "license": "Apache-2.0",
+  "author": "Neptune",
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neptune.ml/neptune-notebooks.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib",
+    "prepare": "npm run clean && npm run build",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^0.19.1",
+    "@jupyterlab/apputils": "^0.19.1",
+    "@jupyterlab/docregistry": "^0.19.1",
+    "@jupyterlab/notebook": "^0.19.2",
+    "@jupyterlab/running": "^0.19.1",
+    "@jupyterlab/vdom": "^1.0.0-alpha.4",
+    "@phosphor/disposable": "^1.1.2",
+    "@types/codemirror": "0.0.74",
+    "react-codemirror2": "^6.0.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.1",
+    "typescript": "~3.1.1"
+  },
+  "jupyterlab": {
+    "extension": true
+  }
+}
