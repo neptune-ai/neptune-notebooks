@@ -19,7 +19,7 @@ import random
 
 from click.testing import CliRunner
 
-from neptune_notebooks_plugin import upload
+from neptune_notebooks_plugin import new
 
 
 class TestPlugin(unittest.TestCase):
@@ -27,13 +27,13 @@ class TestPlugin(unittest.TestCase):
 
     def test_path_not_exist(self):
         path = '/tmp/{}'.format(random.randint(10000, 1000000))
-        result = self.runner.invoke(upload, [path])
+        result = self.runner.invoke(new, [path])
         self.assertEqual(result.exit_code, 1)
         self.assertEqual(result.output.strip(), "ERROR: File `{}` doesn't exist".format(path))
 
     def test_path_is_not_file(self):
         path = '/tmp/{}'.format(random.randint(10000, 1000000))
         os.mkdir(path)
-        result = self.runner.invoke(upload, [path])
+        result = self.runner.invoke(new, [path])
         self.assertEqual(result.exit_code, 1)
         self.assertEqual(result.output.strip(), "ERROR: `{}` is not a file".format(path))

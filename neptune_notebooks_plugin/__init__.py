@@ -17,10 +17,26 @@
 import click
 
 
-@click.command('notebook')
+@click.group()
+def notebook():
+    pass
+
+
+@notebook.command()
+@click.argument('path', required=True)
+@click.option('--force', '-f', is_flag=True,
+              help='Force upload existing notebook as a new one (overrides metadata in local file)')
+@click.option('--project', '-p', help='Project name')
+def new(project, force, path):
+    # We do not want to import anything if process was executed for autocompletion purposes.
+    from neptune_notebooks.upload import upload_new_notebook as run_upload
+    return run_upload(project_name=project, path=path, force=force)
+
+
+@notebook.command()
 @click.argument('path', required=True)
 @click.option('--project', '-p', help='Project name')
-def upload(path, project):
+def update(project, path):
     # We do not want to import anything if process was executed for autocompletion purposes.
-    from neptune_notebooks.upload import upload as run_upload
-    return run_upload(path=path, project=project)
+    from neptune_notebooks.upload import upload_new_checkpoint as run_upload
+    return run_upload(project_name=project, path=path)

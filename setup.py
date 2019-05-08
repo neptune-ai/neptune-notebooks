@@ -47,7 +47,7 @@ def main():
             platforms='any',
             install_requires=requirements,
             entry_points={
-                'neptune.plugins': "notebook = neptune_notebooks_plugin:upload"
+                'neptune.plugins': "notebook = neptune_notebooks_plugin:notebook"
             },
             cmdclass={
                 'git_version': git_version.GitVersion,
