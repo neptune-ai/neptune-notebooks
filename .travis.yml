@@ -18,9 +18,9 @@ script:
   - make tests
   - jupyter nbextension list
   - jupyter nbextension enable --py --sys-prefix neptune-notebooks
-  - jupyter labextension list
-  - jupyter labextension list 2>&1 | grep -q neptune-notebooks
-  - cd packages/labextension && jupyter labextension link
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list 2>&1 | grep -q neptune-notebooks; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then cd packages/labextension && jupyter labextension link; fi
 deploy:
   distributions: git_version sdist
   provider: pypi

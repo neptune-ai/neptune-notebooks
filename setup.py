@@ -20,19 +20,6 @@ from __future__ import print_function
 name = 'neptune-notebooks'
 
 # -----------------------------------------------------------------------------
-# Minimal Python version sanity check
-# -----------------------------------------------------------------------------
-
-import sys
-
-v = sys.version_info
-if v[:2] < (3, 3):
-    # Note: 3.3 is untested, but we'll still allow it
-    error = "ERROR: %s requires Python version 3.3 or above." % name
-    print(error, file=sys.stderr)
-    sys.exit(1)
-
-# -----------------------------------------------------------------------------
 # get on with it
 # -----------------------------------------------------------------------------
 
