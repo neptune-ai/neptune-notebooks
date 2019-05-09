@@ -1,6 +1,6 @@
 {
-  "name": "jupyterlab-neptune",
-  "version": "0.1.0",
+  "name": "neptune-notebooks",
+  "version": "0.0.0",
   "description": "A JupyterLab extension for Neptune",
   "keywords": [
     "jupyter",
@@ -27,7 +27,8 @@
     "build": "tsc",
     "clean": "rimraf lib",
     "prepare": "npm run clean && npm run build",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "dist": "rimraf dist && npm run build && mkdir dist && cd dist && npm pack .."
   },
   "dependencies": {
     "@jupyterlab/application": "^0.19.1",

@@ -1,14 +1,26 @@
 sudo: false
 language: python
 python:
-- '2.7'
-- '3.5'
-- '3.6'
+  - '2.7'
+  - '3.5'
+  - '3.6'
+cache:
+  pip: true
+  directories:
+    - $HOME/.npm
 install:
-- make prepare
-- pip install tox-travis
+  - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+  - bash -c "source ~/.nvm/nvm.sh; nvm install 6"
+  - make prepare
+  - pip install tox-travis jupyter jupyterlab
+  - python setup.py sdist && pip install -v .
 script:
-- make tests
+  - make tests
+  - jupyter nbextension list
+  - jupyter nbextension enable --py --sys-prefix neptune-notebooks
+  - jupyter labextension list
+  - jupyter labextension list 2>&1 | grep -q neptune-notebooks
+  - cd packages/labextension && jupyter labextension link
 deploy:
   distributions: git_version sdist
   provider: pypi
