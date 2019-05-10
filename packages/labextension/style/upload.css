@@ -1,0 +1,7 @@
+button.n-UploadButton--success {
+  color: #77c63e;
+}
+
+button.n-UploadButton--failed {
+  color: #c60002;
+}

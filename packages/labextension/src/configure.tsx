@@ -7,6 +7,7 @@ import { NeptuneContent } from "./content";
 import { NeptuneSession } from "./kernel";
 import "../style/configure.css";
 
+
 export class NeptuneConfigure extends ReactElementWidget {
   constructor(content: NeptuneContent, session: NeptuneSession, connection: NeptuneConnection) {
     super(<ConfigureButton content={content} session={session} connection={connection}/>);
