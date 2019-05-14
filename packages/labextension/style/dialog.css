@@ -1,0 +1,26 @@
+.connect-dialog {
+    min-width: 500px;
+}
+
+.input-status-icon {
+    color: transparent;
+    flex: auto;
+}
+
+.input-status-icon--valid {
+    color: #77c63e;
+}
+
+.input-status-icon--invalid {
+    color: #c60002;
+}
+
+
+.input-with-status-icon {
+    display: flex;
+    flex-direction: row;
+}
+
+.invalid-value-message {
+    color: #c60002;
+}

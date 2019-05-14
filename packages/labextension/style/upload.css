@@ -1,0 +1,30 @@
+button.n-UploadButton--success {
+  color: #77c63e;
+}
+
+button.n-UploadButton--failed {
+  color: #c60002;
+}
+
+
+.n-UploadDialog {
+  display: flex;
+  flex-direction: column;
+}
+
+.n-UploadDialog__note {
+  font-size: 18px;
+  margin-bottom: 32px;
+}
+
+label.n-UploadDialog__option-label {
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+input.n-UploadDialog__option {
+  height: auto;
+  appearance: radio;
+  -webkit-appearance: radio;
+  -moz-appearance: radio;
+}
