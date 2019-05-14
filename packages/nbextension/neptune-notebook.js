@@ -4,463 +4,807 @@ define([
     'base/js/events',
     'base/js/dialog'
     ], function($, Jupyter, events, dialog) {
+    var NEPTUNE_LOGO_URL = 'url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAABHNCSVQICAgIfAhkiAAAAN5JREFUKJHF0K9Lw0EcxvGXc07ZEJTJBIOrBothJsHmLAOLMLQJ/lNGu0E2ozKDJoMIgqIOy0wiIiZ/MIOfLxzD7B74cHfvu+eezx3DUg4HOEMx4WM4xgXGBw1QxxIm0Ej2N1CJy9ZT40iMe3jFE5axFXwfN/jCAnYGW73GJlbQS/g91rCKh7/e+IJqtPSJOUyjjxlM4hvlqMt8GOfxHvMr1GLdxXPw2+B9TI0G/EjSFyOljDe0gtf8ft5sdv4I7cTYwGMkNBO+jbv4j104jMqUwzlOIyFTASfooOTf9QMT5SpplgZyIQAAAABJRU5ErkJggg==\')';
 
-    var initialize = function () {
-        console.debug("initializing neptune")
-        $([IPython.events]).on("kernel_ready.Kernel", function() {
-            var apiToken = window.localStorage.getItem('neptune_api_token') || ''
-            var project = window.localStorage.getItem('neptune_project') || ''
-            injectNotebookId()
-            if (apiToken && project) {
-                console.debug("Neptune - kernel is ready - initializing neptune client in notebook")
-            } else {
-                console.debug("Neptune - kernel is ready - not configured")
-            }
-        });
-        $([IPython.events]).on("notebook_saved.Notebook", function(dane) {
-            console.debug("notebook saved")
+    var uniqueComponentId = 0;
+
+    var globalApiAddress = null;
+    var globalAccessToken = null;
+    var globalUsername = null;
+
+    var projects = [];
+    var notebook = null;
+
+    var uploadTimer = new Timer();
+    var configTimer = new Timer();
+
+    return {
+        'load_jupyter_extension': loadJupyterExtensions,
+        'load_ipython_extension': loadJupyterExtensions
+    };
+
+    function initialize() {
+        $([IPython.events]).on('kernel_ready.Kernel', function() {
+            injectNotebookId();
         });
         var buttonGroup = $(Jupyter.toolbar.add_buttons_group([
             Jupyter.keyboard_manager.actions.register ({
                 help   : 'Connect to Neptune',
                 icon   : 'fa-check',
-                handler: show_neptune_popup
+                handler: showConfigModal
             }, 'neptune_notebooks', 'neptune_notebook'),
             Jupyter.keyboard_manager.actions.register ({
                 help   : 'Upload to Neptune',
                 icon   : 'fa-cloud-upload',
                 label  : 'Upload',
-                handler: save_notebook_in_neptune
+                handler: createCheckpoint
             }, 'neptune_notebooks', 'neptune_notebook_upload')
         ]));
-        $(buttonGroup.find("button")[0]).attr("id", "neptune-authorize-btn")
-        $(buttonGroup.find("button")[1]).attr("id", "neptune-upload-btn")
+        $(buttonGroup
+            .find('button')[0])
+            .attr('id', 'neptune-authorize-btn');
 
-        $(buttonGroup).find("#neptune-authorize-btn").find("i").removeClass("fa-check")
-        $(buttonGroup).find("#neptune-authorize-btn").css("background", "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAABHNCSVQICAgIfAhkiAAAAN5JREFUKJHF0K9Lw0EcxvGXc07ZEJTJBIOrBothJsHmLAOLMLQJ/lNGu0E2ozKDJoMIgqIOy0wiIiZ/MIOfLxzD7B74cHfvu+eezx3DUg4HOEMx4WM4xgXGBw1QxxIm0Ej2N1CJy9ZT40iMe3jFE5axFXwfN/jCAnYGW73GJlbQS/g91rCKh7/e+IJqtPSJOUyjjxlM4hvlqMt8GOfxHvMr1GLdxXPw2+B9TI0G/EjSFyOljDe0gtf8ft5sdv4I7cTYwGMkNBO+jbv4j104jMqUwzlOIyFTASfooOTf9QMT5SpplgZyIQAAAABJRU5ErkJggg==') 7px 4px no-repeat")
-        $(buttonGroup).find("#neptune-authorize-btn").css("min-width", "30px")
-        $(buttonGroup).find("#neptune-upload-btn").append(" Upload")
+        $(buttonGroup
+            .find('button')[1])
+            .attr('id', 'neptune-upload-btn');
 
-        if (! (window.localStorage.getItem('neptune_api_token') || '') || !getNotebookId()) {
-          $(buttonGroup).find("#neptune-authorize-btn").css("padding-left", "24px")
-          $(buttonGroup).find("#neptune-authorize-btn").append(" Configure");
-          $(buttonGroup).find("#neptune-upload-btn").hide();
+        $(buttonGroup)
+            .find('#neptune-authorize-btn')
+            .css('background', NEPTUNE_LOGO_URL + ' 7px 4px no-repeat')
+            .css('min-width', '30px')
+            .find('i')
+            .removeClass('fa-check');
+
+        $(buttonGroup)
+            .find('#neptune-upload-btn')
+            .append(' Upload');
+
+        if (!window.localStorage.getItem('neptune_api_token') || !getNotebookId()) {
+            $(buttonGroup).find('#neptune-authorize-btn')
+                .css('padding-left', '24px')
+                .append($('<span class=\'text\'> Configure</span>'));
+            $(buttonGroup).find('#neptune-upload-btn').hide();
         } else {
-          $(buttonGroup).find("#neptune-upload-btn").show();
+            $(buttonGroup).find('#neptune-upload-btn').show();
         }
 
         $(buttonGroup)
-            .append('<div class="popup" id="neptune-upload-status" style="display: none"></div>')
+            .append('<div class=\'popup\' id=\'neptune-upload-status\' style=\'display: none\'></div>')
+            .append('<div class=\'popup\' id=\'neptune-authorize-status\' style=\'display: none\'></div>');
 
-        $(buttonGroup).find("#neptune-upload-status")
-            .css("margin-left", "29px")
-            .css("margin-top", "23px")
-            .css("font-weight", "normal")
-            .css("text-align", "center")
-            .css("vertical-align", "middle")
-            .css("background-image", "none")
-            .css("border", "1px solid transparent")
-            .css("padding", "6px 12px")
-            .css("border-radius", "2px")
-            .css("color", "#333")
-            .css("background-color", "#fff")
-            .css("background-image", "none")
-            .css("border-color", "#ccc")
-            .css("width", "260px")
-            .css("max-width", "260px")
-            .css("position", "absolute")
-            .css("z-index", "10")
-            .css("white-space", "normal")
-            .css("text-align", "left")
-
-    };
-
-    function getNotebookId() {
-        var neptuneMetadata = IPython.notebook.metadata.neptune
-        if (neptuneMetadata && neptuneMetadata.notebookId) {
-            return neptuneMetadata.notebookId
-        }
-        return null
-    }
-
-    function injectNotebookId() {
-        if (getNotebookId()) {
-            IPython.notebook.kernel.execute("" +
-                "import os\n" +
-                "os.environ['NEPTUNE_NOTEBOOK_ID']='" + getNotebookId() + "'\n"
-            )
-        }
-
-    }
-
-    function createCheckpoint(status, api_address, accessToken) {
-        var body = JSON.stringify(IPython.notebook.toJSON())
-        var jupyterPath = IPython.notebook.notebook_path
-        var nbId = IPython.notebook.metadata.neptune.notebookId
-        $.ajax({
-            url: api_address + "/api/leaderboard/v1/notebooks/"+nbId+"/checkpoints?jupyterPath=" + jupyterPath,
-            method: "POST",
-            data: body,
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('Authorization', "Bearer " + accessToken);
-            },
-            contentType: "application/octet-stream",
-            success: function(data) {
-                successNbSave(data)
-                if (status) {
-                    status.ok()
-                }
-            },
-            error: function(data) {
-                console.error("Neptune failed to create new notebook checkpoint")
-                errorNbSave(data)
-                if (status) {
-                    status.fail("Failed to create new notebook, please try again")
-                }
-            }
-        });
-    }
-
-    function createNotebook(status, api_address, accessToken) {
-        var jupyterPath = IPython.notebook.notebook_path
-        var currentProjectId = $("#neptune-project").val()
-        $.ajax({
-            url: api_address + "/api/leaderboard/v1/notebooks?projectIdentifier=" + currentProjectId + "&jupyterPath=" + jupyterPath,
-            method: "POST",
-            data: "{}",
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('Authorization', "Bearer " + accessToken);
-            },
-            contentType: "application/octet-stream",
-            success: function(data) {
-                console.debug("Created notebook")
-                IPython.notebook.metadata.neptune = {
-                  notebookId: data.id
-                }
-                IPython.notebook.save_checkpoint()
-                injectNotebookId()
-                createCheckpoint(status, api_address, accessToken)
-            },
-            error: function(data) {
-                console.error("Neptune failed to create new notebook")
-                errorNbSave(data)
-                status.fail("Failed to create new notebook, please try again")
-            }
-        });
-    }
-
-    var idleTimer = {
-        handle: 0,
-        start: function(fun) {
-            this.stop();
-            this.handle = setTimeout(fun, 4000);
-        },
-        stop: function() {
-            if (this.handle) {
-                clearTimeout(this.handle);
-                this.handle = 0;
-            }
-        }
-    };
-
-    function nbSaveButtonReset() {
-        $("#neptune-upload-btn").find("i").removeClass().addClass("fa").css("color", "black")
-    }
-
-    function idleNbSave() {
-        idleTimer.stop()
-        nbSaveButtonReset()
-        $("#neptune-upload-status")
-            .hide()
-        $("#neptune-upload-btn").prop("disabled", false)
-        $("#neptune-upload-btn").find("i").addClass("fa-cloud-upload")
-    }
-    function duringNbSave() {
-        idleTimer.stop()
-        nbSaveButtonReset()
-        $("#neptune-upload-btn").prop("disabled", true)
-        $("#neptune-upload-btn").find("i").addClass("fa-spin fa-spinner")
-    }
-
-    function successNbSave(data) {
-        nbSaveButtonReset()
-        $("#neptune-upload-btn").prop("disabled", false)
-        $("#neptune-upload-btn").find("i").addClass("fa-check-circle").css("color", "green")
-        $("#neptune-upload-status")
-            .text("Successfully uploaded! To see notebook in Neptune, go to ")
-            .append("<a>link</a>")
-            .show()
-        idleTimer.start(idleNbSave)
-    }
-
-    function errorNbSave(data) {
-        nbSaveButtonReset()
-        $("#neptune-upload-btn").prop("disabled", false)
-        $("#neptune-upload-btn").find("i").addClass("fa-times-circle").css("color", "red")
-        if (data && data.status == 403) {
-            $("#neptune-upload-status")
-                .text("Failed to upload notebook. You are not authorized to upload to project: "+window.localStorage.getItem('neptune_project'))
-                .show()
-        } else {
-            $("#neptune-upload-status")
-                .text("An error occurred while uploading, please try again.")
-                .show()
-        }
-        idleTimer.start(idleNbSave)
-    }
-
-    function save_notebook_in_neptune_with_tokens(status, api_address, accessToken, username) {
-        var metadata = IPython.notebook.metadata
-        // get existing notebook
-        if (metadata.neptune && metadata.neptune.notebookId) {
-
-            $.ajax({
-                url: api_address + "/api/leaderboard/v1/notebooks?id=" + metadata.neptune.notebookId,
-                type: "GET",
-                beforeSend: function(xhr){
-                    xhr.setRequestHeader('Authorization', "Bearer " + accessToken);
-                },
-                success: function(nbData) {
-                    console.debug(nbData)
-                    var jupyterPath = IPython.notebook.notebook_path
-                    if (nbData.entries && nbData.entries.length == 1 && nbData.entries[0].owner == username) {
-                        // same owner, check path
-                        if (nbData.entries[0].path == jupyterPath) {
-                            // same path - upload cp
-                            createCheckpoint(status, api_address, accessToken)
-                        } else {
-                            // path changed - ask user if create nb or add cp
-                            createNotebook(status, api_address, accessToken)
-                        }
-                    } else {
-                        // new owner - new notebook
-                        createNotebook(status, api_address, accessToken)
-                    }
-                },
-                error: function(nbData) {
-                    console.debug("get notebook error - assume we need to create new nb")
-                    createNotebook(status, api_address, accessToken)
-                }
-            })
-        } else {
-            createNotebook(status, api_address, accessToken)
-        }
-    }
-
-
-    function save_notebook_in_neptune() {
-        duringNbSave()
-        if (IPython.notebook.nbformat == 4) {
-            var apiToken = window.localStorage.getItem('neptune_api_token') || ''
-            var decodedToken = JSON.parse(atob(apiToken))
-            $.ajax({
-                url: decodedToken.api_address + "/api/backend/v1/authorization/oauth-token",
-                type: "GET",
-                beforeSend: function(xhr){
-                    xhr.setRequestHeader('X-Neptune-Api-Token', apiToken);
-                },
-                success: function(data) {
-                    var accessToken = data.accessToken
-                    var username = data.username
-                    createCheckpoint(null, decodedToken.api_address, accessToken)
-                },
-                error: function(data) {
-                    console.debug("api token error")
-                    console.debug(data)
-                    errorNbSave(data)
-                    status.fail("Api token error")
-                }
+        $(buttonGroup)
+            .find('#neptune-upload-status, #neptune-authorize-status')
+            .css({
+                'margin-left': '29px',
+                'margin-top': '23px',
+                'font-weight': 'normal',
+                'vertical-align': 'middle',
+                'background-image': 'none',
+                'border': '1px solid transparent',
+                'padding': '6px 12px',
+                'border-radius': '2px',
+                'color': '#333',
+                'background-color': '#fff',
+                'border-color': '#ccc',
+                'max-width': '260px',
+                'position': 'absolute',
+                'z-index': '10',
+                'white-space': 'normal',
+                'text-align': 'left',
+                'width': '260px'
             });
-        } else {
-            console.error("Unsupported nbformat = " + IPython.notebook.metadata.nbformat)
-            errorNbSave(null)
-            status.fail("Notebook is in invalid format. >=4.0 is supported")
-        }
+
+        $(buttonGroup)
+            .find('#neptune-authorize-status')
+            .css('margin-left', '0px');
     }
 
-    function makeLabel(forAttr, text) {
-        return $('<label/>')
-            .addClass('col-sm-2 control-label')
-            .css('padding-right', '1em')
-            .attr('for', forAttr)
-            .text(text)
-    }
-
-    var counter = 0
-    function makeStatus() {
-        counter += 1
-        var statusIsOk = false
-        var e = $('<div />').addClass('col-sm-1')
-        var handlers = []
-        var errorArea = $('<div class="help-block">neptune-status-'+counter+'</div>')
-        e.prepend($('<i/>')
-            .addClass('fa fa-2x fa-question-circle')
-            .css("margin-top", "2px")
-            .css("margin-left", "20px")
-            .css("color", "black")
-        )
-        var img = e.find("i")
-
-        var checkOk = function () {
-          return statusIsOk
-        }
-
-        function reset() {
-            img.removeClass()
-            statusIsOk = false
-            errorArea.hide()
-        }
-
-        function fireHandlers() {
-            handlers.forEach(function(ee) {
-                ee.validate()
-            })
-        }
-
-        var makeOk = function() {
-            reset()
-            errorArea.hide()
-            statusIsOk = true
-            img.addClass('fa fa-2x fa-check-circle').css("color", "green")
-            fireHandlers()
-        }
-
-        var makeSpin = function() {
-            reset()
-            errorArea.hide()
-            img.addClass('fa fa-2x fa-spin fa-spinner').css("color", "black")
-            fireHandlers()
-        }
-
-        var makeFail = function(statusText) {
-            reset()
-            errorArea.text(statusText)
-            errorArea.show()
-            img.addClass('fa fa-2x fa-times-circle').css("color", "red")
-            fireHandlers()
-        }
-
-        var addHandler = function(handler) {
-            handlers.push(handler)
-        }
-
-        return { elem: e, errorElem: errorArea, ok: makeOk, spin: makeSpin, fail: makeFail, clear: reset, isOk: checkOk, add: addHandler}
-    }
-
-    function handleButton(statuses) {
-        function makeRevalidate() {
-            var valid = true
-            for (var status in statuses) {
-                valid = valid && statuses[status].isOk()
-            }
-            var acceptButton = $('#neptune_modal').find('.btn-primary')
-            acceptButton.prop('disabled', !valid)
-            updateTextArea()
-        }
-
-        return {validate: makeRevalidate}
-    }
-
-    var globalApiAddress = null
-    var globalAccessToken = null
-    var globalUsername = null
-
-    function getAccessToken(status, apiToken, continuation) {
-        var decodedToken = {}
+    function getAccessToken(status, apiToken, callback) {
+        var decodedToken = {};
         try {
-          decodedToken = JSON.parse(atob(apiToken))
+            decodedToken = JSON.parse(atob(apiToken));
         } catch(error) {
-            status.clear()
-            if (apiToken != '') {
-                status.fail('Api token is not valid')
+            status && status.clear();
+            if (!apiToken) {
+                status && status.fail('Api token is not valid');
             } else {
-                status.clear()
+                status && status.clear();
             }
-            return false
+            return false;
         }
 
-        status.spin()
+        status && status.spin();
+
         $.ajax({
-            url: decodedToken.api_address + "/api/backend/v1/authorization/oauth-token",
-            type: "GET",
+            url: decodedToken.api_address + '/api/backend/v1/authorization/oauth-token',
+            type: 'GET',
             beforeSend: function(xhr){
                 xhr.setRequestHeader('X-Neptune-Api-Token', apiToken);
             },
             success: function(data) {
-                globalApiAddress = decodedToken.api_address
-                globalAccessToken = data.accessToken
-                globalUsername = data.username
-                status.ok()
-                continuation(decodedToken.api_address, data.accessToken, data.username)
+                globalApiAddress = decodedToken.api_address;
+                globalAccessToken = data.accessToken;
+                globalUsername = data.username;
+                status && status.ok();
+                callback(decodedToken.api_address, data.accessToken, data.username);
             },
-            error: function(data) {
-                status.fail('Api token is not valid')
-                return false
+            error: function() {
+                status && status.fail('Api token is not valid');
+                return false;
             }
         });
     }
 
-    function getUserProjects(status, apiAddress, accessToken, continuation) {
+    function getUserProjects(status, apiAddress, accessToken, callback) {
+        status.spin();
+
         $.ajax({
-            url: apiAddress + "/api/backend/v1/projects2?userRelation=memberOrHigher",
-            type: "GET",
-            beforeSend: function(xhr){
-                xhr.setRequestHeader('Authorization', "Bearer " + accessToken);
+            url: apiAddress + '/api/backend/v1/projects?userRelation=memberOrHigher',
+            type: 'GET',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
             },
             success: function(projectData) {
-                continuation(projectData)
+                projects = projectData.entries;
+                callback(projectData);
             },
-            error: function(projectData) {
-              console.debug("Failed to exchange api token")
-              console.debug(projectData)
-              status.fail("Unable to download user projects")
+            error: function() {
+                status.fail('Unable to download user projects');
+            }
+        });
+    }
+
+    function getNotebookData(status, apiAddress, accessToken, notebookId, username, callback, errorCallback) {
+        status && status.spin();
+        $.ajax({
+            url: apiAddress + '/api/leaderboard/v1/notebooks/' + notebookId,
+            type: 'GET',
+            beforeSend: function(xhr){
+                xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            },
+            success: function(nbData) {
+                var jupyterPath = IPython.notebook.notebook_path;
+                notebook = nbData;
+                if (!nbData) {
+                    return false;
+                }
+
+                var projectId = $('#neptune-project').val();
+                if (projectId && nbData.projectId !== projectId) {
+                    status && status.fail('You changed the project');
+                    return callback(nbData);
+                }
+
+                if (nbData.owner !== username) {
+                    status && status.fail('You are not the owner of this notebook. You need to create your own copy');
+                    return callback(nbData);
+                }
+
+                if (nbData.path !== jupyterPath) {
+                    status && status.warn('Notebook was previously uploaded under different path');
+                    return callback(nbData);
+                }
+
+                status && status.ok();
+                callback(nbData);
+            },
+            error: function(nbData) {
+                status && status.clear();
+                if (typeof errorCallback === 'function') {
+                    errorCallback(nbData);
+                }
             }
         })
     }
 
-    function getNotebookData(status, apiAddress, accessToken, notebookId, username, continuation) {
-            $.ajax({
-                url: apiAddress + "/api/leaderboard/v1/notebooks?id=" + notebookId,
-                type: "GET",
-                beforeSend: function(xhr){
-                    xhr.setRequestHeader('Authorization', "Bearer " + accessToken);
-                },
-                success: function(nbData) {
-                    var jupyterPath = IPython.notebook.notebook_path
-                    if (nbData.entries && nbData.entries.length == 1) {
-                        if (nbData.entries[0].projectId == $("#neptune-project").val() || !($("#neptune-project").val())) {
-                          if (nbData.entries[0].owner == username) {
-                              if (nbData.entries[0].path == jupyterPath) {
-                                  status.ok()
-                              } else {
-                                  status.fail("Notebook was previously uploaded under different path")
-                              }
-                          } else {
-                              status.fail("You are not the owner of this notebook. You need to create your own copy")
-                          }
-                        } else {
-                          status.fail("You changed the project")
-                        }
-                          continuation(nbData.entries[0])
-                    }
-                    return false
-                },
-                error: function(nbData) {
-                    console.debug("get notebook error - assume we need to create new nb")
-                    return false
+    function requestCreateCheckpoint(status, apiAdress, accessToken, callback, errorCallback) {
+        var body = JSON.stringify(IPython.notebook.toJSON());
+        var jupyterPath = IPython.notebook.notebook_path;
+        var nbId = IPython.notebook.metadata.neptune.notebookId;
+        $.ajax({
+            url: apiAdress + '/api/leaderboard/v1/notebooks/'+nbId+'/checkpoints?jupyterPath=' + jupyterPath,
+            method: 'POST',
+            data: body,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            },
+            contentType: 'application/octet-stream',
+            success: function(data) {
+                successNbSave(data);
+                status && status.ok();
+                if (typeof callback === 'function') {
+                    callback(data);
                 }
+                updateNotebookLinks(data, apiAdress);
+            },
+            error: function(data) {
+                errorNbSave(data);
+                status && status.fail('Failed to create new notebook, please try again');
+                if (typeof errorCallback === 'function') {
+                    errorCallback(data);
+                }
+            }
+        });
+    }
+
+    function requestCreateNotebook(status, api_address, accessToken, projectId, callback, errorCallback) {
+        var currentProjectId = projectId || $('#neptune-project').val();
+        $.ajax({
+            url: api_address + '/api/leaderboard/v1/notebooks?projectIdentifier=' + currentProjectId,
+            method: 'POST',
+            data: '{}',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            },
+            contentType: 'application/octet-stream',
+            success: function(data) {
+                IPython.notebook.metadata.neptune = {
+                    notebookId: data.id
+                };
+                IPython.notebook.save_checkpoint();
+                injectNotebookId();
+                createCheckpoint(callback, errorCallback, true);
+            },
+            error: function(data) {
+                console.error('Neptune failed to create new notebook');
+                errorNbSave(data);
+                if (typeof errorCallback === 'function') {
+                    errorCallback(data);
+                }
+                status.fail('Failed to create new notebook, please try again');
+            }
+        });
+    }
+
+    function showConfirmationModal(apiAddress, accessToken, projectId, callback, errorCallback) {
+        var element = dialog.modal({
+            show: false,
+            title: 'Your notebook\'s path has changed, how would you like to continue?',
+            notebook: Jupyter.notebook,
+            keyboard_manager: Jupyter.notebook.keyboard_manager,
+            body: renderConfirmationModal(apiAddress, accessToken, projectId, getNotebookId(), function() {return element;}, callback, errorCallback)
+        }).attr('id', 'neptune_modal');
+        element.find('.neptune-popup-closer').prepend(
+            $('<i/>')
+                .addClass('fa fa-lg')
+        );
+        element.find('.modal-footer').hide();
+        element.modal('show');
+    }
+
+    function renderConfirmationModal(apiAddress, accessToken, projectId, notebookId, modalProvider, callback, errorCallback) {
+        var popupBody = $('<div id=\'neptune-upload-ext\' />');
+
+        var form = $('<form/>')
+            .addClass('form-horizontal');
+
+        var text = $('<div />')
+            .text('How would you like to continue?');
+
+        var checkpointRadio = createRadio('create-checkpoint', 'Continue working with the same notebook', true);
+        var notebookRadio = createRadio('create-notebook', 'Create new notebook in Neptune', false);
+
+        var buttons = $('<div/>')
+            .css({
+                'display': 'flex',
+                'justify-content': 'flex-end'
             })
+            .append(
+                makeButton('Cancel', function () {
+                    modalProvider().modal('hide');
+                    return false;
+                })
+                    .css('margin-right', '10px')
+            )
+            .append(
+                makeButton('Apply', function () {
+                    if ($('#upload-create-checkpoint').prop('checked')) {
+                        requestCreateCheckpoint(null, apiAddress, accessToken, callback, errorCallback);
+                    } else {
+                        requestCreateNotebook(null, apiAddress, accessToken, projectId, callback, errorCallback);
+                    }
+                    modalProvider().modal('hide');
+                    return false;
+                })
+                    .addClass('btn-primary')
+            );
+
+        form
+            .append(text)
+            .append(checkpointRadio)
+            .append(notebookRadio)
+            .append(buttons)
+            .children('div')
+            .addClass('form-group');
+
+        popupBody
+            .append(form);
+
+        return popupBody;
+
+        function createRadio(name, label, checked) {
+            const id = 'upload-' + name;
+            return $('<div/>')
+                .append(
+                    $('<input type=\'radio\' name=\'uploadRadio\'/>')
+                        .attr('id', id)
+                        .val(name)
+                        .prop('checked', checked)
+                        .addClass('form-check-input col-sm-1')
+                ).append(
+                    $('<label/>')
+                        .attr('for', id)
+                        .text(label)
+                        .addClass('form-check-label col-sm-11')
+                );
+        }
+    }
+
+    function showConfigModal(callback) {
+        var modal;
+
+        var apiTokenStatus = new Status();
+        var projectSelectStatus = new Status();
+        var notebookCreationStatus = new Status();
+
+        var apiToken = window.localStorage.getItem('neptune_api_token') || '';
+        var notebookId = getNotebookId();
+
+        modal = dialog.modal({
+            show: false,
+            title: 'Configure connection to Neptune',
+            notebook: Jupyter.notebook,
+            keyboard_manager: Jupyter.notebook.keyboard_manager,
+            body: renderConfigModal(apiTokenStatus, projectSelectStatus, notebookCreationStatus, apiToken, notebookId, function() { return modal;}, callback),
+        }).attr('id', 'neptune_modal');
+
+        modal.find('.neptune-popup-closer')
+            .prepend(
+                $('<i/>')
+                    .addClass('fa fa-lg')
+            )
+            .prop('disabled', true);
+
+        modal.find('.modal-footer').hide();
+        modal.modal('show');
+    }
+
+
+    function renderConfigModal (apiTokenStatus, projectSelectStatus, notebookCreationStatus, initialApiToken, initialNotebookId, modalProvider) {
+        var modalBody = $('<div id=\'neptune-notebook-ext\' />');
+
+        var NUMBER_SIZE = '36px';
+
+        var step1 = $('<div id=\'tab1\' />');
+        var step2 = $('<div id=\'tab2\' />');
+
+        var step1Form = createStep1Form();
+        var step2Form = createStep2Form();
+
+        step1.append(step1Form);
+        step2.append(step2Form);
+
+        apiTokenStatus.clear();
+        projectSelectStatus.clear();
+        notebookCreationStatus.clear();
+
+        var tokenInput = $('<div/>')
+            .append(makeLabel('neptune-api-token', 'Api Token'))
+            .append(
+                $('<div/>')
+                    .addClass('col-sm-11')
+                    .append(
+                        $('<input id=\'neptune-api-token\' type=\'text\' />')
+                            .addClass('form-control')
+                            .val(initialApiToken)
+                            .data('oldVal', initialApiToken)
+                            .bind('change click keyup input paste', function() {
+                                if ($(this).data('oldVal') !== $(this).val()) {
+                                    $(this).data('oldVal', $(this).val());
+                                    validate(apiTokenStatus, projectSelectStatus, notebookCreationStatus);
+                                }
+                            })
+                    ).append(apiTokenStatus.errorElem)
+            )
+            .append(apiTokenStatus.elem);
+
+        var projectInput = $('<div/>')
+            .append(makeLabel('neptune-project', 'Select project'))
+            .append(
+                $('<div/>')
+                    .addClass('col-sm-11')
+                    .append(
+                        $('<select/>')
+                            .addClass('form-control')
+                            .css('margin-left', '0px')
+                            .attr('id', 'neptune-project')
+                            .bind('change click keyup input paste', function() {
+                                if ($(this).data('oldVal') !== $(this).val()) {
+                                    $(this).data('oldVal', $(this).val());
+                                    if ($(this).val() === 'invalidProject') {
+                                        projectSelectStatus.fail('You don\'t have write access to this project');
+                                    } else {
+                                        projectSelectStatus.ok();
+                                    }
+                                    validate(apiTokenStatus, projectSelectStatus, notebookCreationStatus);
+                                }
+                            })
+                    )
+                    .append(projectSelectStatus.errorElem)
+            )
+            .append(projectSelectStatus.elem);
+
+
+        var errorText = $('<div id=\'error-create-notebook\'>An error occured, please try again.</div>')
+            .css({
+                'color': 'red',
+                'display': 'flex',
+                'justify-content': 'flex-end'
+            })
+            .hide();
+
+        var step1Buttons = $('<div/>')
+            .css({
+                'display': 'flex',
+                'justify-content': 'flex-end'
+            })
+            .append(
+                makeButton('Cancel', function () {
+                    modalProvider().modal('hide');
+                    return false;
+                })
+                    .css('margin-right', '10px')
+            )
+            .append(
+                makeButton('Create notebook', function (event) {
+                    errorText.hide();
+                    createNotebook(notebookCreationStatus, globalApiAddress, globalAccessToken, globalUsername, function() {
+                        updateTextArea();
+                        setStep('step2');
+                    }, function () {
+                        errorText.show();
+                    });
+                    event.stopPropagation();
+                    return false;
+                })
+                    .addClass('btn-primary')
+            );
+
+        step1Form
+            .append(tokenInput)
+            .append(projectInput)
+            .append(errorText)
+            .append(step1Buttons);
+
+        var integrationCode = $('<div/>')
+            .append($('<div/>')
+                .addClass('col-sm-12')
+                .append($('<textarea id=\'neptune-integration-area\' rows=\'7\' disabled />')
+                    .addClass('form-control')
+                    .css({
+                        'resize': 'none',
+                        'white-space': 'pre',
+                        'overflow': 'auto'
+                    })
+                )
+            );
+
+        var step2Buttons = $('<div/>')
+            .css({
+                'display': 'flex',
+                'justify-content': 'flex-end'
+            })
+            .append(
+                makeButton('Do it later', function () {
+                    modalProvider().modal('hide');
+                    return false;
+                })
+                    .css('margin-right', '10px')
+            )
+            .append(
+                makeButton('Integrate', function () {
+                    IPython.notebook.kernel.execute($('#neptune-integration-area').val());
+                    configSave();
+                    modalProvider().modal('hide');
+                    return false;
+                })
+                    .addClass('btn-primary')
+            );
+
+        step2Form
+            .append(integrationCode)
+            .append(step2Buttons);
+
+        $([step1Form, step2Form]).each(function() {
+            this
+                .children('div')
+                .addClass('form-group');
+        });
+
+        modalBody
+            .append(step1)
+            .append(step2);
+
+        var step = (getNotebookId() && window.localStorage.getItem('neptune_api_token')) ? 'step2' : 'step1';
+        setStep(step);
+        fetchData(apiTokenStatus, projectSelectStatus, notebookCreationStatus);
+
+        return modalBody;
+
+        function validate(tokenStatus, projectStatus, notebookStatus) {
+            var apiToken = modalBody.find('#neptune-api-token').val();
+            try {
+                JSON.parse(atob(apiToken))
+            } catch(error) {
+                tokenStatus.clear();
+                if (!apiToken) {
+                    tokenStatus.fail('Api token is not valid');
+                } else {
+                    projectStatus.clear();
+                }
+                return false;
+            }
+            getAccessToken(tokenStatus, apiToken, function(apiAddress, accessToken, username) {
+                window.localStorage.setItem('neptune_api_token', apiToken);
+                globalApiAddress = apiAddress;
+                globalAccessToken = accessToken;
+                globalUsername = username;
+                getUserProjects(projectStatus, apiAddress, accessToken, function(projectData) {
+                    var currentProjectId = $('#neptune-project').val();
+                    fillProjectSelectBox(projectStatus, currentProjectId, projectData);
+                    getNotebookData(notebookStatus, apiAddress, accessToken, initialNotebookId, username, function(nbData) {});
+                })
+            });
+            return false;
+        }
+
+        function createStep2Form() {
+            var step2Header = createStep2Header();
+
+            var subtitle2 = $('<div />')
+                .addClass('col-sm-12')
+                .css({
+                    'color': '#68b84c',
+                    'font-size': '16px',
+                    'font-weight': '600',
+                    'margin-bottom': '20px'
+                })
+                .append('Initial checkpoint successful! Check this ')
+                .append(
+                    $('<a>this link</a>')
+                        .addClass('notebook-link')
+                )
+                .append(' to see your notebook ' + IPython.notebook.notebook_name);
+
+            var subtitle3 = $('<div />')
+                .addClass('col-sm-12')
+                .css('font-size', '13px')
+                .text('Integrate to create Neptune experiments and see them all linked to this notebook. ' +
+                    ' Click \'Integrate\' to run the code below, then just \'import neptune\' and work as usual.');
+
+            return createForm()
+                .append(step2Header)
+                .append(subtitle2)
+                .append(subtitle3);
+        }
+
+        function createStep1Form() {
+            var step1Header = createStep1Header();
+
+            var step1Text = $('<div/>')
+                .addClass('col-sm-12')
+                .text('API token and Project allows you to checkpoint and share your work in Neptune.');
+
+            return createForm()
+                .append(step1Header)
+                .append(step1Text);
+        }
+
+        function createStep2Header() {
+            return createHeader()
+                .append(createStepTitle()
+                    .css('cursor', 'pointer')
+                    .append($('<i/>')
+                        .addClass('fa fa-2x fa-check-circle')
+                        .css({
+                            'color': '#68b84c',
+                            'border': '1px solid transparent',
+                            'border-radius': '50%',
+                            'width': NUMBER_SIZE
+                        })
+                    )
+                    .append(createStepTitleText('Checkpoint')
+                        .css({
+                            'color': '#68b84c',
+                            'vertical-align': 'super'
+                        })
+                    )
+                    .click(function () { setStep('step1') })
+                )
+                .append(createDivider())
+                .append(createStepTitle()
+                    .append(createStepNumber(2))
+                    .append(createStepTitleText('Integrations'))
+                );
+        }
+
+        function createStep1Header() {
+            return createHeader()
+                .append(createStepTitle()
+                    .append(createStepNumber(1))
+                    .append(createStepTitleText('Checkpoint'))
+                )
+                .append(createDivider())
+                .append(createStepTitle()
+                    .append(createStepNumber(2)
+                        .css('background-color', '#d8d8d8')
+                    )
+                    .append(createStepTitleText('Integrations')
+                        .css('color', '#d8d8d8')
+                    )
+                );
+        }
+
+        function createDivider() {
+            return $('<div/>')
+                .addClass('col-sm-4')
+                .css({
+                    'background-color': '#d8d8d8',
+                    'height': '1px',
+                });
+        }
+
+        function createStepTitleText(text) {
+            return $('<span>' + text + '</span>')
+                .css({
+                    'margin-left': '10px',
+                    'color': '#337ab7',
+                });
+        }
+
+        function createStepTitle() {
+            return $('<div/>')
+                .addClass('col-sm-4')
+                .css({
+                    'font-size': '17px',
+                    'font-weight': 'bold',
+                    'text-align': 'center',
+                });
+        }
+
+        function createHeader() {
+            return $('<div/>')
+                .css({
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'margin-bottom': '20px',
+                });
+        }
+
+        function createForm() {
+            return $('<form/>')
+                .addClass('form-horizontal')
+                .css('padding', '0 20px')
+        }
+
+        function createStepNumber(number) {
+            return $('<span>' + number + '</span>')
+                .css({
+                    'display': 'inline-block',
+                    'background-color': '#337ab7',
+                    'color': '#fff',
+                    'border': '1px solid transparent',
+                    'border-radius': '50%',
+                    'line-height': NUMBER_SIZE,
+                    'width': NUMBER_SIZE,
+                    'height': NUMBER_SIZE,
+                });
+        }
+
+        function fetchData(tokenStatus, projectStatus, notebookStatus) {
+            getAccessToken(tokenStatus, initialApiToken, function(apiAddress, accessToken, username) {
+                getUserProjects(projectStatus, apiAddress, accessToken, function(projectData) {
+                    if (getNotebookId()) {
+                        getNotebookData(notebookStatus, apiAddress, accessToken, getNotebookId(), username, function(nbData) {
+                            fillProjectSelectBox(projectStatus, nbData.projectId, projectData);
+                            updateTextArea();
+                            updateNotebookLinks(nbData, apiAddress);
+                        })
+                    } else {
+                        fillProjectSelectBox(projectStatus, null, projectData);
+                        updateTextArea();
+                    }
+                })
+            });
+            return false;
+        }
+
+        function setStep(step) {
+            if (step === 'step1') {
+                step1.show();
+                step2.hide();
+            } else {
+                step1.hide();
+                step2.show();
+            }
+        }
+    }
+
+    function createNotebook(status, api_address, accessToken, username, callback, errorCallback) {
+        status.spin();
+        getNotebookData(status, api_address, accessToken, getNotebookId(), username, function(nbData) {
+            var currentProjectId = $('#neptune-project').val();
+            if (currentProjectId === nbData.projectId) {
+                showConfirmationModal(api_address, accessToken, null, callback, errorCallback);
+            } else {
+                requestCreateNotebook(status, api_address, accessToken, null, callback, errorCallback);
+            }
+        }, function () {
+            requestCreateNotebook(status, api_address, accessToken, null, callback, errorCallback);
+        })
+    }
+
+    function createCheckpoint(callback, errorCallback, force) {
+        duringNbSave();
+
+        var initialApiToken = window.localStorage.getItem('neptune_api_token') || '';
+
+        getAccessToken(null, initialApiToken, function(apiAddress, accessToken, username) {
+            var jupyterPath = IPython.notebook.notebook_path;
+            if (getNotebookId()) {
+                getNotebookData(null, apiAddress, accessToken, getNotebookId(), username, function(nbData) {
+                    if (!nbData) {
+                        return errorNbSave(null, 'You don\'t have access to this notebook, details in configuration');
+                    }
+
+                    if (nbData.owner !== username) {
+                        return errorNbSave(null, 'You are not the owner of this notebook. You need to create your own copy, details in configuration');
+                    }
+
+                    if (nbData.path !== jupyterPath) {
+                        showConfirmationModal(apiAddress, accessToken, nbData.projectId, callback, errorCallback);
+                        return errorNbSave(null, 'Notebook was previously uploaded under different path');
+                    }
+
+                    requestCreateCheckpoint(null, apiAddress, accessToken, callback, errorCallback);
+                }, function () {
+                    if (force) {
+                        requestCreateCheckpoint(null, apiAddress, accessToken, callback, errorCallback);
+                    }
+                })
+            } else {
+                errorNbSave(null, 'Notebook is not associated to Neptune, details in configuration');
+            }
+        });
+    }
+
+    function getNotebookId() {
+        var neptuneMetadata = IPython.notebook.metadata.neptune;
+        if (neptuneMetadata && neptuneMetadata.notebookId) {
+            return neptuneMetadata.notebookId;
+        }
+        return null;
+    }
+
+    function injectNotebookId() {
+        var notebookId = getNotebookId();
+        if (notebookId) {
+            IPython.notebook.kernel.execute('' +
+                'import os\n' +
+                'os.environ[\'NEPTUNE_NOTEBOOK_ID\']=\'' + notebookId + '\'\n'
+            );
+        }
     }
 
     function fillProjectSelectBox(status, selectedProjectId, projectData) {
-        var currentProject = selectedProjectId
+        var currentProject = selectedProjectId;
         var projectIdentifiers = projectData.entries.map(function(row) {
-          return row.id
-        })
+            return row.id;
+        });
         var projectIdsWithNames = projectData.entries.map(function(row) {
-          return [row.id, row.organizationName + "/" + row.name]
-        })
-        $("#neptune-project option").remove()
+            return [row.id, row.organizationName + '/' + row.name];
+        });
+        $('#neptune-project option').remove();
         $.each(projectIdsWithNames, function (i, item) {
             $('#neptune-project').append($('<option>', {
                 value: item[0],
@@ -468,261 +812,283 @@ define([
             }));
         });
         if (projectIdentifiers.indexOf(currentProject) >= 0) {
-          $('#neptune-project').val(currentProject)
-          status.ok()
+            $('#neptune-project').val(currentProject);
+            status.ok();
         } else {
             if (currentProject) {
-                $('#neptune-project').append($('<option>', {
-                    value: 'invalidProject',
-                    text : "Undisclosed project"
-                }));
-                $('#neptune-project').val('invalidProject')
-                status.fail("You don't have write access to this project")
+                $('#neptune-project')
+                    .append($('<option>', {
+                        value: 'invalidProject',
+                        text : 'Undisclosed project'
+                    }))
+                    .val('invalidProject');
+                status.fail('You don\'t have write access to this project');
             } else {
-                status.ok()
+                status.ok();
             }
         }
 
     }
 
     function updateTextArea() {
-        $("#neptune-integration-area").val("" +
-                            "import os\n" +
-                            "os.environ['NEPTUNE_API_TOKEN']='" + $("#neptune-api-token").val() + "'\n" +
-                            "os.environ['NEPTUNE_PROJECT']='" + $("#neptune-project option:selected").text() + "'\n" +
-                            "os.environ['NEPTUNE_NOTEBOOK_ID']='" + getNotebookId() + "'\n" +
-                            "import neptune\n" +
-                            "neptune.init()\n")
+        $('#neptune-integration-area').val('' +
+            'import os\n' +
+            'os.environ[\'NEPTUNE_API_TOKEN\']=\'' + $('#neptune-api-token').val() + '\'\n' +
+            'os.environ[\'NEPTUNE_PROJECT\']=\'' + $('#neptune-project option:selected').text() + '\'\n' +
+            'os.environ[\'NEPTUNE_NOTEBOOK_ID\']=\'' + getNotebookId() + '\'\n' +
+            'import neptune\n' +
+            'neptune.init()');
     }
 
-    function build_neptune_popup (apiTokenStatus, projectSelectStatus, notebookCreationStatus, initialApiToken, initialNotebookId) {
-        var neptune_popup = $('#neptune-notebook-ext');
-
-        var currentProjectId = null
-        var currentApiToken = initialApiToken
-
-
-        if (neptune_popup.length > 0) return neptune_popup;
-
-        neptune_popup = $('<div/>').attr('id', 'neptune-notebook-ext');
-
-        var controls = $('<form/>')
-            .appendTo(neptune_popup)
-            .addClass('form-horizontal');
-
-        var acceptButton = handleButton([apiTokenStatus, projectSelectStatus, notebookCreationStatus])
-
-        apiTokenStatus.add(acceptButton)
-        projectSelectStatus.add(acceptButton)
-        notebookCreationStatus.add(acceptButton)
-        apiTokenStatus.clear()
-        projectSelectStatus.clear()
-        notebookCreationStatus.clear()
-
-
-        var initControls = function (tokenStatus, projectStatus, notebookStatus) {
-            getAccessToken(tokenStatus, initialApiToken, function(apiAddress, accessToken, username) {
-                getUserProjects(projectStatus, apiAddress, accessToken, function(projectData) {
-                    if (getNotebookId()) {
-                        getNotebookData(notebookStatus, apiAddress, accessToken, getNotebookId(), username, function(nbData) {
-                            fillProjectSelectBox(projectStatus, nbData.projectId, projectData)
-                            updateTextArea()
-                        })
-                    } else {
-                        fillProjectSelectBox(projectStatus, null, projectData)
-                        updateTextArea()
-                    }
-                })
+    function configReset() {
+        $('#neptune-authorize-btn')
+            .css('background', NEPTUNE_LOGO_URL + ' 7px 4px no-repeat')
+            .find('i')
+            .removeClass()
+            .addClass('fa')
+            .css({
+                'color': 'black',
+                'padding-right': '0'
             });
-            return false;
-        }
 
-        $('<div/>')
-            .appendTo(controls)
-            .append(makeLabel('neptune-api-token', 'Api Token'))
-            .append(
-                $('<div/>')
-                    .addClass('col-sm-9')
-                    .append(
-                        $('<input/>')
-                            .addClass('form-control')
-                            .attr('id', 'neptune-api-token')
-                            .attr('type', 'text')
-                            .val(initialApiToken)
-                    ).append(apiTokenStatus.errorElem)
-            )
-            .append(apiTokenStatus.elem)
-        $('<div/>')
-            .appendTo(controls)
-            .append(makeLabel('neptune-project', 'Select project'))
-            .append(
-                $('<div/>')
-                .addClass('col-sm-9')
-                .append(
-                    $('<select/>')
-                        .addClass('form-control')
-                        .css("margin-left", "0px")
-                        .attr('id', 'neptune-project')
-                )
-                .append(projectSelectStatus.errorElem)
-            )
-            .append(projectSelectStatus.elem);
 
-        $('<div/>')
-            .appendTo(controls)
-            .append(makeLabel('neptune-notebook', 'Notebook'))
-            .append($('<div/>')
-                .addClass('col-sm-9')
-                .append($("<button />")
-                    .text("Create in Neptune & upload notebook")
-                    .addClass("btn")
-                    .attr('id', 'neptune-crete-notebook')
-                    .css("width", "100%")
-                    .click(function(event) {
-                         save_notebook_in_neptune_with_tokens(notebookCreationStatus, globalApiAddress, globalAccessToken, globalUsername)
-                         acceptButton.validate()
-                         return false
-                     })
-                )
-                .append(notebookCreationStatus.errorElem))
-            .append(notebookCreationStatus.elem);
-
-        $('<div/>')
-            .appendTo(controls)
-            .append(makeLabel('neptune-notebook', 'Integration'))
-            .append($('<div/>')
-                .addClass('col-sm-9')
-                .append($("<textarea rows='6'/>")
-                    .prop('disabled', true)
-                    .addClass("form-control")
-                    .css('resize', 'none')
-                    .attr('id', 'neptune-integration-area')
-                )
-            )
-            .append($("<button />")
-                .text(" Run!")
-                .addClass("btn")
-                .css("margin-left", "3px")
-                .css("padding-left", "3px")
-                .attr('id', 'neptune-integration-run')
-                .click(function(event) {
-                    IPython.notebook.kernel.execute($("#neptune-integration-area").val())
-                     return false
-                 })
-            );
-
-        initControls(apiTokenStatus, projectSelectStatus, notebookCreationStatus)
-
-        var validate = function (tokenStatus, projectStatus, notebookStatus) {
-            var apiToken = neptune_popup.find('#neptune-api-token').val()
-            var decodedToken = {}
-            try {
-              decodedToken = JSON.parse(atob(apiToken))
-            } catch(error) {
-                tokenStatus.clear()
-                if (apiToken != '') {
-                    tokenStatus.fail('Api token is not valid')
-                } else {
-                    projectStatus.clear()
-                }
-                return false
-            }
-            getAccessToken(tokenStatus, apiToken, function(apiAddress, accessToken, username) {
-                window.localStorage.setItem('neptune_api_token', apiToken)
-                globalApiAddress = apiAddress
-                globalAccessToken = accessToken
-                globalUsername = username
-                getUserProjects(projectStatus, apiAddress, accessToken, function(projectData) {
-                    var currentProjectId = $("#neptune-project").val()
-                    fillProjectSelectBox(projectStatus, currentProjectId, projectData)
-                    getNotebookData(notebookStatus, apiAddress, accessToken, initialNotebookId, username, function(nbData) {})
-                })
-            })
-            return false;
-        }
-
-        var input = controls.find("#neptune-api-token")
-        input.data('oldVal', input.val());
-        input.bind("change click keyup input paste", function(event) {
-            // If value has changed...
-            if (input.data('oldVal') !== input.val()) {
-                // Updated stored value
-                input.data('oldVal', input.val());
-                // Do action
-                validate(apiTokenStatus, projectSelectStatus, notebookCreationStatus)
-            }
-        });
-
-        var input2 = controls.find("#neptune-project")
-        input2.data('oldVal', input2.val());
-        input2.bind("change click keyup input paste", function(event) {
-            // If value has changed...
-            if (input2.data('oldVal') !== input2.val()) {
-                // Updated stored value
-                input2.data('oldVal', input2.val());
-                // Do action
-                if (input2.val() == 'invalidProject') {
-                    projectSelectStatus.fail("You don't have write access to this project")
-                } else {
-                    projectSelectStatus.ok()
-                }
-                validate(apiTokenStatus, projectSelectStatus, notebookCreationStatus)
-            }
-        });
-
-        var form_groups = controls
-            .children('div')
-            .addClass('form-group');
-
-        return neptune_popup;
+        $('#neptune-authorize-status')
+            .hide();
     }
 
-    function show_neptune_popup () {
-        var modal;
+    function configSave() {
+        var authorizeButton = $('#neptune-authorize-btn');
 
-        var apiTokenStatus = makeStatus();
-        var projectSelectStatus = makeStatus();
-        var notebookCreationStatus = makeStatus();
+        authorizeButton
+            .css('padding-left', '8px')
+            .find('.text').remove();
 
-        var apiToken = window.localStorage.getItem('neptune_api_token') || ''
-        var notebookId = getNotebookId()
+        $('#neptune-upload-btn').show();
 
-        modal = dialog.modal({
-            show: false,
-            title: 'Configure connection to Neptune',
-            notebook: Jupyter.notebook,
-            keyboard_manager: Jupyter.notebook.keyboard_manager,
-            body: build_neptune_popup(apiTokenStatus, projectSelectStatus, notebookCreationStatus, apiToken, notebookId),
-            buttons: {
-                ' Close': {
-                    class : 'btn-primary',
-                    click: function() {
-                        var apiToken = modal.find('#neptune-api-token').val()
-                        var project = modal.find('#neptune-project').val()
-                        if (getNotebookId()) {
-                          $("#neptune-upload-btn").show()
-                          $("#neptune-authorize-btn").text("");
-                          $("#neptune-authorize-btn").css("padding-left", "")
-                          $("#neptune-authorize-btn").append("<i class='fa' />")
-                        }
-                    }
-                }
-            }
-        }).attr('id', 'neptune_modal')
-        modal.find('.btn-primary').prepend(
-            $('<i/>')
-                .addClass('fa fa-lg')
-        ).prop('disabled', true);
+        authorizeButton
+            .css('background', NEPTUNE_LOGO_URL + ' 27px 4px no-repeat')
+            .find('i')
+            .removeClass()
+            .addClass('fa fa-check-circle')
+            .css({
+                'color': 'green',
+                'padding-right': '20px'
+            });
 
-        modal.modal('show');
+        $('#neptune-authorize-status')
+            .text('Configuration completed!')
+            .show();
+
+        configTimer.start(configReset);
     }
 
-    function load_jupyter_extension () {
+    function nbSaveButtonReset() {
+        $('#neptune-upload-btn')
+            .find('i')
+            .removeClass()
+            .addClass('fa')
+            .css('color', 'black');
+    }
+
+    function idleNbSave() {
+        uploadTimer.stop();
+        nbSaveButtonReset();
+        $('#neptune-upload-status')
+            .hide();
+
+        $('#neptune-upload-btn')
+            .prop('disabled', false)
+            .find('i')
+            .addClass('fa-cloud-upload');
+    }
+
+    function duringNbSave() {
+        uploadTimer.stop();
+        nbSaveButtonReset();
+
+        $('#neptune-upload-btn')
+            .prop('disabled', true)
+            .find('i')
+            .addClass('fa-spin fa-spinner');
+    }
+
+    function successNbSave() {
+        nbSaveButtonReset();
+        $('#neptune-upload-btn')
+            .prop('disabled', false)
+            .find('i').addClass('fa-check-circle').css('color', 'green');
+        $('#neptune-upload-status')
+            .text('Successfully uploaded! To see notebook in Neptune, go to ')
+            .append(
+                $('<a>link</a>')
+                    .addClass('notebook-link')
+            )
+            .show();
+        uploadTimer.start(idleNbSave);
+        updateNotebookLinks();
+    }
+
+    function errorNbSave(data, statusText) {
+        nbSaveButtonReset();
+        $('#neptune-upload-btn')
+            .prop('disabled', false).find('i')
+            .addClass('fa-times-circle')
+            .css('color', 'red');
+
+        if (data && data.status === 403) {
+            $('#neptune-upload-status')
+                .text('Failed to upload notebook. You are not authorized to upload to this notebook.')
+                .show();
+        } else {
+            $('#neptune-upload-status')
+                .text(statusText || 'An error occurred while uploading, please try again.')
+                .show();
+        }
+        uploadTimer.start(idleNbSave);
+    }
+
+    function makeLabel(forAttr, text) {
+        return $('<label/>')
+            .addClass('col-sm-2')
+            .attr('for', forAttr)
+            .text(text);
+    }
+
+    function makeButton(text, callback) {
+        return $('<button/>')
+            .addClass('btn')
+            .text(text)
+            .click(callback);
+    }
+
+    function loadJupyterExtensions() {
         return Jupyter.notebook.config.loaded.then(initialize);
     }
 
-    return {
-        load_jupyter_extension: load_jupyter_extension,
-        load_ipython_extension: load_jupyter_extension
-    };
+
+    function updateNotebookLinks(notebook, apiAddress) {
+        $('.notebook-link')
+            .attr('target', '__blank')
+            .attr('rel', 'noopener noreferrer')
+            .attr('href', makeNotebookUrl(notebook, apiAddress));
+    }
+
+    function makeNotebookUrl(notebook, apiAddress) {
+        if (!notebook) {
+            return null;
+        }
+
+        var project = projects.find(function (project) {
+            return project.id === notebook.projectId;
+        });
+
+        return apiAddress + '/' + project.organizationName + '/' + project.name + '/' +
+            notebook.name + '-' + notebook.id + '/' + notebook.lastCheckpointId;
+    }
+
+    function Timer() {
+        return {
+            handle: 0,
+            start: function(fun) {
+                this.stop();
+                this.handle = setTimeout(fun, 4000);
+            },
+            stop: function() {
+                if (this.handle) {
+                    clearTimeout(this.handle);
+                    this.handle = 0;
+                }
+            }
+        };
+    }
+
+    function Status() {
+        uniqueComponentId += 1;
+        var statusIsOk = false;
+        var e = $('<div />').addClass('col-sm-1');
+        var handlers = [];
+        var errorArea = $('<div class=\'help-block\'>neptune-status-' + uniqueComponentId + '</div>')
+            .css('color', 'red');
+
+        e.prepend($('<i/>')
+            .addClass('fa fa-2x fa-question-circle')
+            .css('margin-top', '2px')
+            .css('margin-left', '20px')
+            .css('color', 'black')
+        );
+        var img = e.find('i');
+
+        return {
+            elem: e,
+            errorElem: errorArea,
+            ok: makeOk,
+            spin: makeSpin,
+            fail: makeFail,
+            warn: makeWarn,
+            clear: reset,
+            isOk: checkOk,
+            add: addHandler
+        };
+
+        function checkOk() {
+            return statusIsOk;
+        }
+
+        function reset() {
+            img.removeClass();
+            statusIsOk = false;
+            errorArea.hide();
+        }
+
+        function fireHandlers() {
+            handlers.forEach(function(ee) {
+                ee.validate();
+            });
+        }
+
+        function makeOk() {
+            reset();
+            errorArea.hide();
+            statusIsOk = true;
+            img
+                .addClass('fa fa-2x fa-check-circle')
+                .css('color', 'green');
+            fireHandlers();
+        }
+
+        function makeWarn(statusText) {
+            reset();
+            errorArea.text(statusText);
+            errorArea.show();
+            statusIsOk = true;
+            img
+                .addClass('fa fa-2x fa-exclamation-circle')
+                .css('color', 'orange');
+            fireHandlers();
+        }
+
+        function makeSpin() {
+            reset();
+            errorArea.hide();
+            img
+                .addClass('fa fa-2x fa-spin fa-spinner')
+                .css('color', 'black');
+            fireHandlers();
+        }
+
+        function makeFail(statusText) {
+            reset();
+            errorArea.text(statusText);
+            errorArea.show();
+            img
+                .addClass('fa fa-2x fa-times-circle')
+                .css('color', 'red');
+            fireHandlers();
+        }
+
+        function addHandler(handler) {
+            handlers.push(handler);
+        }
+    }
 });
+
