@@ -5,67 +5,65 @@ import {ContentsManager} from "@jupyterlab/services";
 
 export class NeptuneContent {
 
-    private readonly context: DocumentRegistry.IContext<INotebookModel>;
-    private readonly contentsManager: ContentsManager;
+  private readonly context: DocumentRegistry.IContext<INotebookModel>;
 
-    constructor(context: DocumentRegistry.IContext<INotebookModel>,
-                contentsManager: ContentsManager) {
-        this.context = context;
-        this.contentsManager = contentsManager;
-    }
+  private readonly contentsManager: ContentsManager;
 
-    getNotebookPath = () => {
-        return this.context.path;
-    };
+  constructor(
+    context: DocumentRegistry.IContext<INotebookModel>,
+    contentsManager: ContentsManager
+  ) {
+    this.context = context;
+    this.contentsManager = contentsManager;
+  }
 
-    getNotebookContent = () => {
-        return this.contentsManager.get(this.context.path, {content: true})
-            .then(content => JSON.stringify(content));
-    };
+  getNotebookPath = () => {
+    return this.context.path;
+  };
 
-    getMetadata = () => {
-        return this.context.ready.then(() => {
-            let metadata = this.context.model.metadata.get("neptune") as NeptuneMetadata;
-            if (metadata) {
-                return metadata;
-            } else {
-                return {};
-            }
-        });
-    };
+  getNotebookContent = () => {
+    return this.contentsManager
+      .get(this.context.path, {content: true})
+      .then(content => JSON.stringify(content));
+  };
 
-    validateMetadata = () => {
-        return this.getMetadata().then(metadata => {
-            if (metadata.notebookId) {
-                return Promise.resolve();
-            } else {
-                return Promise.reject("Missing `notebookId`");
-            }
-        })
-    };
+  getMetadata = () => {
+    return this.context.ready.then(() => {
+      let metadata = this.context.model.metadata.get("neptune") as NeptuneMetadata;
 
-    updateMetadata = (update: Partial<NeptuneMetadata>) => {
-        return this.context.ready.then(() => {
-            let metadata = this.context.model.metadata;
+      return metadata || {};
+    });
+  };
 
-            if (!metadata.has("neptune")) {
-                metadata.set("neptune", {});
-            }
+  validateMetadata = () => {
+    return this
+      .getMetadata()
+      .then(metadata => {
+        if (metadata.notebookId) {
+          return Promise.resolve();
+        }
+        return Promise.reject("Missing `notebookId`");
+    })
+  };
 
-            let neptuneMetadata = this.context.model.metadata.get("neptune") as NeptuneMetadata;
+  updateMetadata = (update: Partial<NeptuneMetadata>) => {
+    return this.context.ready
+      .then(() => {
+        let metadata = this.context.model.metadata;
 
-            if (update.notebookId) {
-                neptuneMetadata.notebookId = update.notebookId;
-            }
-
-            this.context.model.metadata.set("neptune", neptuneMetadata as JSONObject);
-        });
-    }
-
+        if (!metadata.has("neptune")) {
+          metadata.set("neptune", {});
+        }
+        let neptuneMetadata = this.context.model.metadata.get("neptune") as NeptuneMetadata;
+        if (update.notebookId) {
+          neptuneMetadata.notebookId = update.notebookId;
+        }
+        this.context.model.metadata.set("neptune", neptuneMetadata as JSONObject);
+    });
+  }
 }
 
+
 interface NeptuneMetadata {
-
-    notebookId?: string;
-
+  notebookId?: string;
 }
