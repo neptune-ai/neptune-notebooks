@@ -256,10 +256,10 @@ define([
         });
     }
 
-    function showConfirmationModal(apiAddress, accessToken, projectId, callback, errorCallback) {
+    function showConfirmationModal(apiAddress, accessToken, projectId, title, callback, errorCallback) {
         var element = dialog.modal({
             show: false,
-            title: 'Your notebook\'s path has changed, how would you like to continue?',
+            title: title,
             notebook: Jupyter.notebook,
             keyboard_manager: Jupyter.notebook.keyboard_manager,
             body: renderConfirmationModal(apiAddress, accessToken, projectId, getNotebookId(), function() {return element;}, callback, errorCallback)
@@ -371,12 +371,13 @@ define([
 
 
     function renderConfigModal (apiTokenStatus, projectSelectStatus, notebookCreationStatus, initialApiToken, initialNotebookId, modalProvider) {
-        var modalBody = $('<div id=\'neptune-notebook-ext\' />');
+        var modalBody = $('<div id=\'neptune-notebook-ext\' />')
+            .css('min-height', '300px');
 
         var NUMBER_SIZE = '36px';
 
-        var step1 = $('<div id=\'tab1\' />');
-        var step2 = $('<div id=\'tab2\' />');
+        var step1 = $('<div id=\'tab1\' />').hide();
+        var step2 = $('<div id=\'tab2\' />').hide();
 
         var step1Form = createStep1Form();
         var step2Form = createStep2Form();
@@ -460,6 +461,7 @@ define([
                     errorText.hide();
                     createNotebook(notebookCreationStatus, globalApiAddress, globalAccessToken, globalUsername, function() {
                         updateTextArea();
+                        configSave();
                         setStep('step2');
                     }, function () {
                         errorText.show();
@@ -504,7 +506,6 @@ define([
             .append(
                 makeButton('Integrate', function () {
                     IPython.notebook.kernel.execute($('#neptune-integration-area').val());
-                    configSave();
                     modalProvider().modal('hide');
                     return false;
                 })
@@ -525,8 +526,6 @@ define([
             .append(step1)
             .append(step2);
 
-        var step = (getNotebookId() && window.localStorage.getItem('neptune_api_token')) ? 'step2' : 'step1';
-        setStep(step);
         fetchData(apiTokenStatus, projectSelectStatus, notebookCreationStatus);
 
         return modalBody;
@@ -709,10 +708,16 @@ define([
                             fillProjectSelectBox(projectStatus, nbData.projectId, projectData);
                             updateTextArea();
                             updateNotebookLinks(nbData, apiAddress);
+                            setStep('step2')
+                        }, function() {
+                            fillProjectSelectBox(projectStatus, null, projectData);
+                            updateTextArea();
+                            setStep('step1');
                         })
                     } else {
                         fillProjectSelectBox(projectStatus, null, projectData);
                         updateTextArea();
+                        setStep('step1');
                     }
                 })
             });
@@ -735,7 +740,7 @@ define([
         getNotebookData(status, api_address, accessToken, getNotebookId(), username, function(nbData) {
             var currentProjectId = $('#neptune-project').val();
             if (currentProjectId === nbData.projectId) {
-                showConfirmationModal(api_address, accessToken, null, callback, errorCallback);
+                showConfirmationModal(api_address, accessToken, null, 'Your notebook\'s project has changed.', callback, errorCallback);
             } else {
                 requestCreateNotebook(status, api_address, accessToken, null, callback, errorCallback);
             }
@@ -762,7 +767,7 @@ define([
                     }
 
                     if (nbData.path !== jupyterPath) {
-                        showConfirmationModal(apiAddress, accessToken, nbData.projectId, callback, errorCallback);
+                        showConfirmationModal(apiAddress, accessToken, nbData.projectId, 'Your notebook\'s path has changed.', callback, errorCallback);
                         return errorNbSave(null, 'Notebook was previously uploaded under different path');
                     }
 
@@ -770,6 +775,8 @@ define([
                 }, function () {
                     if (force) {
                         requestCreateCheckpoint(null, apiAddress, accessToken, callback, errorCallback);
+                    } else {
+                        return errorNbSave(null, 'Your notebook does not exist, details in configuration');
                     }
                 })
             } else {
@@ -982,7 +989,7 @@ define([
             return project.id === notebook.projectId;
         });
 
-        return apiAddress + '/' + project.organizationName + '/' + project.name + '/' +
+        return apiAddress + '/' + project.organizationName + '/' + project.name + '/n/' +
             notebook.name + '-' + notebook.id + '/' + notebook.lastCheckpointId;
     }
 
