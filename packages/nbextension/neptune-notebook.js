@@ -246,7 +246,6 @@ define([
                 createCheckpoint(callback, errorCallback, true);
             },
             error: function(data) {
-                console.error('Neptune failed to create new notebook');
                 errorNbSave(data);
                 if (typeof errorCallback === 'function') {
                     errorCallback(data);
@@ -739,7 +738,7 @@ define([
         status.spin();
         getNotebookData(status, api_address, accessToken, getNotebookId(), username, function(nbData) {
             var currentProjectId = $('#neptune-project').val();
-            if (currentProjectId === nbData.projectId) {
+            if (currentProjectId === nbData.projectId && username.owner === username) {
                 showConfirmationModal(api_address, accessToken, null, 'Your notebook\'s project has changed.', callback, errorCallback);
             } else {
                 requestCreateNotebook(status, api_address, accessToken, null, callback, errorCallback);
@@ -763,7 +762,7 @@ define([
                     }
 
                     if (nbData.owner !== username) {
-                        return errorNbSave(null, 'You are not the owner of this notebook. You need to create your own copy, details in configuration');
+                        return requestCreateNotebook(null, apiAddress, accessToken, nbData.projectId , callback, errorCallback);
                     }
 
                     if (nbData.path !== jupyterPath) {
