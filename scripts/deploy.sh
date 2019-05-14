@@ -7,6 +7,6 @@ then
     twine upload dist/*.tar.gz
 
     # npm package
-    cd packages/labextension
-    npm publish
+#    cd packages/labextension
+#    npm publish
 fi
