@@ -1,4 +1,4 @@
-# jupyterlab-neptune
+# neptune-notebooks
 
 A JupyterLab extension for Neptune
 
@@ -10,7 +10,7 @@ A JupyterLab extension for Neptune
 ## Installation
 
 ```bash
-jupyter labextension install jupyterlab-neptune
+jupyter labextension install neptune-notebooks
 ```
 
 ## Development

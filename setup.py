@@ -14,66 +14,99 @@
 # limitations under the License.
 #
 
-import os
+from __future__ import print_function
 
-from setuptools import find_packages, setup
+# the name of the project
+name = 'neptune-notebooks'
+
+# -----------------------------------------------------------------------------
+# get on with it
+# -----------------------------------------------------------------------------
+
+import os
+from os.path import join as pjoin
+from glob import glob
+
+from setuptools import setup, find_packages
+
+from setupbase import (create_cmdclass, install_npm, ensure_targets,
+                       combine_commands, expand_data_files)
+
+here = os.path.abspath(os.path.dirname(__file__))
 
 import git_version
 
+version = '0.0.0'
+try:
+    with open('VERSION') as f:
+        version = f.readline().strip()
+except IOError:
+    pass
 
-def version():
-    try:
-        with open('VERSION') as f:
-            return f.readline().strip()
-    except IOError:
-        return '0.0.0'
+nbextension = pjoin(here, 'packages', 'nbextension')
+labextension = pjoin(here, 'packages', 'labextension')
+
+# Representative files that should exist after a successful build
+
+jstargets = [
+    pjoin(nbextension, 'neptune-notebook.js'),
+    pjoin(labextension, 'dist', 'neptune-notebooks-{}.tgz'.format(version)),
+]
+
+cmdclass = create_cmdclass(('jsdeps',))
+
+cmdclass['jsdeps'] = combine_commands(
+    install_npm(labextension, build_cmd='dist'),
+    ensure_targets(jstargets),
+)
+
+cmdclass['git_version'] = git_version.GitVersion
+
+package_data = {
+    name: [
+        'packages/nbextension/*.*js*',
+        'packages/labextension/dist/*.tgz'
+    ]
+}
+
+data_files = expand_data_files([
+    ('share/jupyter/nbextensions/neptune-notebooks', [pjoin(nbextension, '*.js*')]),
+    ('share/jupyter/lab/extensions', [pjoin(labextension, 'dist', '*.tgz')]),
+])
 
 
 def main():
-    root_dir = os.path.dirname(__file__)
-
-    with open(os.path.join(root_dir, 'requirements.txt')) as f:
+    with open(os.path.join(here, 'requirements.txt')) as f:
         requirements = [r.strip() for r in f]
-        setup(
-            name='neptune-notebooks',
-            version=version(),
-            url='https://github.com/neptune-ml/neptune-notebooks',
-            license='Apache License 2.0',
-            author='neptune.ml',
-            author_email='contact@neptune.ml',
-            description='Neptune Notebooks',
-            long_description=__doc__,
-            packages=find_packages(),
-            platforms='any',
-            install_requires=requirements,
-            entry_points={
-                'neptune.plugins': "notebook = neptune_notebooks_plugin:upload"
-            },
-            cmdclass={
-                'git_version': git_version.GitVersion,
-            },
-            classifiers=[
-                # As from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-                # 'Development Status :: 1 - Planning',
-                # 'Development Status :: 2 - Pre-Alpha',
-                # 'Development Status :: 3 - Alpha',
-                'Development Status :: 4 - Beta',
-                # 'Development Status :: 5 - Production/Stable',
-                # 'Development Status :: 6 - Mature',
-                # 'Development Status :: 7 - Inactive',
-                'Environment :: Console',
-                'Intended Audience :: Developers',
-                'License :: OSI Approved :: Apache Software License',
-                'Operating System :: POSIX',
-                'Operating System :: MacOS',
-                'Operating System :: Unix',
-                'Operating System :: Microsoft :: Windows',
-                'Programming Language :: Python',
-                'Programming Language :: Python :: 2',
-                'Programming Language :: Python :: 3',
-                'Topic :: Software Development :: Libraries :: Python Modules',
-            ]
-        )
+    setup(
+        name=name,
+        version=version,
+        scripts=glob(pjoin('scripts', '*')),
+        cmdclass=cmdclass,
+        packages=find_packages(here),
+        package_data=package_data,
+        include_package_data=True,
+        data_files=data_files,
+        author='Neptune',
+        author_email='contact@neptune.ml',
+        url='http://jupyter.org',
+        license='BSD',
+        platforms='any',
+        install_requires=requirements,
+        keywords=['ipython', 'jupyter'],
+        entry_points={
+            'neptune.plugins': "notebook = neptune_notebooks_plugin:upload"
+        },
+        classifiers=[
+            'Intended Audience :: Developers',
+            'Intended Audience :: System Administrators',
+            'Intended Audience :: Science/Research',
+            'License :: OSI Approved :: Apache Software License',
+            'Programming Language :: Python',
+            'Programming Language :: Python :: 2',
+            'Programming Language :: Python :: 3',
+        ],
+    )
 
 
 if __name__ == "__main__":
