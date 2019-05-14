@@ -161,7 +161,7 @@ class UploadDialog extends React.Component<UploadDialogProps> {
             checked
             onChange={this.updateResolveStrategy}
           />
-          Continue working with the same notebook
+          Append checkpoint to this notebook
         </label>
 
         <label className="n-UploadDialog__option-label">
