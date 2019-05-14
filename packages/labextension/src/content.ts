@@ -1,7 +1,7 @@
-import {INotebookModel} from "@jupyterlab/notebook";
-import {DocumentRegistry} from "@jupyterlab/docregistry";
-import {JSONObject} from "@phosphor/coreutils";
-import {ContentsManager} from "@jupyterlab/services";
+import { INotebookModel } from '@jupyterlab/notebook';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { JSONObject } from '@phosphor/coreutils';
+import { ContentsManager } from '@jupyterlab/services';
 
 export class NeptuneContent {
 
@@ -29,7 +29,7 @@ export class NeptuneContent {
 
   getMetadata = () => {
     return this.context.ready.then(() => {
-      let metadata = this.context.model.metadata.get("neptune") as NeptuneMetadata;
+      let metadata = this.context.model.metadata.get('neptune') as NeptuneMetadata;
 
       return metadata || {};
     });
@@ -42,7 +42,7 @@ export class NeptuneContent {
         if (metadata.notebookId) {
           return Promise.resolve();
         }
-        return Promise.reject("Missing `notebookId`");
+        return Promise.reject('Missing `notebookId`');
     })
   };
 
@@ -51,14 +51,14 @@ export class NeptuneContent {
       .then(() => {
         let metadata = this.context.model.metadata;
 
-        if (!metadata.has("neptune")) {
-          metadata.set("neptune", {});
+        if (!metadata.has('neptune')) {
+          metadata.set('neptune', {});
         }
-        let neptuneMetadata = this.context.model.metadata.get("neptune") as NeptuneMetadata;
+        let neptuneMetadata = this.context.model.metadata.get('neptune') as NeptuneMetadata;
         if (update.notebookId) {
           neptuneMetadata.notebookId = update.notebookId;
         }
-        this.context.model.metadata.set("neptune", neptuneMetadata as JSONObject);
+        this.context.model.metadata.set('neptune', neptuneMetadata as JSONObject);
     });
   }
 }

@@ -1,11 +1,16 @@
-import * as React from "react";
-import { ReactElementWidget, ToolbarButtonComponent } from '@jupyterlab/apputils';
-
-import { NeptuneConnection, setGlobalApiToken } from "./connection";
-import { NeptuneConnectionInfoDialog } from "./dialog";
-import { NeptuneContent } from "./content";
-import { NeptuneSession } from "./kernel";
-import "../style/configure.css";
+import * as React from 'react';
+import {
+  ReactElementWidget,
+  ToolbarButtonComponent
+} from '@jupyterlab/apputils';
+import {
+  NeptuneConnection,
+  setGlobalApiToken
+} from './connection';
+import { NeptuneConnectionInfoDialog } from './dialog';
+import { NeptuneContent } from './content';
+import { NeptuneSession } from './kernel';
+import '../style/configure.css';
 
 
 export class NeptuneConfigure extends ReactElementWidget {

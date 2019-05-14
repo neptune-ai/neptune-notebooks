@@ -1,5 +1,5 @@
-import * as React from "react";
-import { ChangeEvent } from "react";
+import * as React from 'react';
+import { ChangeEvent } from 'react';
 import {
   Dialog,
   ReactElementWidget,
@@ -7,8 +7,8 @@ import {
   ToolbarButtonComponent
 } from '@jupyterlab/apputils';
 
-import { NeptuneConnection } from "./connection";
-import { NeptuneContent } from "./content";
+import { NeptuneConnection } from './connection';
+import { NeptuneContent } from './content';
 import '../style/upload.css';
 import createButton = Dialog.createButton;
 
@@ -76,7 +76,7 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
         return connection.getNotebook().then(notebook => {
           return connection.getUsername().then(username => {
             if (notebook.owner !== username) {
-              return Promise.reject("Notebook has different owner");
+              return Promise.reject('Notebook has different owner');
             }
           });
         });
@@ -107,8 +107,8 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
           return showDialog({
               body: <UploadDialog onUpdateResolveStrategyChange={this.updateResolveStrategy} />,
               buttons: [
-                createButton({ label: "Cancel", accept: false }),
-                createButton({ label: "Apply", accept: true })
+                createButton({ label: 'Cancel', accept: false }),
+                createButton({ label: 'Apply', accept: true })
               ]
             })
             .then(result => {

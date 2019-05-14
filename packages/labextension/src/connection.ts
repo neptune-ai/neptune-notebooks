@@ -1,6 +1,6 @@
-import { Signal } from "@phosphor/signaling";
+import { Signal } from '@phosphor/signaling';
 
-import { NeptuneConnectionParams } from "./connection";
+import { NeptuneConnectionParams } from './connection';
 
 
 export interface NeptuneConnectionParams {
@@ -45,9 +45,9 @@ export class NeptuneConnection {
       .getAuthorizationHeader()
       .then(authorizationHeader => {
         return fetch(
-            this.getApiAddress() + "/api/backend/v1/projects2?userRelation=memberOrHigher",
+            this.getApiAddress() + '/api/backend/v1/projects2?userRelation=memberOrHigher',
             {
-              headers: { "Authorization": authorizationHeader }
+              headers: { 'Authorization': authorizationHeader }
             }
           )
           .then(response => response.json())
@@ -62,16 +62,16 @@ export class NeptuneConnection {
   createNotebook = (path: string) => {
     return this.getAuthorizationHeader()
       .then(authorizationHeader => {
-        return fetch(this.getApiAddress() + "/api/leaderboard/v1/notebooks" +
-            "?projectIdentifier=" + this.params.project +
-            "&jupyterPath=" + path,
+        return fetch(this.getApiAddress() + '/api/leaderboard/v1/notebooks' +
+            '?projectIdentifier=' + this.params.project +
+            '&jupyterPath=' + path,
             {
-              method: "POST",
+              method: 'POST',
               headers: {
-                "Authorization": authorizationHeader,
-                "Content-Type": "application/octet-stream"
+                'Authorization': authorizationHeader,
+                'Content-Type': 'application/octet-stream'
               },
-              body: "{}"
+              body: '{}'
             }
           )
           .then(response => response.json())
@@ -84,9 +84,9 @@ export class NeptuneConnection {
       .getAuthorizationHeader()
       .then(authorizationHeader => {
         return fetch(
-            this.getApiAddress() + "/api/leaderboard/v1/notebooks/" + this.params.notebookId,
+            this.getApiAddress() + '/api/leaderboard/v1/notebooks/' + this.params.notebookId,
             {
-              headers: { "Authorization": authorizationHeader }
+              headers: { 'Authorization': authorizationHeader }
             }
           )
           .then(response => response.json())
@@ -96,12 +96,12 @@ export class NeptuneConnection {
 
   createCheckpoint = (path: string, content: string) => {
     this.getAuthorizationHeader().then(authorizationHeader => {
-      return fetch(this.getApiAddress() + "/api/leaderboard/v1/notebooks/" + this.params.notebookId + "/checkpoints?jupyterPath=" + path,
+      return fetch(this.getApiAddress() + '/api/leaderboard/v1/notebooks/' + this.params.notebookId + '/checkpoints?jupyterPath=' + path,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Authorization": authorizationHeader,
-            "Content-Type": "application/octet-stream"
+            'Authorization': authorizationHeader,
+            'Content-Type': 'application/octet-stream'
           },
           body: content
         }
@@ -114,16 +114,16 @@ export class NeptuneConnection {
   };
 
   private getAuthorizationHeader = () => {
-    return this.getOAuthToken().then(oauthToken => "Bearer " + oauthToken.accessToken);
+    return this.getOAuthToken().then(oauthToken => 'Bearer ' + oauthToken.accessToken);
   };
 
   private getOAuthToken = () => {
     let apiToken = this.params.apiToken;
     try {
       let decodedToken = JSON.parse(atob(apiToken));
-      return fetch(decodedToken.api_address + "/api/backend/v1/authorization/oauth-token", {
+      return fetch(decodedToken.api_address + '/api/backend/v1/authorization/oauth-token', {
           headers: {
-            "X-Neptune-Api-Token": apiToken
+            'X-Neptune-Api-Token': apiToken
           }
         })
         .then(response => response.json())
@@ -158,7 +158,7 @@ export function createConnection(params: Partial<NeptuneConnectionParams>) {
           .then(projects => {
             let project = projects.find(project => project.id === notebook.projectId);
             connection.updateParams({
-              project: project.organizationName + "/" + project.name
+              project: project.organizationName + '/' + project.name
             })
           })
       )
@@ -179,12 +179,12 @@ export function createEmptyConnection() {
 
 
 export function getGlobalApiToken() {
-  return window.localStorage.getItem("neptune_api_token") || "";
+  return window.localStorage.getItem('neptune_api_token') || '';
 }
 
 
 export function setGlobalApiToken(apiToken: string) {
-  window.localStorage.setItem("neptune_api_token", apiToken);
+  window.localStorage.setItem('neptune_api_token', apiToken);
 }
 
 
