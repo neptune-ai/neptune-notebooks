@@ -1,9 +1,7 @@
 import { Signal } from '@phosphor/signaling';
 
-import { NeptuneConnectionParams } from './connection';
 
-
-export interface NeptuneConnectionParams {
+export interface INeptuneConnectionParams {
   apiToken: string;
   project: string;
   notebookId: string;
@@ -12,11 +10,11 @@ export interface NeptuneConnectionParams {
 
 export class NeptuneConnection {
 
-  private params: NeptuneConnectionParams;
+  private params: INeptuneConnectionParams;
 
-  private _paramsChanged = new Signal<this, NeptuneConnectionParams>(this);
+  private _paramsChanged = new Signal<this, INeptuneConnectionParams>(this);
 
-  constructor(params: NeptuneConnectionParams) {
+  constructor(params: INeptuneConnectionParams) {
     this.params = params;
   }
 
@@ -24,19 +22,19 @@ export class NeptuneConnection {
     return this.params;
   };
 
-  setParams = (params: NeptuneConnectionParams) => {
+  setParams = (params: INeptuneConnectionParams) => {
     this.params = params;
     this._paramsChanged.emit(params);
   };
 
-  updateParams = (params: Partial<NeptuneConnectionParams>) => {
+  updateParams = (params: Partial<INeptuneConnectionParams>) => {
     this.setParams({
       ...this.params,
       ...params
     });
   };
 
-  get paramsChanged(): Signal<this, NeptuneConnectionParams> {
+  get paramsChanged(): Signal<this, INeptuneConnectionParams> {
     return this._paramsChanged;
   }
 
@@ -45,13 +43,13 @@ export class NeptuneConnection {
       .getAuthorizationHeader()
       .then(authorizationHeader => {
         return fetch(
-            this.getApiAddress() + '/api/backend/v1/projects2?userRelation=memberOrHigher',
+            this.getApiAddress() + '/api/backend/v1/projects?userRelation=memberOrHigher',
             {
               headers: { 'Authorization': authorizationHeader }
             }
           )
           .then(response => response.json())
-          .then(data => data.entries as Array<Project>)
+          .then(data => data.entries as Array<INeptuneProject>)
     });
   };
 
@@ -90,7 +88,7 @@ export class NeptuneConnection {
             }
           )
           .then(response => response.json())
-          .then(data => data as Notebook);
+          .then(data => data as INeptuneNotebook);
     });
   };
 
@@ -142,7 +140,8 @@ export class NeptuneConnection {
 
 }
 
-export function createConnection(params: Partial<NeptuneConnectionParams>) {
+
+export function createConnection(params: Partial<INeptuneConnectionParams>) {
 
   let connection = new NeptuneConnection({
     apiToken: params.apiToken,
@@ -179,12 +178,12 @@ export function createEmptyConnection() {
 
 
 export function getGlobalApiToken() {
-  return window.localStorage.getItem('neptune_api_token') || '';
+  return window.localStorage.getItem('neptune:ApiToken') || '';
 }
 
 
 export function setGlobalApiToken(apiToken: string) {
-  window.localStorage.setItem('neptune_api_token', apiToken);
+  window.localStorage.setItem('neptune:ApiToken', apiToken);
 }
 
 
@@ -195,14 +194,14 @@ interface OAuthToken {
 }
 
 
-interface Project {
+interface INeptuneProject {
   id: string;
   organizationName: string;
   name: string;
 }
 
 
-interface Notebook {
+interface INeptuneNotebook {
   id: string;
   projectId: string;
   path: string;

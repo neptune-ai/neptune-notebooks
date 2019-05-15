@@ -1,6 +1,6 @@
 import { Kernel } from '@jupyterlab/services';
 import { IClientSession } from '@jupyterlab/apputils';
-import { NeptuneConnectionParams } from './connection';
+import { INeptuneConnectionParams } from './connection';
 
 
 export class NeptuneSession {
@@ -11,7 +11,7 @@ export class NeptuneSession {
     this.session = session;
   }
 
-  runInitializationCode(params: NeptuneConnectionParams): Kernel.IFuture {
+  runInitializationCode(params: INeptuneConnectionParams): Kernel.IFuture {
     return this.session.kernel.requestExecute({
       code: getInitializationCode(params)
     });
@@ -19,8 +19,8 @@ export class NeptuneSession {
 }
 
 
-export function getInitializationCode(params: NeptuneConnectionParams): string {
-  let {
+export function getInitializationCode(params: INeptuneConnectionParams): string {
+  const {
     apiToken,
     project,
     notebookId

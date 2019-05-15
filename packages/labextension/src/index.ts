@@ -72,13 +72,16 @@ export class ButtonExtension implements DocumentRegistry.IWidgetExtension<Notebo
           })
           .catch(() => Promise.resolve(createEmptyConnection()))
           .then(connection => {
-            let neptuneConfigure = new NeptuneConfigure(content, session, connection);
-            let neptuneUpload = new NeptuneUpload(content, connection);
+            let neptuneConfigureButton = new NeptuneConfigure(content, session, connection);
+            let neptuneUploadNotebookButton = new NeptuneUpload(content, connection);
 
-            panel.toolbar.insertItem(idx++, 'configure-neptune', neptuneConfigure);
-            panel.toolbar.insertItem(idx, 'upload-notebook', neptuneUpload);
+            panel.toolbar.insertItem(idx++, 'neptune:configure', neptuneConfigureButton);
+            panel.toolbar.insertItem(idx, 'neptune:uploadNotebook', neptuneUploadNotebookButton);
 
-            return [neptuneConfigure, neptuneUpload];
+            return [
+              neptuneConfigureButton,
+              neptuneUploadNotebookButton
+            ];
           });
     }) as Promise<Array<ReactElementWidget>>;
 

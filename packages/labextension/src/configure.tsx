@@ -20,9 +20,9 @@ export class NeptuneConfigure extends ReactElementWidget {
 }
 
 
-class ConfigureButton extends React.Component<ConfigureButtonProps, ConfigureButtonState> {
+class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureButtonState> {
 
-  constructor(props: Readonly<ConfigureButtonProps>) {
+  constructor(props: Readonly<IConfigureButtonProps>) {
     super(props);
     this.state = {
       isConfigurationValid: false
@@ -84,13 +84,13 @@ class ConfigureButton extends React.Component<ConfigureButtonProps, ConfigureBut
 }
 
 
-interface ConfigureButtonProps {
+interface IConfigureButtonProps {
   content: NeptuneContent;
   session: NeptuneSession;
   connection: NeptuneConnection;
 }
 
 
-interface ConfigureButtonState {
+interface IConfigureButtonState {
   isConfigurationValid: boolean;
 }

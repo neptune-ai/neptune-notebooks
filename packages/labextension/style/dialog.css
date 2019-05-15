@@ -1,5 +1,7 @@
-.connect-dialog {
-    min-width: 500px;
+.n-ConnectDialog {
+  display: flex;
+  flex-direction: column;
+
 }
 
 .input-status-icon {

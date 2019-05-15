@@ -29,7 +29,7 @@ export class NeptuneContent {
 
   getMetadata = () => {
     return this.context.ready.then(() => {
-      let metadata = this.context.model.metadata.get('neptune') as NeptuneMetadata;
+      let metadata = this.context.model.metadata.get('neptune') as INeptuneMetadata;
 
       return metadata || {};
     });
@@ -46,7 +46,7 @@ export class NeptuneContent {
     })
   };
 
-  updateMetadata = (update: Partial<NeptuneMetadata>) => {
+  updateMetadata = (update: Partial<INeptuneMetadata>) => {
     return this.context.ready
       .then(() => {
         let metadata = this.context.model.metadata;
@@ -54,7 +54,7 @@ export class NeptuneContent {
         if (!metadata.has('neptune')) {
           metadata.set('neptune', {});
         }
-        let neptuneMetadata = this.context.model.metadata.get('neptune') as NeptuneMetadata;
+        let neptuneMetadata = this.context.model.metadata.get('neptune') as INeptuneMetadata;
         if (update.notebookId) {
           neptuneMetadata.notebookId = update.notebookId;
         }
@@ -64,6 +64,6 @@ export class NeptuneContent {
 }
 
 
-interface NeptuneMetadata {
+interface INeptuneMetadata {
   notebookId?: string;
 }

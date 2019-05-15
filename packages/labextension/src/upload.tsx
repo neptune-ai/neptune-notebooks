@@ -10,7 +10,6 @@ import {
 import { NeptuneConnection } from './connection';
 import { NeptuneContent } from './content';
 import '../style/upload.css';
-import createButton = Dialog.createButton;
 
 
 const STRATEGY = {
@@ -107,8 +106,8 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
           return showDialog({
               body: <UploadDialog onUpdateResolveStrategyChange={this.updateResolveStrategy} />,
               buttons: [
-                createButton({ label: 'Cancel', accept: false }),
-                createButton({ label: 'Apply', accept: true })
+                Dialog.createButton({ label: 'Cancel', accept: false }),
+                Dialog.createButton({ label: 'Apply', accept: true })
               ]
             })
             .then(result => {
