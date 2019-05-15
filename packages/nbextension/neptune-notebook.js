@@ -486,7 +486,7 @@ define([
         var integrationCode = $('<div/>')
             .append($('<div/>')
                 .addClass('col-sm-12')
-                .append($('<textarea id=\'neptune-integration-area\' rows=\'7\' disabled />')
+                .append($('<textarea id=\'neptune-integration-area\' rows=\'5\' disabled />')
                     .addClass('form-control')
                     .css({
                         'resize': 'none',
@@ -709,21 +709,25 @@ define([
         function fetchData(tokenStatus, projectStatus, notebookStatus) {
             getAccessToken(tokenStatus, initialApiToken, function(apiAddress, accessToken, username) {
                 getUserProjects(projectStatus, apiAddress, accessToken, function(projectData) {
+                    function handleNotAuthorized() {
+                        fillProjectSelectBox(projectStatus, null, projectData);
+                        updateTextArea();
+                        setStep('step1');
+                    }
+
                     if (getNotebookId()) {
                         getNotebookData(notebookStatus, apiAddress, accessToken, getNotebookId(), username, function(nbData) {
+                            if (nbData.owner !== username) {
+                                handleNotAuthorized();
+                                return;
+                            }
                             fillProjectSelectBox(projectStatus, nbData.projectId, projectData);
                             updateTextArea();
                             updateNotebookLinks(nbData, apiAddress);
                             setStep('step2')
-                        }, function() {
-                            fillProjectSelectBox(projectStatus, null, projectData);
-                            updateTextArea();
-                            setStep('step1');
-                        })
+                        }, handleNotAuthorized)
                     } else {
-                        fillProjectSelectBox(projectStatus, null, projectData);
-                        updateTextArea();
-                        setStep('step1');
+                        handleNotAuthorized();
                     }
                 })
             }, function () {
@@ -855,9 +859,7 @@ define([
             'import os\n' +
             'os.environ[\'NEPTUNE_API_TOKEN\']=\'' + $('#neptune-api-token').val() + '\'\n' +
             'os.environ[\'NEPTUNE_PROJECT\']=\'' + $('#neptune-project option:selected').text() + '\'\n' +
-            'os.environ[\'NEPTUNE_NOTEBOOK_ID\']=\'' + getNotebookId() + '\'\n' +
-            'import neptune\n' +
-            'neptune.init()');
+            'os.environ[\'NEPTUNE_NOTEBOOK_ID\']=\'' + getNotebookId() + '\'\n');
     }
 
     function configReset() {
