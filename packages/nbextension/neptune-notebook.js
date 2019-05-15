@@ -538,11 +538,10 @@ define([
                 JSON.parse(atob(apiToken))
             } catch(error) {
                 tokenStatus.clear();
-                if (!apiToken) {
-                    tokenStatus.fail('Api token is not valid');
-                } else {
-                    projectStatus.clear();
-                }
+                tokenStatus.fail('Api token is not valid');
+                globalApiAddress = null;
+                globalAccessToken = null;
+                globalUsername = null;
                 return false;
             }
             getAccessToken(tokenStatus, apiToken, function(apiAddress, accessToken, username) {
