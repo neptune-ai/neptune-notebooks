@@ -105,10 +105,13 @@ define([
             decodedToken = JSON.parse(atob(apiToken));
         } catch(error) {
             status && status.clear();
-            if (!apiToken) {
+            if (apiToken) {
                 status && status.fail('Api token is not valid');
             } else {
                 status && status.clear();
+            }
+            if (typeof errorCallback === 'function') {
+                errorCallback(error);
             }
             return false;
         }
@@ -723,6 +726,8 @@ define([
                         setStep('step1');
                     }
                 })
+            }, function () {
+                setStep('step1');
             });
             return false;
         }
@@ -784,6 +789,11 @@ define([
                 })
             } else {
                 errorNbSave(null, 'Notebook is not associated to Neptune, details in configuration');
+            }
+        }, function (error) {
+            errorNbSave(null, 'Wrong token provided, details in configuration');
+            if (typeof errorCallback === 'function') {
+                errorCallback(error)
             }
         });
     }
