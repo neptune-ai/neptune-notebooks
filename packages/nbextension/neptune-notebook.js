@@ -99,7 +99,7 @@ define([
             .css('margin-left', '0px');
     }
 
-    function getAccessToken(status, apiToken, callback) {
+    function getAccessToken(status, apiToken, callback, errorCallback) {
         var decodedToken = {};
         try {
             decodedToken = JSON.parse(atob(apiToken));
@@ -129,6 +129,9 @@ define([
                 callback(decodedToken.api_address, data.accessToken, data.username);
             },
             error: function() {
+                if (typeof errorCallback === 'function') {
+                    errorCallback();
+                }
                 status && status.fail('Api token is not valid');
                 return false;
             }
@@ -496,7 +499,7 @@ define([
                 'justify-content': 'flex-end'
             })
             .append(
-                makeButton('Do it later', function () {
+                makeButton('Cancel', function () {
                     modalProvider().modal('hide');
                     return false;
                 })
@@ -552,6 +555,8 @@ define([
                     fillProjectSelectBox(projectStatus, currentProjectId, projectData);
                     getNotebookData(notebookStatus, apiAddress, accessToken, initialNotebookId, username, function(nbData) {});
                 })
+            }, function () {
+                setStep('step1');
             });
             return false;
         }
@@ -567,7 +572,7 @@ define([
                     'font-weight': '600',
                     'margin-bottom': '20px'
                 })
-                .append('Initial checkpoint successful! Check this ')
+                .append('Initial checkpoint successful! Check ')
                 .append(
                     $('<a>this link</a>')
                         .addClass('notebook-link')
@@ -578,7 +583,7 @@ define([
                 .addClass('col-sm-12')
                 .css('font-size', '13px')
                 .text('Integrate to create Neptune experiments and see them all linked to this notebook. ' +
-                    ' Click \'Integrate\' to run the code below, then just \'import neptune\' and work as usual.');
+                    ' Click \'Integrate\' to run the code below.');
 
             return createForm()
                 .append(step2Header)
@@ -622,7 +627,7 @@ define([
                 .append(createDivider())
                 .append(createStepTitle()
                     .append(createStepNumber(2))
-                    .append(createStepTitleText('Integrations'))
+                    .append(createStepTitleText('Integration'))
                 );
         }
 
@@ -637,7 +642,7 @@ define([
                     .append(createStepNumber(2)
                         .css('background-color', '#d8d8d8')
                     )
-                    .append(createStepTitleText('Integrations')
+                    .append(createStepTitleText('Integration')
                         .css('color', '#d8d8d8')
                     )
                 );
@@ -738,7 +743,7 @@ define([
         status.spin();
         getNotebookData(status, api_address, accessToken, getNotebookId(), username, function(nbData) {
             var currentProjectId = $('#neptune-project').val();
-            if (currentProjectId === nbData.projectId && username.owner === username) {
+            if (currentProjectId === nbData.projectId && nbData.owner === username) {
                 showConfirmationModal(api_address, accessToken, null, 'Your notebook\'s project has changed.', callback, errorCallback);
             } else {
                 requestCreateNotebook(status, api_address, accessToken, null, callback, errorCallback);
