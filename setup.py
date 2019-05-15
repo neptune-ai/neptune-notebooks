@@ -95,7 +95,7 @@ def main():
         install_requires=requirements,
         keywords=['ipython', 'jupyter'],
         entry_points={
-            'neptune.plugins': "notebook = neptune_notebooks_plugin:upload"
+            'neptune.plugins': "notebook = neptune_notebooks_plugin:notebook"
         },
         classifiers=[
             'Intended Audience :: Developers',

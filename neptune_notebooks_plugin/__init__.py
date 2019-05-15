@@ -17,10 +17,24 @@
 import click
 
 
-@click.command('notebook')
+@click.group()
+def notebook():
+    pass
+
+
+@notebook.command()
 @click.argument('path', required=True)
+@click.option('--new', is_flag=True, help='Creates a new notebook instead of updating existing one.')
+@click.option('--update', is_flag=True,
+              help='Indicates that an existing notebook should be updated if the path was changed.')
 @click.option('--project', '-p', help='Project name')
-def upload(path, project):
+def sync(project, update, new, path):
     # We do not want to import anything if process was executed for autocompletion purposes.
-    from neptune_notebooks.upload import upload as run_upload
-    return run_upload(path=path, project=project)
+    import sys
+    from neptune_notebooks.sync import sync as run_sync
+
+    if new and update:
+        click.echo("ERROR: --new and --update flags are mutually exclusive.")
+        sys.exit(1)
+
+    return run_sync(project_name=project, path=path, update_flag=update, new_flag=new)
