@@ -29,9 +29,9 @@ import { NeptuneUpload } from './upload';
  * The plugin registration information.
  */
 const plugin: JupyterLabPlugin<void> = {
-  activate,
   id: 'neptune-notebook',
-  autoStart: true
+  autoStart: true,
+  activate
 };
 
 
@@ -50,6 +50,7 @@ export class ButtonExtension implements DocumentRegistry.IWidgetExtension<Notebo
    * Create a new extension object.
    */
   createNew(panel: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
+    // Insert buttons into the toolbar before the first spacer
     let idx = 0;
     let namesIt = panel.toolbar.names();
     let name;
@@ -69,17 +70,8 @@ export class ButtonExtension implements DocumentRegistry.IWidgetExtension<Notebo
             apiToken: getGlobalApiToken(),
             notebookId: metadata.notebookId
           })
+          .catch(() => Promise.resolve(createEmptyConnection()))
           .then(connection => {
-            let neptuneConfigure = new NeptuneConfigure(content, session, connection);
-            let neptuneUpload = new NeptuneUpload(content, connection);
-
-            panel.toolbar.insertItem(idx++, 'configure-neptune', neptuneConfigure);
-            panel.toolbar.insertItem(idx, 'upload-notebook', neptuneUpload);
-
-            return [neptuneConfigure, neptuneUpload];
-          })
-          .catch(() => {
-            let connection = createEmptyConnection();
             let neptuneConfigure = new NeptuneConfigure(content, session, connection);
             let neptuneUpload = new NeptuneUpload(content, connection);
 
