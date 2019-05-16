@@ -13,7 +13,6 @@ import {
 } from '@jupyterlab/notebook';
 import { ReactElementWidget } from '@jupyterlab/apputils';
 
-import '../style/index.css';
 import { NeptuneConfigure } from './configure';
 import { NeptuneContent } from './content';
 import { NeptuneSession } from './kernel';
