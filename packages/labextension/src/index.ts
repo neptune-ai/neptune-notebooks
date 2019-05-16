@@ -13,7 +13,6 @@ import {
 } from '@jupyterlab/notebook';
 import { ReactElementWidget } from '@jupyterlab/apputils';
 
-import { NeptuneConfigure } from './configure';
 import { NeptuneContent } from './content';
 import { NeptuneSession } from './kernel';
 import {
@@ -21,23 +20,14 @@ import {
   createEmptyConnection,
   getGlobalApiToken
 } from './connection';
-import { NeptuneUpload } from './upload';
-
-
-/**
- * The plugin registration information.
- */
-const plugin: JupyterLabPlugin<void> = {
-  id: 'neptune-notebook',
-  autoStart: true,
-  activate
-};
+import { NeptuneConfigureButton } from './configure';
+import { NeptuneUploadButton } from './upload';
 
 
 /**
  * A notebook widget extension that adds a button to the toolbar.
  */
-export class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
+export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
 
   private readonly app: JupyterLab;
 
@@ -71,8 +61,8 @@ export class ButtonExtension implements DocumentRegistry.IWidgetExtension<Notebo
           })
           .catch(() => Promise.resolve(createEmptyConnection()))
           .then(connection => {
-            let neptuneConfigureButton = new NeptuneConfigure(content, session, connection);
-            let neptuneUploadNotebookButton = new NeptuneUpload(content, connection);
+            let neptuneConfigureButton = new NeptuneConfigureButton(content, session, connection);
+            let neptuneUploadNotebookButton = new NeptuneUploadButton(content, connection);
 
             panel.toolbar.insertItem(idx++, 'neptune:configure', neptuneConfigureButton);
             panel.toolbar.insertItem(idx, 'neptune:uploadNotebook', neptuneUploadNotebookButton);
@@ -94,15 +84,19 @@ export class ButtonExtension implements DocumentRegistry.IWidgetExtension<Notebo
 
 
 /**
- * Activate the extension.
+ * The plugin registration information.
  */
-function activate(app: JupyterLab) {
-  app.docRegistry.addWidgetExtension('Notebook', new ButtonExtension(app));
-}
+const plugin: JupyterLabPlugin<void> = {
+  id: 'neptune-notebook',
+  autoStart: true,
+  activate: (app: JupyterLab) => {
+    app.docRegistry.addWidgetExtension('Notebook', new NeptuneNotebookExtension(app));
+  }
+};
 
 
-// noinspection JSUnusedGlobalSymbols
 /**
  * Export the plugin as default.
  */
+// noinspection JSUnusedGlobalSymbols
 export default plugin;

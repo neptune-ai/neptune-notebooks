@@ -13,12 +13,22 @@ import { NeptuneSession } from './kernel';
 import '../style/configure.css';
 
 
-export class NeptuneConfigure extends ReactElementWidget {
+export class NeptuneConfigureButton extends ReactElementWidget {
   constructor(content: NeptuneContent, session: NeptuneSession, connection: NeptuneConnection) {
     super(<ConfigureButton content={content} session={session} connection={connection}/>);
   }
 }
 
+
+interface IConfigureButtonProps {
+  content: NeptuneContent;
+  session: NeptuneSession;
+  connection: NeptuneConnection;
+}
+
+interface IConfigureButtonState {
+  isConfigurationValid: boolean;
+}
 
 class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureButtonState> {
 
@@ -43,7 +53,7 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
       <ToolbarButtonComponent
         className={cssClass}
         label={label}
-        onClick={this.onConnectButtonClick}
+        onClick={this.showConfigureDialog}
         tooltip='Connect to Neptune'
       />
     );
@@ -59,14 +69,20 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
       .then(() => connection.validate())
       .then(() => this.setState({ isConfigurationValid: true }))
       .catch(() => this.setState({ isConfigurationValid: false }));
-  };
+  }
 
-  private onConnectButtonClick = () => {
+  private showConfigureDialog = () => {
     const {
       content,
       session,
       connection
     } = this.props;
+
+    if (this.state.isConfigurationValid) {
+      console.log('Connection is configured');
+    } else {
+      console.warn('Connection needs to be configured');
+    }
 
     new NeptuneConnectionInfoDialog(content, session, connection.getParams())
       .show()
@@ -80,17 +96,5 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
             .then(() => this.validateConfiguration());
         }
       });
-  };
-}
-
-
-interface IConfigureButtonProps {
-  content: NeptuneContent;
-  session: NeptuneSession;
-  connection: NeptuneConnection;
-}
-
-
-interface IConfigureButtonState {
-  isConfigurationValid: boolean;
+  }
 }

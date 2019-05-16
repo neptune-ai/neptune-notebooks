@@ -17,16 +17,27 @@ const STRATEGY = {
   create: 'create'
 };
 
-export class NeptuneUpload extends ReactElementWidget {
+export class NeptuneUploadButton extends ReactElementWidget {
   constructor(content: NeptuneContent, connection: NeptuneConnection) {
     super(<UploadButton connection={connection} content={content}/>);
   }
 }
 
 
-class UploadButton extends React.Component<UploadButtonProps, UploadButtonState> {
+interface IUploadButtonProps {
+  content: NeptuneContent;
+  connection: NeptuneConnection;
+}
 
-  constructor(props: Readonly<UploadButtonProps>) {
+interface IUploadButtonState {
+  isUploadAvailable: boolean;
+  uploadStatus?: boolean;
+  conflictResolveStrategy: string;
+}
+
+class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonState> {
+
+  constructor(props: Readonly<IUploadButtonProps>) {
     super(props);
     this.state = {
       isUploadAvailable: false,
@@ -55,7 +66,7 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
         className={className}
         iconClassName={'fa fa-lg ' + glyph}
         label='Upload'
-        onClick={this.onUploadButtonClick}
+        onClick={this.uploadNotebook}
         tooltip='Upload to Neptune'
         enabled={this.state.isUploadAvailable}
       />
@@ -92,7 +103,7 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
   }
 
 
-  private onUploadButtonClick = () => {
+  private uploadNotebook = () => {
     const {
       connection,
       content
@@ -134,12 +145,11 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
 }
 
 
-interface UploadDialogProps {
+interface IUploadDialogProps {
   onUpdateResolveStrategyChange: (strategy: string) => void
 }
 
-
-class UploadDialog extends React.Component<UploadDialogProps> {
+class UploadDialog extends React.Component<IUploadDialogProps> {
   updateResolveStrategy = (event: ChangeEvent<HTMLInputElement>) => {
     this.props.onUpdateResolveStrategyChange(event.target.value);
   }
@@ -176,17 +186,4 @@ class UploadDialog extends React.Component<UploadDialogProps> {
       </div>
     );
   }
-}
-
-
-interface UploadButtonProps {
-  content: NeptuneContent;
-  connection: NeptuneConnection;
-}
-
-
-interface UploadButtonState {
-  isUploadAvailable: boolean;
-  uploadStatus?: boolean;
-  conflictResolveStrategy: string;
 }
