@@ -20,7 +20,9 @@ import {
   createEmptyConnection,
   getGlobalApiToken
 } from './connection';
-import { NeptuneConfigureButton } from './configure';
+
+import { NeptuneConfigureButton } from './configure-button';
+// import { NeptuneConfigureButton } from './configure';
 import { NeptuneUploadButton } from './upload';
 
 
@@ -43,7 +45,6 @@ export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtensi
     let idx = 0;
     let namesIt = panel.toolbar.names();
     let name;
-
     // noinspection SuspiciousTypeOfGuard
     while ((name = namesIt.next()) && name !== undefined && name != 'spacer') {
       idx++;
@@ -61,7 +62,8 @@ export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtensi
           })
           .catch(() => Promise.resolve(createEmptyConnection()))
           .then(connection => {
-            let neptuneConfigureButton = new NeptuneConfigureButton(content, session, connection);
+            // let neptuneConfigureButton = new NeptuneConfigureButton(content, session, connection);
+            let neptuneConfigureButton = new NeptuneConfigureButton({connection, content, session});
             let neptuneUploadNotebookButton = new NeptuneUploadButton(content, connection);
 
             panel.toolbar.insertItem(idx++, 'neptune:configure', neptuneConfigureButton);

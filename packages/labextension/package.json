@@ -38,7 +38,9 @@
     "@jupyterlab/vdom": "^1.0.0-alpha.4",
     "@phosphor/disposable": "^1.1.2",
     "@types/codemirror": "0.0.74",
-    "react-codemirror2": "^6.0.0"
+    "@types/react-modal": "^3.8.2",
+    "react-codemirror2": "^6.0.0",
+    "react-modal": "^3.8.1"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",

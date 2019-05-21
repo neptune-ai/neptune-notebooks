@@ -1,0 +1,63 @@
+import * as React from 'react';
+import * as ReactModal from 'react-modal';
+import {
+  ReactElementWidget,
+  ToolbarButtonComponent
+} from '@jupyterlab/apputils';
+
+import {
+  NeptuneConnection,
+  INeptuneConnectionParams
+  // setGlobalApiToken
+} from './connection';
+// import { NeptuneConnectionInfoDialog } from './dialog';
+import { NeptuneContent } from './content';
+import { NeptuneSession } from './kernel';
+
+
+class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureButtonState> {
+  private showConfigureDialog = () => {
+    const {
+      content,
+      session,
+      connection
+    } = this.props;
+  
+    if (this.state.isConfigurationValid) {
+      console.log('Connection is configured');
+    } else {
+      console.warn('Connection needs to be configured');
+    }
+  
+    new NeptuneConnectionInfoDialog(content, session, connection.getParams())
+      .show()
+      .then(params => {
+        if (params !== null) {
+          connection.setParams(params);
+          setGlobalApiToken(params.apiToken);
+          return content.updateMetadata({
+              notebookId: params.notebookId
+            })
+            .then(() => this.validateConfiguration());
+        }
+      });
+  }
+}
+
+
+class ConfigureModal extends React.PureComponent<IConfigureModal, IConfigureModalState> {
+  createNotebook = () => {
+    // let connection = this.localConnection;
+    //
+    // return connection
+    //   .createNotebook(this.content.getNotebookPath())
+    //   .then(notebookId => {
+    //     connection.updateParams({ notebookId: notebookId });
+    //     return this.content
+    //       .getNotebookContent()
+    //       .then(content => connection.createCheckpoint(this.content.getNotebookPath(), content))
+    //       .then(() => notebookId);
+    //   });
+    this.completeConfigurationStep();
+  }
+}

@@ -1,0 +1,133 @@
+.n-ConfigureModal {
+  width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 13px -6px, rgba(0, 0, 0, 0.14) 0px 20px 31px 3px, rgba(0, 0, 0, 0.12) 0px 8px 38px 7px;
+  overflow: auto;
+  border-radius: 2px;
+  outline: none;
+  padding: 32px 64px;
+}
+
+
+.n-ConfigureModalOverlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 4000;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.n-ConfigureModalHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.n-ConfigureModalHeader > :not(:first-child) {
+  margin-left: 32px;
+}
+
+
+.n-ConfigureModalBody {
+  display: flex;
+  flex-direction: column;
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+
+.n-ConfigureModalFooter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+.n-ConfigureModalFooter > :not(:first-child) {
+  margin-left: 8px;
+}
+
+
+.n-ConfigurationStep {
+  flex: 1;
+  color: #d8d8d8;
+  font-size: 17px;
+}
+.n-ConfigurationStep--current {
+  color: #337ab7;
+}
+.n-ConfigurationStep--completed {
+  color: #68b84c;
+  cursor: pointer;
+}
+.n-ConfigurationStepSeparator {
+  flex: 1;
+  height: 1px;
+  background-color: #d8d8d8;
+}
+.n-ConfigurationStep__stepNo {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  line-height: 1.5em;
+  text-align: center;
+  border-radius: 50%;
+  color: #fff;
+  margin-right: 0.5em;
+  font-size: 15px;
+  background-color: #d8d8d8;
+}
+.n-ConfigurationStep__stepNo--current {
+  background-color: #337ab7;
+}
+.n-ConfigurationStep__stepNo--completed {
+  background-color: #68b84c;
+}
+
+
+.n-ConfigurationStepLead {
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+.n-ConfigurationStepLead-success {
+  color: #68b84c;
+}
+
+
+.n-form-label {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+.n-form-label--small {
+  font-size: 13px;
+}
+.n-form-item {
+  display: flex;
+  flex-direction: row;
+}
+
+
+.n-ConfigureModalButton {
+  border: none;
+  border-radius: 0;
+  padding: 0 16px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 13px;
+}
+.n-ConfigureModalButton--primary {
+  color: #fff;
+  background-color: #337ab7;
+}
+.n-ConfigureModalButton--secondary {
+  color: #337ab7;
+  background-color: #f0f0f0;
+}

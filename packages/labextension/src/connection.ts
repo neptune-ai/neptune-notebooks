@@ -178,12 +178,12 @@ export function createEmptyConnection() {
 
 
 export function getGlobalApiToken() {
-  return window.localStorage.getItem('neptune:ApiToken') || '';
+  return window.localStorage.getItem('neptuneLabs:ApiToken') || '';
 }
 
 
 export function setGlobalApiToken(apiToken: string) {
-  window.localStorage.setItem('neptune:ApiToken', apiToken);
+  window.localStorage.setItem('neptuneLabs:ApiToken', apiToken);
 }
 
 
