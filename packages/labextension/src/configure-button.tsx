@@ -8,10 +8,9 @@ import { ConfigureModal } from './configure-modal';
 import '../style/configure-button.css';
 
 
-
 export class NeptuneConfigureButton extends ReactElementWidget {
-  constructor(props: IConfigureButtonProps) {
-    super(<ConfigureButton {...props} />);
+  constructor(content: NeptuneContent, session: NeptuneSession, connection: NeptuneConnection) {
+    super(<ConfigureButton content={content} session={session} connection={connection} />);
   }
 }
 
@@ -81,7 +80,6 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
   private updateMetadata = () => {
     console.log('updateMetadata');
   }
-
 
   private validateConfiguration = () => {
     const {

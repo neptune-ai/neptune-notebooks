@@ -22,7 +22,6 @@ import {
 } from './connection';
 
 import { NeptuneConfigureButton } from './configure-button';
-// import { NeptuneConfigureButton } from './configure';
 import { NeptuneUploadButton } from './upload';
 
 
@@ -62,9 +61,8 @@ export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtensi
           })
           .catch(() => Promise.resolve(createEmptyConnection()))
           .then(connection => {
-            // let neptuneConfigureButton = new NeptuneConfigureButton(content, session, connection);
-            let neptuneConfigureButton = new NeptuneConfigureButton({connection, content, session});
-            let neptuneUploadNotebookButton = new NeptuneUploadButton(content, connection);
+            const neptuneConfigureButton = new NeptuneConfigureButton(content, session, connection);
+            const neptuneUploadNotebookButton = new NeptuneUploadButton(content, connection);
 
             panel.toolbar.insertItem(idx++, 'neptune:configure', neptuneConfigureButton);
             panel.toolbar.insertItem(idx, 'neptune:uploadNotebook', neptuneUploadNotebookButton);
@@ -76,11 +74,11 @@ export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtensi
           });
     }) as Promise<Array<ReactElementWidget>>;
 
-    return new DisposableDelegate(() =>
-      buttonsPromise.then(buttons =>
+    return new DisposableDelegate(() => {
+      return buttonsPromise.then(buttons =>
         buttons.forEach(button => button.dispose())
-      )
-    );
+      );
+    });
   }
 }
 

@@ -154,11 +154,12 @@ export class ConfigureModal extends React.PureComponent<IConfigureModal, IConfig
 
 
   private completeConfigurationStep = () => {
-    this.setState({ configureCompleted: true });
+     this.setState({ configureCompleted: true });
   }
 
 
   private createNotebook = () => {
+    this.props.onCreateNotebook();
     this.completeConfigurationStep();
   }
 
