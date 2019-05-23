@@ -112,8 +112,39 @@
 .n-form-item {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
+
+.n-form-input {
+  border: 1px solid #979797;
+  height: 28px;
+  line-height: 26px;
+  padding: 0 0.5em;
+  font-size: 14px;
+}
+.n-form-input-with-status {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.n-input-status-icon {
+  color: transparent;
+}
+.n-input-status-icon--valid {
+  color: #77c63e;
+}
+.n-input-status-icon--invalid {
+  color: #c60002;
+}
+
+
+.notebook-integration-code {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid #979797;
+}
 
 .n-ConfigureModalButton {
   border: none;
@@ -126,6 +157,9 @@
 .n-ConfigureModalButton--primary {
   color: #fff;
   background-color: #337ab7;
+}
+.n-ConfigureModalButton--primary.is-disabled {
+  background-color: #999;
 }
 .n-ConfigureModalButton--secondary {
   color: #337ab7;

@@ -39,6 +39,7 @@
     "@phosphor/disposable": "^1.1.2",
     "@types/codemirror": "0.0.74",
     "@types/react-modal": "^3.8.2",
+    "codemirror": "^5.47.0",
     "react-codemirror2": "^6.0.0",
     "react-modal": "^3.8.1"
   },

@@ -1,29 +1,46 @@
 import * as React from 'react';
+import { ChangeEvent } from 'react';
 import * as ReactModal from 'react-modal';
+import { UnControlled as CodeMirror } from 'react-codemirror2';
+import 'codemirror/mode/python/python';
 
 import {
   NeptuneConnection,
   INeptuneConnectionParams
 } from './connection';
 import { NeptuneContent } from './content';
-import { NeptuneSession } from './kernel';
+import {
+  NeptuneSession,
+  getInitializationCode
+} from './kernel';
 import '../style/configure-modal.css';
 
+
+enum STEP {
+  CONFIGURATION,
+  INTEGRATION
+}
 
 interface IConfigureModal {
   content: NeptuneContent;
   initParams: INeptuneConnectionParams;
   session: NeptuneSession;
   isOpen: boolean;
-  onCreateNotebook: () => void;
+  isConfigurationValid: boolean;
+  onCreateNotebook: (params: INeptuneConnectionParams) => void;
   onClose: () => void;
 }
 
 interface IConfigureModalState {
-  configureCompleted: boolean;
+  visibleStep: STEP,
+  notebookId?: string;
+  apiToken?: string;
+  isApiTokenValid?: boolean;
+  selectedProject?: string;
+  projectsList?: Array<string>;
 }
 
-export class ConfigureModal extends React.PureComponent<IConfigureModal, IConfigureModalState> {
+export class ConfigureModal extends React.Component<IConfigureModal, IConfigureModalState> {
   private readonly content: NeptuneContent;
   private readonly session: NeptuneSession;
   private readonly localConnection: NeptuneConnection;
@@ -31,25 +48,70 @@ export class ConfigureModal extends React.PureComponent<IConfigureModal, IConfig
   constructor(props: IConfigureModal) {
     super(props);
 
-    this.state = {
-      configureCompleted: false
-    };
-
     const {
       content,
       initParams,
-      session
+      session,
+      isConfigurationValid
     } = this.props;
 
     this.content = content;
     this.session = session;
-    this.localConnection = new NeptuneConnection({...initParams});
+    this.localConnection = new NeptuneConnection({ ...initParams });
 
-    console.log(
-      this.content,
-      this.session,
-      this.localConnection
-    );
+    const {
+      apiToken,
+      project,
+      notebookId
+    } = this.localConnection.getParams();
+
+    this.state = {
+      visibleStep: isConfigurationValid ? STEP.INTEGRATION : STEP.CONFIGURATION,
+      apiToken,
+      selectedProject: project,
+      projectsList: null,
+      notebookId
+    };
+  }
+
+
+  componentDidMount(): void {
+    this.initializeDialog();
+  }
+
+
+  componentDidUpdate(
+    prevProps: Readonly<IConfigureModal>,
+    prevState: Readonly<IConfigureModalState>,
+    snapshot?: any
+  ): void {
+    if (prevState.apiToken !== this.state.apiToken) {
+      this.initializeDialog();
+    }
+
+    if (
+      prevProps.isOpen !== this.props.isOpen
+      && this.props.isOpen
+    ) {
+      this.setState({
+        visibleStep: this.props.isConfigurationValid ? STEP.INTEGRATION : STEP.CONFIGURATION
+      });
+    }
+  }
+
+
+  initializeDialog = () => {
+    this.localConnection
+      .validate()
+      .then(() => {
+        this.setState({ isApiTokenValid: true });
+        this.localConnection
+          .listProjects()
+          .then(projects => this.setState({
+            projectsList: projects.map(project => `${project.organizationName}/${project.name}`)
+          }));
+      })
+      .catch(() => this.setState({ isApiTokenValid: false }));
   }
 
 
@@ -59,7 +121,7 @@ export class ConfigureModal extends React.PureComponent<IConfigureModal, IConfig
     let configureStepNo  = <span>1</span>;
     let integrateStepState = '';
 
-    if (this.state.configureCompleted) {
+    if (this.state.visibleStep === STEP.INTEGRATION) {
       configureStepState = 'completed';
       configureAction = this.backToConfigurationStep;
       configureStepNo = <i className="fa fa-check"></i>
@@ -83,31 +145,101 @@ export class ConfigureModal extends React.PureComponent<IConfigureModal, IConfig
 
 
   renderCurrentStepContent(): React.ReactElement<any> {
-    if (!this.state.configureCompleted) {
+    if (this.state.visibleStep === STEP.CONFIGURATION) {
       return this.renderConfigureStep();
     }
     return this.renderIntegrateStep();
   }
 
   renderConfigureStep(): React.ReactElement<any> {
+    const {
+      apiToken
+    } = this.state;
+
     return (
       <React.Fragment>
         <div className="n-ConfigurationStepLead">API token and Project allows you to checkpoint and share your work in Neptune.</div>
 
         <label className="n-form-label" htmlFor="neptune-api-token">API token</label>
         <div className="n-form-item">
-          [input]
+          <input
+            id="neptune-api-token"
+            className="n-form-input n-form-input-with-status"
+            type="text"
+            defaultValue={apiToken}
+            title={apiToken}
+            onChange={this.updateApiToken}
+          />
+          { this.renderApiTokenStatus() }
         </div>
 
         <label className="n-form-label" htmlFor="neptune-project">Select project</label>
         <div className="n-form-item">
-          [select]
+          { this.renderProjectsSelect() }
+          { this.renderProjectsStatus() }
         </div>
       </React.Fragment>
     );
   }
 
+
+  renderApiTokenStatus = (): React.ReactElement<any> => {
+    return this.renderInputStatus(this.state.isApiTokenValid);
+  };
+
+
+  renderProjectsSelect = (): React.ReactElement<any> => {
+    const {
+      selectedProject,
+      projectsList,
+    } = this.state;
+
+    return (
+      <select id="neptune-project" className="n-form-input n-form-input-with-status" value={selectedProject} disabled={projectsList === null} onChange={this.updateSelectedProject}>
+      {
+        (projectsList === null) ? (
+          <option label={selectedProject} value={selectedProject} />
+        ) : (
+          [
+            <option value="" key="--">--Please choose the project--</option>,
+            ...projectsList.map(project => <option key={project} label={project} value={project} />)
+          ]
+        )
+      }
+      </select>
+    );
+  }
+
+  renderProjectsStatus = (): React.ReactElement<any> => {
+    return this.renderInputStatus(!!this.state.selectedProject);
+  }
+
+  renderInputStatus(condition): React.ReactElement<any> {
+    const glyphClass = condition ? 'fa-check-circle' : 'fa-times-circle';
+    let iconVariant = '';
+    if (condition === true) {
+      iconVariant = 'n-input-status-icon--valid';
+    } else if (condition === false) {
+      iconVariant = 'n-input-status-icon--invalid';
+    }
+    const iconClasses = 'n-input-status-icon fa fa-lg ' + glyphClass + ' ' + iconVariant;
+    return (<i id="neptune-api-token-icon" className={iconClasses} />);
+  };
+
+
   renderIntegrateStep(): React.ReactElement<any> {
+    const {
+      apiToken,
+      selectedProject,
+      notebookId
+    } = this.state;
+
+    const code = getInitializationCode({
+      apiToken,
+      project: selectedProject,
+      notebookId
+    });
+
     return (
       <React.Fragment>
         <div className="n-ConfigurationStepLead n-ConfigurationStepLead-success">
@@ -118,7 +250,14 @@ export class ConfigureModal extends React.PureComponent<IConfigureModal, IConfig
           Integrate to create Neptune experiments and see them all linked to this notebook. Click "Integrate" to run the code below, then just "import neptune" and work as usual.
         </div>
         <div className="n-form-item">
-          [textarea]
+          <CodeMirror
+            className="notebook-integration-code"
+            options={{
+              mode: 'python',
+              readOnly: true
+            }}
+            value={code}
+          />
         </div>
       </React.Fragment>
     );
@@ -130,49 +269,89 @@ export class ConfigureModal extends React.PureComponent<IConfigureModal, IConfig
       onClose
     } = this.props;
 
-    if (!this.state.configureCompleted) {
+    if (this.state.visibleStep === STEP.CONFIGURATION) {
+      const requireParams = !this.state.isApiTokenValid || !this.state.selectedProject;
+      const disabledClass = requireParams ? 'is-disabled' : '';
+
       return (
         <React.Fragment>
           <button type="button" className="n-ConfigureModalButton n-ConfigureModalButton--secondary" onClick={onClose}>Cancel</button>
-          <button type="button" className="n-ConfigureModalButton n-ConfigureModalButton--primary" onClick={this.createNotebook}>Create notebook</button>
+          <button
+            type="button"
+            className={"n-ConfigureModalButton n-ConfigureModalButton--primary " + disabledClass}
+            onClick={this.createNotebook}
+            disabled={requireParams}
+          >Create notebook</button>
         </React.Fragment>
       );
     }
 
     return (
       <React.Fragment>
-        <button type="button" className="n-ConfigureModalButton n-ConfigureModalButton--secondary" onClick={this.backToConfigurationStep}>Do it later</button>
+        <button type="button" className="n-ConfigureModalButton n-ConfigureModalButton--secondary" onClick={onClose}>Cancel</button>
         <button type="button" className="n-ConfigureModalButton n-ConfigureModalButton--primary" onClick={this.integrateNotebook}>Integrate</button>
       </React.Fragment>
     );
   }
 
 
+  private updateApiToken = (ev: ChangeEvent<HTMLInputElement>) => {
+    const apiToken = ev.target.value;
+
+    this.localConnection.updateParams({ apiToken });
+    this.setState({ apiToken });
+  }
+
+
+  private updateSelectedProject = (ev: ChangeEvent<HTMLSelectElement>) => {
+    const project = ev.target.value;
+
+    this.localConnection.updateParams({ project });
+    this.setState({ selectedProject: project });
+  }
+
   private backToConfigurationStep = () => {
-    this.setState({ configureCompleted: false });
+    this.setState({ visibleStep: STEP.CONFIGURATION });
   }
 
 
   private completeConfigurationStep = () => {
-     this.setState({ configureCompleted: true });
+    this.setState({ visibleStep: STEP.INTEGRATION });
   }
 
 
   private createNotebook = () => {
-    this.props.onCreateNotebook();
-    this.completeConfigurationStep();
+    this.localConnection
+      .createNotebook(this.content.getNotebookPath())
+      .then(notebookId => {
+        this.localConnection.updateParams({ notebookId });
+        this.content
+          .getNotebookContent()
+          .then(content => this.localConnection.createCheckpoint(this.content.getNotebookPath(), content))
+          .then(() => {
+            this.props.onCreateNotebook(this.localConnection.getParams());
+            this.completeConfigurationStep();
+            this.setState({ notebookId });
+          });
+      });
   }
 
 
   private integrateNotebook = () => {
-    // this.runCell();
-    this.props.onClose();
+    this
+      .runCell()
+      .then(() => {
+        this.props.onClose()
+      })
+      .catch(err => {
+        console.error('Integration failed', err);
+      });
   }
 
 
-  // private runCell() {
-  //   this.session.runInitializationCode(this.localConnection.getParams());
-  // };
+  private runCell(): Promise<any> {
+    return this.session.runInitializationCode(this.localConnection.getParams()).done;
+  };
 
 
   render() {

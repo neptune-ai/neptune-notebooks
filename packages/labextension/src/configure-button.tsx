@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { ReactElementWidget, ToolbarButtonComponent } from "@jupyterlab/apputils";
 
-import { NeptuneConnection } from './connection';
+import {
+  NeptuneConnection,
+  INeptuneConnectionParams,
+  setGlobalApiToken
+} from './connection';
 import { NeptuneContent } from './content';
 import { NeptuneSession } from './kernel';
 import { ConfigureModal } from './configure-modal';
@@ -66,6 +70,7 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
         />
         <ConfigureModal
           isOpen={isModalOpen}
+          isConfigurationValid={isConfigurationValid}
           content={content}
           session={session}
           initParams={connection.getParams()}
@@ -77,8 +82,18 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
   }
 
 
-  private updateMetadata = () => {
-    console.log('updateMetadata');
+  private updateMetadata = (params: INeptuneConnectionParams) => {
+    const {
+      content,
+      session,
+      connection
+    } = this.props;
+
+    connection.setParams(params);
+    setGlobalApiToken(params.apiToken);
+    content
+      .updateMetadata({ notebookId: params.notebookId })
+      .then(() => this.validateConfiguration());
   }
 
   private validateConfiguration = () => {
