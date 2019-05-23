@@ -208,7 +208,7 @@ define([
         var jupyterPath = IPython.notebook.notebook_path;
         var nbId = IPython.notebook.metadata.neptune.notebookId;
         $.ajax({
-            url: apiAdress + '/api/leaderboard/v1/notebooks/'+nbId+'/checkpoints?jupyterPath=' + jupyterPath,
+            url: apiAdress + '/api/leaderboard/v1/notebooks/'+nbId+'/checkpoints?jupyterPath=' + encodeURIComponent(jupyterPath),
             method: 'POST',
             data: body,
             beforeSend: function(xhr) {
@@ -751,8 +751,10 @@ define([
         status.spin();
         getNotebookData(status, api_address, accessToken, getNotebookId(), username, function(nbData) {
             var currentProjectId = $('#neptune-project').val();
-            if (currentProjectId === nbData.projectId && nbData.owner === username) {
+            if (currentProjectId !== nbData.projectId) {
                 showConfirmationModal(api_address, accessToken, null, 'Your notebook\'s project has changed.', callback, errorCallback);
+            } else if (nbData.owner === username) {
+                showConfirmationModal(api_address, accessToken, null, 'No changes detected', callback, errorCallback);
             } else {
                 requestCreateNotebook(status, api_address, accessToken, null, callback, errorCallback);
             }
