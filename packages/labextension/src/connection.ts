@@ -73,7 +73,7 @@ export class NeptuneConnection {
             }
           )
           .then(response => response.json())
-          .then(data => data.id)
+          .then(data => data.id);
       });
   };
 
@@ -93,23 +93,53 @@ export class NeptuneConnection {
   };
 
   createCheckpoint = (path: string, content: string) => {
-    this.getAuthorizationHeader().then(authorizationHeader => {
-      return fetch(this.getApiAddress() + '/api/leaderboard/v1/notebooks/' + this.params.notebookId + '/checkpoints?jupyterPath=' + path,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': authorizationHeader,
-            'Content-Type': 'application/octet-stream'
-          },
-          body: content
-        }
-      );
-    });
+    this
+      .getAuthorizationHeader()
+      .then(authorizationHeader => {
+        return fetch(this.getApiAddress() + '/api/leaderboard/v1/notebooks/' + this.params.notebookId + '/checkpoints?jupyterPath=' + path,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': authorizationHeader,
+              'Content-Type': 'application/octet-stream'
+            },
+            body: content
+          }
+        );
+      });
   };
 
   getUsername = () => {
     return this.getOAuthToken().then(oauthToken => oauthToken.username);
   };
+
+  // getNotebookURI = (project) => {
+  //   if (this.notebook === null) {
+  //     return null;
+  //   }
+
+  //   const {
+  //     id,
+  //     name,
+  //     lastCheckpointId
+  //   } = this.notebook;
+  //   const apiAddress = this.getApiAddress();
+
+  //   return `${apiAddress}\/${project}\/n\/${name}\-${id}\/${lastCheckpointId}`;
+
+  //   // function makeNotebookUrl(notebook, apiAddress) {
+  //   //   if (!notebook) {
+  //   //     return null;
+  //   //   }
+  //   //   var project = projects.find(function (project) {
+  //   //     return project.id === notebook.projectId;
+  //   //   });
+  //   //   return apiAddress + '/' + project.organizationName + '/' + project.name + '/n/' +
+  //   //     notebook.name + '-' + notebook.id + '/' + notebook.lastCheckpointId;
+  //   // }
+  // }
+
+
 
   private getAuthorizationHeader = () => {
     return this.getOAuthToken().then(oauthToken => 'Bearer ' + oauthToken.accessToken);
@@ -207,4 +237,6 @@ interface INeptuneNotebook {
   path: string;
   owner: string;
   creationTime: string;
+  lastCheckpointId: string;
+  name: string;
 }

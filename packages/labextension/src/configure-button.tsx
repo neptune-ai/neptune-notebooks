@@ -102,7 +102,8 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
       content
     } = this.props;
 
-    content.validateMetadata()
+    content
+      .validateMetadata()
       .then(() => connection.validate())
       .then(() => this.setState({ isConfigurationValid: true }))
       .catch(() => this.setState({ isConfigurationValid: false }));

@@ -105,6 +105,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
       .validate()
       .then(() => {
         this.setState({ isApiTokenValid: true });
+
         this.localConnection
           .listProjects()
           .then(projects => this.setState({
@@ -152,9 +153,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
   }
 
   renderConfigureStep(): React.ReactElement<any> {
-    const {
-      apiToken
-    } = this.state;
+    const { apiToken } = this.state;
 
     return (
       <React.Fragment>
@@ -191,7 +190,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
   renderProjectsSelect = (): React.ReactElement<any> => {
     const {
       selectedProject,
-      projectsList,
+      projectsList
     } = this.state;
 
     return (
@@ -240,14 +239,17 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
       notebookId
     });
 
+    const notebookURI = '#';
+    const notebookName = '[NB_NAME]';
+
     return (
       <React.Fragment>
         <div className="n-ConfigurationStepLead n-ConfigurationStepLead-success">
-          Initial checkpoint successful! Check <a href="#">this link</a> to see your notebook [NB_NAME].
+          Initial checkpoint successful! Check <a href={ notebookURI } target="_blank" rel="noopener noreferrer">this link</a> to see your notebook { notebookName }.
         </div>
 
         <div className="n-form-label n-form-label--small">
-          Integrate to create Neptune experiments and see them all linked to this notebook. Click "Integrate" to run the code below, then just "import neptune" and work as usual.
+          Integrate to create Neptune experiments and see them all linked to this notebook. Click "Integrate" to run the code below, then just "import neptune" and work as usual.
         </div>
         <div className="n-form-item">
           <CodeMirror
@@ -275,7 +277,11 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
 
       return (
         <React.Fragment>
-          <button type="button" className="n-ConfigureModalButton n-ConfigureModalButton--secondary" onClick={onClose}>Cancel</button>
+          <button
+            type="button"
+            className="n-ConfigureModalButton n-ConfigureModalButton--secondary"
+            onClick={onClose}
+          >Cancel</button>
           <button
             type="button"
             className={"n-ConfigureModalButton n-ConfigureModalButton--primary " + disabledClass}
@@ -288,8 +294,16 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
 
     return (
       <React.Fragment>
-        <button type="button" className="n-ConfigureModalButton n-ConfigureModalButton--secondary" onClick={onClose}>Cancel</button>
-        <button type="button" className="n-ConfigureModalButton n-ConfigureModalButton--primary" onClick={this.integrateNotebook}>Integrate</button>
+        <button
+          type="button"
+          className="n-ConfigureModalButton n-ConfigureModalButton--secondary"
+          onClick={onClose}
+        >Cancel</button>
+        <button
+          type="button"
+          className="n-ConfigureModalButton n-ConfigureModalButton--primary"
+          onClick={this.integrateNotebook}
+        >Integrate</button>
       </React.Fragment>
     );
   }

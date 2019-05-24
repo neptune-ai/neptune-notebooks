@@ -25,23 +25,16 @@ export function getInitializationCode(params: INeptuneConnectionParams): string 
     project,
     notebookId
   } = params;
-  let code = 'import os';
+  return `import os
+${envEntry('NEPTUNE_API_TOKEN', apiToken)}
+${envEntry('NEPTUNE_PROJECT', project)}
+${envEntry('NEPTUNE_NOTEBOOK_ID', notebookId)}`;
+}
 
-  if (apiToken) {
-      code += "\nos.environ['NEPTUNE_API_TOKEN']=\"" + apiToken + "\"";
-  } else {
-      code += "\n# os.environ['NEPTUNE_API_TOKEN']"
-  }
-  if (project) {
-      code += "\nos.environ['NEPTUNE_PROJECT']=\"" + project + "\"";
-  } else {
-      code += "\n# os.environ['NEPTUNE_PROJECT']"
-  }
-  if (notebookId) {
-      code += "\nos.environ['NEPTUNE_NOTEBOOK_ID']=\"" + notebookId + "\"";
-  } else {
-      code += "\n# os.environ['NEPTUNE_NOTEBOOK_ID']"
-  }
 
-  return code;
+function envEntry(key, value) {
+  const disableComment = value ? '' : '# ';
+  const keyValue = value ? `="${value}"` : '';
+
+  return `${disableComment}os.environ['${key}']${keyValue}`;
 }
