@@ -200,7 +200,7 @@ export function createConnection(params: Partial<INeptuneConnectionParams>) {
 
 export function createEmptyConnection() {
   return new NeptuneConnection({
-    apiToken: null,
+    apiToken: getGlobalApiToken() || null,
     project: null,
     notebookId: null
   });

@@ -85,7 +85,6 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
   private updateMetadata = (params: INeptuneConnectionParams) => {
     const {
       content,
-      session,
       connection
     } = this.props;
 
