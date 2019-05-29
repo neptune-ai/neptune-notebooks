@@ -20,6 +20,7 @@
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "skipLibCheck": true,
   },
   "include": [
     "./src/**/*"

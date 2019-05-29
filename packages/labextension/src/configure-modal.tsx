@@ -33,6 +33,7 @@ interface IConfigureModal {
 }
 
 interface IConfigureModalState {
+  error: string;
   visibleStep: STEP,
   notebookId?: string;
   notebook?: INeptuneNotebook;
@@ -68,6 +69,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
     } = this.localConnection.getParams();
 
     this.state = {
+      error: null,
       visibleStep: isConfigurationValid ? STEP.INTEGRATION : STEP.CONFIGURATION,
       apiToken,
       selectedProject: project,
@@ -161,7 +163,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
   }
 
   renderConfigureStep(): React.ReactElement<any> {
-    const { apiToken } = this.state;
+    const { apiToken, error } = this.state;
 
     return (
       <React.Fragment>
@@ -185,6 +187,9 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
           { this.renderProjectsSelect() }
           { this.renderProjectsStatus() }
         </div>
+        { error && (
+            <div className="n-form-error">{error}</div>
+        )}
       </React.Fragment>
     );
   }
@@ -366,7 +371,9 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
 
 
   private createNotebook = () => {
-    this.localConnection
+    this.setState({error: null});
+
+    return this.localConnection
       .createNotebook(this.content.getNotebookPath())
       .then(notebookId => {
         this.localConnection.updateParams({ notebookId });
@@ -377,7 +384,8 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
             this.props.onCreateNotebook(this.localConnection.getParams());
             this.completeConfigurationStep();
             this.setState({ notebookId });
-          });
+          })
+            .catch(error => this.setState({error}));
       });
   }
 

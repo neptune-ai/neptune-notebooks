@@ -62,7 +62,7 @@ export class NeptuneConnection {
       .then(authorizationHeader => {
         return fetch(this.getApiAddress() + '/api/leaderboard/v1/notebooks' +
             '?projectIdentifier=' + this.params.project +
-            '&jupyterPath=' + path,
+            '&jupyterPath=' + encodeURIComponent(path),
             {
               method: 'POST',
               headers: {
@@ -93,10 +93,9 @@ export class NeptuneConnection {
   };
 
   createCheckpoint = (path: string, content: string) => {
-    this
-      .getAuthorizationHeader()
+    return this.getAuthorizationHeader()
       .then(authorizationHeader => {
-        return fetch(this.getApiAddress() + '/api/leaderboard/v1/notebooks/' + this.params.notebookId + '/checkpoints?jupyterPath=' + path,
+        return fetch(this.getApiAddress() + '/api/leaderboard/v1/notebooks/' + this.params.notebookId + '/checkpoints?jupyterPath=' + encodeURIComponent(path),
           {
             method: 'POST',
             headers: {
@@ -105,7 +104,7 @@ export class NeptuneConnection {
             },
             body: content
           }
-        );
+        ).then((response) => response.ok ? Promise.resolve(response) : Promise.reject('Could not create notebook'));
       });
   };
 

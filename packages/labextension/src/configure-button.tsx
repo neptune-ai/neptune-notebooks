@@ -88,11 +88,10 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
       connection
     } = this.props;
 
-    connection.setParams(params);
-    setGlobalApiToken(params.apiToken);
-    content
-      .updateMetadata({ notebookId: params.notebookId })
-      .then(() => this.validateConfiguration());
+    this.validateConfiguration()
+        .then(() => content.updateMetadata({ notebookId: params.notebookId }))
+        .then( () => connection.setParams(params))
+        .then( () => setGlobalApiToken(params.apiToken))
   }
 
   private validateConfiguration = () => {
@@ -101,7 +100,7 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
       content
     } = this.props;
 
-    content
+    return content
       .validateMetadata()
       .then(() => connection.validate())
       .then(() => this.setState({ isConfigurationValid: true }))
