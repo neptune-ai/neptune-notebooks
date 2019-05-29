@@ -113,33 +113,6 @@ export class NeptuneConnection {
     return this.getOAuthToken().then(oauthToken => oauthToken.username);
   };
 
-  // getNotebookURI = (project) => {
-  //   if (this.notebook === null) {
-  //     return null;
-  //   }
-
-  //   const {
-  //     id,
-  //     name,
-  //     lastCheckpointId
-  //   } = this.notebook;
-  //   const apiAddress = this.getApiAddress();
-
-  //   return `${apiAddress}\/${project}\/n\/${name}\-${id}\/${lastCheckpointId}`;
-
-  //   // function makeNotebookUrl(notebook, apiAddress) {
-  //   //   if (!notebook) {
-  //   //     return null;
-  //   //   }
-  //   //   var project = projects.find(function (project) {
-  //   //     return project.id === notebook.projectId;
-  //   //   });
-  //   //   return apiAddress + '/' + project.organizationName + '/' + project.name + '/n/' +
-  //   //     notebook.name + '-' + notebook.id + '/' + notebook.lastCheckpointId;
-  //   // }
-  // }
-
-
 
   private getAuthorizationHeader = () => {
     return this.getOAuthToken().then(oauthToken => 'Bearer ' + oauthToken.accessToken);
@@ -162,7 +135,7 @@ export class NeptuneConnection {
     }
   };
 
-  private getApiAddress = () => {
+  getApiAddress = () => {
     let { apiToken } = this.params;
     let decodedToken = JSON.parse(atob(apiToken));
     return decodedToken.api_address;
@@ -231,7 +204,7 @@ interface INeptuneProject {
 }
 
 
-interface INeptuneNotebook {
+export interface INeptuneNotebook {
   id: string;
   projectId: string;
   path: string;

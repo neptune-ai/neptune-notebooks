@@ -6,7 +6,8 @@ import 'codemirror/mode/python/python';
 
 import {
   NeptuneConnection,
-  INeptuneConnectionParams
+  INeptuneConnectionParams,
+  INeptuneNotebook
 } from './connection';
 import { NeptuneContent } from './content';
 import {
@@ -34,6 +35,7 @@ interface IConfigureModal {
 interface IConfigureModalState {
   visibleStep: STEP,
   notebookId?: string;
+  notebook?: INeptuneNotebook;
   apiToken?: string;
   isApiTokenValid?: boolean;
   selectedProject?: string;
@@ -111,6 +113,12 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
           .then(projects => this.setState({
             projectsList: projects.map(project => `${project.organizationName}/${project.name}`)
           }));
+
+        this.localConnection
+          .getNotebook()
+          .then(notebook => {
+            this.setState({ notebook });
+          });
       })
       .catch(() => this.setState({ isApiTokenValid: false }));
   }
@@ -226,11 +234,33 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
   };
 
 
+  getNotebookURI = () => {
+    const {
+      selectedProject,
+      notebook
+    } = this.state;
+
+    if (!notebook) {
+      return null;
+    }
+
+    const {
+      id,
+      name,
+      lastCheckpointId
+    } = notebook;
+    const apiAddress = this.localConnection.getApiAddress();
+
+    return `${apiAddress}\/${selectedProject}\/n\/${name}\-${id}\/${lastCheckpointId}`;
+  }
+
+
   renderIntegrateStep(): React.ReactElement<any> {
     const {
       apiToken,
       selectedProject,
-      notebookId
+      notebookId,
+      notebook
     } = this.state;
 
     const code = getInitializationCode({
@@ -239,14 +269,15 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
       notebookId
     });
 
-    const notebookURI = '#';
-    const notebookName = '[NB_NAME]';
-
     return (
       <React.Fragment>
-        <div className="n-ConfigurationStepLead n-ConfigurationStepLead-success">
-          Initial checkpoint successful! Check <a href={ notebookURI } target="_blank" rel="noopener noreferrer">this link</a> to see your notebook { notebookName }.
-        </div>
+        {
+          (notebook) && (
+            <div className="n-ConfigurationStepLead n-ConfigurationStepLead-success">
+              Initial checkpoint successful! Check <a href={this.getNotebookURI()} target="_blank" rel="noopener noreferrer">this link</a> to see your notebook <em>{notebook.name}</em>.
+            </div>
+          )
+        }
 
         <div className="n-form-label n-form-label--small">
           Integrate to create Neptune experiments and see them all linked to this notebook. Click "Integrate" to run the code below, then just "import neptune" and work as usual.
