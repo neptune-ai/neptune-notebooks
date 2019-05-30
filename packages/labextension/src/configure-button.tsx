@@ -93,14 +93,14 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
           {
             uploadStatus === 'success' && (
                 <div className="n-upload-notice">
-                   Notebook created
+                   Configuration successful
                 </div>
             )
           }
           {
             uploadStatus === 'fail' && (
                 <div className="n-upload-notice">
-                   Error during notebook upload
+                   There was an error while configuring your notebook
                 </div>
             )
           }
@@ -111,6 +111,7 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
           content={content}
           session={session}
           initParams={connection.getParams()}
+          isLoading={uploadStatus === 'loading'}
           onCreating={this.uploadLoading}
           onCreateNotebook={this.updateMetadata}
           onCreateFail={this.uploadFail}
@@ -153,7 +154,6 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
     this.resetUpload();
 
     this.setState({ uploadStatus: 'loading' });
-    this.timeout = setTimeout(() => this.resetUpload(), TIMEOUT_TIME);
   };
 
   resetUpload = () => {

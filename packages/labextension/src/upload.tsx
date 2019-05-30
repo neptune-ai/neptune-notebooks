@@ -12,7 +12,7 @@ import { NeptuneContent } from './content';
 import '../style/upload.css';
 
 
-const STRATEGY = {
+export const STRATEGY = {
   continue: 'continue',
   create: 'create'
 };
@@ -219,19 +219,21 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
 
 
 interface IUploadDialogProps {
-  onUpdateResolveStrategyChange: (strategy: string) => void
+  header?: string;
+  onUpdateResolveStrategyChange: (strategy: string) => void;
 }
 
-class UploadDialog extends React.Component<IUploadDialogProps> {
+export class UploadDialog extends React.Component<IUploadDialogProps> {
   updateResolveStrategy = (event: ChangeEvent<HTMLInputElement>) => {
     this.props.onUpdateResolveStrategyChange(event.target.value);
-  }
+  };
 
   render(): React.ReactElement<any> {
+    const text = this.props.header || 'Notebook name has changed.';
     return (
       <div className="n-UploadDialog">
         <p className="n-UploadDialog__note">
-          Notebook name has changed. How would you like to continue?
+          {text} How would you like to continue?
         </p>
 
         <label className="n-UploadDialog__option-label">

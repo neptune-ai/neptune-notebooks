@@ -11,10 +11,15 @@ import {
 } from './connection';
 import { NeptuneContent } from './content';
 import {
+  UploadDialog,
+  STRATEGY,
+} from './upload';
+import {
   NeptuneSession,
   getInitializationCode
 } from './kernel';
 import '../style/configure-modal.css';
+import {Dialog, showDialog} from "@jupyterlab/apputils";
 
 
 enum STEP {
@@ -25,6 +30,7 @@ enum STEP {
 interface IConfigureModal {
   content: NeptuneContent;
   initParams: INeptuneConnectionParams;
+  isLoading: boolean;
   session: NeptuneSession;
   isOpen: boolean;
   isConfigurationValid: boolean;
@@ -43,6 +49,7 @@ interface IConfigureModalState {
   isApiTokenValid?: boolean;
   selectedProject?: string;
   projectsList?: Array<string>;
+  conflictResolveStrategy?: string;
 }
 
 export class ConfigureModal extends React.Component<IConfigureModal, IConfigureModalState> {
@@ -310,7 +317,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
     } = this.props;
 
     if (this.state.visibleStep === STEP.CONFIGURATION) {
-      const requireParams = !this.state.isApiTokenValid || !this.state.selectedProject;
+      const requireParams = !this.state.isApiTokenValid || !this.state.selectedProject || this.props.isLoading;
       const disabledClass = requireParams ? 'is-disabled' : '';
 
       return (
@@ -377,23 +384,76 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
 
     this.props.onCreating();
 
+    Promise.all([
+        this.localConnection.getNotebook(),
+        this.localConnection.getUsername(),
+        this.localConnection.listProjects(),
+        this.content.getMetadata(),
+    ])
+        .then(([notebook, username, projects, metadata]) => {
+          if (notebook.id === metadata.notebookId) {
+            if (notebook.owner === username) {
+              const project = projects.find(project => project.id === notebook.projectId);
+              if (`${project.organizationName}/${project.name}` === this.localConnection.getParams().project) {
+                if (this.content.getNotebookPath() === notebook.path) {
+                  return this.askUser('Nothing has changed.', notebook.id);
+                } else {
+                  return this.askUser('Notebook path has changed.', notebook.id);
+                }
+              } else {
+                return this.askUser('Project has changed.', notebook.id);
+              }
+            }
+          }
+          return this.createNotebookFlow();
+        })
+        .catch(error => {
+          this.props.onCreateFail();
+          this.setState({error});
+        });
+  }
+
+  updateResolveStrategy = (conflictResolveStrategy) => {
+    this.setState({conflictResolveStrategy});
+  }
+
+  askUser = (textPrompt, notebookId) => {
+    return showDialog({
+      body: <UploadDialog header={textPrompt} onUpdateResolveStrategyChange={this.updateResolveStrategy} />,
+      buttons: [
+        Dialog.createButton({ label: 'Cancel', accept: false }),
+        Dialog.createButton({ label: 'Apply', accept: true })
+      ]
+    })
+        .then(result => {
+          if (result.button.accept) {
+            if (this.state.conflictResolveStrategy === STRATEGY.create) {
+              return this.createNotebookFlow();
+            } else {
+              return this.createCheckpointFlow(notebookId);
+            }
+          } else {
+            return Promise.reject();
+          }
+        });
+  }
+
+  createCheckpointFlow = (notebookId) => {
+    this.localConnection.updateParams({ notebookId });
+    this.content
+        .getNotebookContent()
+        .then(content => this.localConnection.createCheckpoint(this.content.getNotebookPath(), content))
+        .then(() => {
+          this.props.onCreateNotebook(this.localConnection.getParams());
+          this.completeConfigurationStep();
+          this.setState({ notebookId });
+        })
+  }
+
+  createNotebookFlow = () => {
     return this.localConnection
-      .createNotebook(this.content.getNotebookPath())
-      .then(notebookId => {
-        this.localConnection.updateParams({ notebookId });
-        this.content
-          .getNotebookContent()
-          .then(content => this.localConnection.createCheckpoint(this.content.getNotebookPath(), content))
-          .then(() => {
-            this.props.onCreateNotebook(this.localConnection.getParams());
-            this.completeConfigurationStep();
-            this.setState({ notebookId });
-          })
-          .catch(error => {
-            this.props.onCreateFail();
-            this.setState({error});
-          });
-      });
+        .createNotebook(this.content.getNotebookPath())
+        .then(this.createCheckpointFlow);
   }
 
 
