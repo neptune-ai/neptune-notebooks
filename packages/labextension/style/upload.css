@@ -28,3 +28,18 @@ input.n-UploadDialog__option {
   -webkit-appearance: radio;
   -moz-appearance: radio;
 }
+
+.n-upload-notice {
+  position: absolute;
+  top: 25px;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  width: 400px;
+  padding: 0 4px;
+}
+
+.jp-Toolbar,
+.jp-Toolbar-item {
+  overflow: visible;
+}

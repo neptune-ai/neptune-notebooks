@@ -28,9 +28,13 @@ interface IConfigureButtonProps {
 interface IConfigureButtonState {
   isConfigurationValid: boolean;
   isModalOpen: boolean;
+  uploadStatus?: string;
 }
 
+const TIMEOUT_TIME = 4000;
+
 class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureButtonState> {
+  timeout: number;
 
   constructor(props: Readonly<IConfigureButtonProps>) {
     super(props);
@@ -50,31 +54,66 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
     } = this.props;
     const {
       isConfigurationValid,
-      isModalOpen
+      isModalOpen,
+        uploadStatus,
     } = this.state;
     let label = '';
     let cssClass = 'n-ConfigureButton';
 
     if (!isConfigurationValid) {
       label = 'Configure';
-      cssClass += ' n-ConfigureButton--withLabel';
+    }
+    let glyph = '';
+
+    switch (uploadStatus) {
+      case 'loading':
+        cssClass += ' n-ConfigureButton--loading';
+        glyph = 'fas fa-spinner fa-spin fa-w-14';
+        break;
+      case 'success':
+        glyph = 'fa-check-circle';
+        cssClass += ' n-ConfigureButton--success';
+        break;
+      case 'fail':
+        cssClass += ' n-ConfigureButton--failed';
+        glyph = 'fa-times-circle';
+        break;
     }
 
     return (
       <React.Fragment>
-        <ToolbarButtonComponent
-          className={cssClass}
-          label={label}
-          onClick={this.openModal}
-          tooltip='Connect to Neptune'
-        />
+        <div style={{position: 'relative'}}>
+          <ToolbarButtonComponent
+            className={cssClass}
+            iconClassName={'n-ConfigureButton-icon fa fa-lg ' + glyph}
+            label={label}
+            onClick={this.openModal}
+            tooltip='Connect to Neptune'
+          />
+          {
+            uploadStatus === 'success' && (
+                <div className="n-upload-notice">
+                   Notebook created
+                </div>
+            )
+          }
+          {
+            uploadStatus === 'fail' && (
+                <div className="n-upload-notice">
+                   Error during notebook upload
+                </div>
+            )
+          }
+        </div>
         <ConfigureModal
           isOpen={isModalOpen}
           isConfigurationValid={isConfigurationValid}
           content={content}
           session={session}
           initParams={connection.getParams()}
+          onCreating={this.uploadLoading}
           onCreateNotebook={this.updateMetadata}
+          onCreateFail={this.uploadFail}
           onClose={this.closeModal}
         />
       </React.Fragment>
@@ -88,11 +127,40 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
       connection
     } = this.props;
 
-    this.validateConfiguration()
-        .then(() => content.updateMetadata({ notebookId: params.notebookId }))
+    content.updateMetadata({ notebookId: params.notebookId })
+        .then(() => this.validateConfiguration())
         .then( () => connection.setParams(params))
         .then( () => setGlobalApiToken(params.apiToken))
-  }
+        .then( () => this.uploadSuccess())
+        .catch(() => this.uploadFail())
+  };
+
+  uploadFail = () => {
+    this.resetUpload();
+
+    this.setState({ uploadStatus: 'fail' });
+    this.timeout = setTimeout(() => this.resetUpload(), TIMEOUT_TIME);
+  };
+
+  uploadSuccess = () => {
+    this.resetUpload();
+
+    this.setState({ uploadStatus: 'success' });
+    this.timeout = setTimeout(() => this.resetUpload(), TIMEOUT_TIME);
+  };
+
+  uploadLoading = () => {
+    this.resetUpload();
+
+    this.setState({ uploadStatus: 'loading' });
+    this.timeout = setTimeout(() => this.resetUpload(), TIMEOUT_TIME);
+  };
+
+  resetUpload = () => {
+    clearTimeout(this.timeout);
+
+    this.setState({uploadStatus: null})
+  };
 
   private validateConfiguration = () => {
     const {

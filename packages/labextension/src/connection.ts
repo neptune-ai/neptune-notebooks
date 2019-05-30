@@ -196,7 +196,7 @@ interface OAuthToken {
 }
 
 
-interface INeptuneProject {
+export interface INeptuneProject {
   id: string;
   organizationName: string;
   name: string;

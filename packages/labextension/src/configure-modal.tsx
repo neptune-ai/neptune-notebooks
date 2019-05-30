@@ -29,6 +29,8 @@ interface IConfigureModal {
   isOpen: boolean;
   isConfigurationValid: boolean;
   onCreateNotebook: (params: INeptuneConnectionParams) => void;
+  onCreating: () => void;
+  onCreateFail: () => void;
   onClose: () => void;
 }
 
@@ -373,6 +375,8 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
   private createNotebook = () => {
     this.setState({error: null});
 
+    this.props.onCreating();
+
     return this.localConnection
       .createNotebook(this.content.getNotebookPath())
       .then(notebookId => {
@@ -385,7 +389,10 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
             this.completeConfigurationStep();
             this.setState({ notebookId });
           })
-            .catch(error => this.setState({error}));
+          .catch(error => {
+            this.props.onCreateFail();
+            this.setState({error});
+          });
       });
   }
 

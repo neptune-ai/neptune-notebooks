@@ -7,7 +7,7 @@ import {
   ToolbarButtonComponent
 } from '@jupyterlab/apputils';
 
-import { NeptuneConnection } from './connection';
+import { NeptuneConnection, INeptuneProject } from './connection';
 import { NeptuneContent } from './content';
 import '../style/upload.css';
 
@@ -31,11 +31,16 @@ interface IUploadButtonProps {
 
 interface IUploadButtonState {
   isUploadAvailable: boolean;
-  uploadStatus?: boolean;
+  uploadStatus?: string;
   conflictResolveStrategy: string;
+  notebook?: any;
+  projects?: Array<INeptuneProject>;
 }
 
+const TIMEOUT_TIME = 4000;
+
 class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonState> {
+  timeout: number;
 
   constructor(props: Readonly<IUploadButtonProps>) {
     super(props);
@@ -43,7 +48,9 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
       isUploadAvailable: false,
       conflictResolveStrategy: STRATEGY.continue
     };
-    this.props.connection.paramsChanged.connect(() => this.validateUpload());
+    this.props.connection.paramsChanged.connect(() => {
+      this.validateUpload()
+    });
     this.validateUpload();
   }
 
@@ -52,25 +59,62 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
     let glyph = 'fa-arrow-circle-up';
 
     switch (this.state.uploadStatus) {
-      case true:
+      case 'loading':
+        glyph = 'fas fa-spinner fa-spin fa-w-14';
+        break;
+      case 'success':
         className += ' n-UploadButton--success';
         break;
-      case false:
+      case 'fail':
         className += ' n-UploadButton--failed';
         glyph = 'fa-times-circle';
         break;
     }
 
     return (
-      <ToolbarButtonComponent
-        className={className}
-        iconClassName={'fa fa-lg ' + glyph}
-        label='Upload'
-        onClick={this.uploadNotebook}
-        tooltip='Upload to Neptune'
-        enabled={this.state.isUploadAvailable}
-      />
+        <div style={{position: 'relative'}}>
+          <ToolbarButtonComponent
+              className={className}
+              iconClassName={'fa fa-lg ' + glyph}
+              label='Upload'
+              onClick={this.uploadNotebook}
+              tooltip='Upload to Neptune'
+              enabled={this.state.isUploadAvailable}
+          />
+          {
+            (this.state.uploadStatus === 'success') && (
+                <div className="n-upload-notice">
+                  Successfully uploaded! To see notebook in Neptune, go to <a href={this.getNotebookURI()} target="_blank" rel="noopener noreferrer">link</a>.
+                </div>
+            )
+          }
+          {
+            (this.state.uploadStatus === 'fail') && (
+                <div className="n-upload-notice">
+                  An error occurred during notebook upload. Please try again.
+                </div>
+            )
+          }
+        </div>
     );
+  }
+
+  getNotebookURI = () => {
+    if (!this.state.notebook) {
+      return null;
+    }
+
+    const {
+      id,
+      name,
+      lastCheckpointId,
+      projectId,
+    } = this.state.notebook;
+
+    const apiAddress = this.props.connection.getApiAddress();
+    const project = this.state.projects.find(project => project.id === projectId);
+
+    return `${apiAddress}\/${project.organizationName}/${project.name}\/n\/${name}\-${id}\/${lastCheckpointId}`;
   }
 
   private validateUpload = () => {
@@ -110,9 +154,12 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
     } = this.props;
     const path = content.getNotebookPath();
 
+    this.setLoading();
+
     connection
       .getNotebook()
       .then(notebook => {
+        this.setState({notebook});
         if (notebook.path !== path) {
           return showDialog({
               body: <UploadDialog onUpdateResolveStrategyChange={this.updateResolveStrategy} />,
@@ -139,8 +186,34 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
           .getNotebookContent()
           .then(notebookContent => connection.createCheckpoint(path, notebookContent));
       })
-      .then(() => this.setState({ uploadStatus: true }) )
-      .catch(() => this.setState({ uploadStatus: false }) );
+      .then(() => connection.listProjects().then((entries: Array<INeptuneProject>) => this.setState({projects: entries})))
+      .then(() => this.setUploaded() )
+      .catch(() => this.setRejected() );
+  };
+
+  resetUploadState() {
+    clearTimeout(this.timeout);
+    this.setState({ uploadStatus: null});
+  };
+
+  setLoading = () => {
+    this.resetUploadState();
+
+    this.setState({uploadStatus: 'loading'});
+  };
+
+  setUploaded = () => {
+    this.resetUploadState();
+
+    this.setState({uploadStatus: 'success'});
+    this.timeout = setTimeout(() => this.resetUploadState(), TIMEOUT_TIME);
+  };
+
+  setRejected= () => {
+    this.resetUploadState();
+
+    this.setState({uploadStatus: 'fail'});
+    this.timeout = setTimeout(() => this.resetUploadState(), TIMEOUT_TIME);
   };
 }
 
