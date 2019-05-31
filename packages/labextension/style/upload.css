@@ -6,6 +6,9 @@ button.n-UploadButton--failed {
   color: #c60002;
 }
 
+.n-UploadButton:enabled {
+  cursor: pointer;
+}
 
 .n-UploadDialog {
   display: flex;

@@ -26,7 +26,7 @@ interface IConfigureButtonProps {
 }
 
 interface IConfigureButtonState {
-  isConfigurationValid: boolean;
+  isConfigurationValid?: boolean;
   isModalOpen: boolean;
   uploadStatus?: string;
 }
@@ -40,7 +40,6 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
     super(props);
 
     this.state = {
-      isConfigurationValid: false,
       isModalOpen: false
     };
     this.validateConfiguration();
@@ -59,6 +58,10 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
     } = this.state;
     let label = '';
     let cssClass = 'n-ConfigureButton';
+
+    if (typeof isConfigurationValid !== 'boolean') {
+      return null;
+    }
 
     if (!isConfigurationValid) {
       label = 'Configure';

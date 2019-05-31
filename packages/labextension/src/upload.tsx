@@ -30,7 +30,7 @@ interface IUploadButtonProps {
 }
 
 interface IUploadButtonState {
-  isUploadAvailable: boolean;
+  isUploadAvailable?: boolean;
   uploadStatus?: string;
   conflictResolveStrategy: string;
   notebook?: any;
@@ -45,7 +45,6 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
   constructor(props: Readonly<IUploadButtonProps>) {
     super(props);
     this.state = {
-      isUploadAvailable: false,
       conflictResolveStrategy: STRATEGY.continue
     };
     this.props.connection.paramsChanged.connect(() => {
@@ -57,6 +56,10 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
   render(): React.ReactElement<any> {
     let className = 'n-UploadButton';
     let glyph = 'fa-arrow-circle-up';
+
+    if (typeof this.state.isUploadAvailable !== 'boolean') {
+      return null;
+    }
 
     switch (this.state.uploadStatus) {
       case 'loading':
