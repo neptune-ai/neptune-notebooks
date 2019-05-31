@@ -119,20 +119,31 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
       .then(() => {
         this.setState({ isApiTokenValid: true });
 
-        this.localConnection
-          .listProjects()
-          .then(projects => this.setState({
-            projectsList: projects.map(project => `${project.organizationName}/${project.name}`)
-          }));
+        Promise.all([
+          this.localConnection
+              .listProjects()
+              .then(projects => {
+                this.setState({
+                  projectsList: projects.map(project => `${project.organizationName}/${project.name}`)
+                });
+                return projects;
+              }),
+          this.localConnection
+              .getNotebook()
+              .then(notebook => {
+                this.setState({ notebook });
+                return notebook;
+              })
+        ])
+            .then(([projects, notebook]) => {
+              const project = projects.find(project => project.id === notebook.projectId);
+              this.setState({selectedProject: `${project.organizationName}/${project.name}`});
+            })
 
-        this.localConnection
-          .getNotebook()
-          .then(notebook => {
-            this.setState({ notebook });
-          });
+
       })
       .catch(() => this.setState({ isApiTokenValid: false }));
-  }
+  };
 
 
   renderCurrentStepHeader(): React.ReactElement<any> {
@@ -416,6 +427,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
               .getNotebook()
               .then(notebook => {
                 this.setState({ notebook });
+                window.localStorage.setItem('neptuneLabs:projectIdentifier', this.state.selectedProject);
               });
         });
   }

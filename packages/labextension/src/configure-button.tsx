@@ -85,7 +85,7 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
 
     return (
       <React.Fragment>
-        <div style={{position: 'relative'}}>
+        <div className="n-Button-Wrapper">
           <ToolbarButtonComponent
             className={cssClass}
             iconClassName={'n-ConfigureButton-icon fa fa-lg ' + glyph}

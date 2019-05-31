@@ -57,6 +57,7 @@ export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtensi
       .then(metadata => {
         return createConnection({
             apiToken: getGlobalApiToken(),
+            project: window.localStorage.getItem('neptuneLabs:projectIdentifier'),
             notebookId: metadata.notebookId
           })
           .catch(() => Promise.resolve(createEmptyConnection()))

@@ -6,6 +6,10 @@ button.n-ConfigureButton:enabled:hover {
   cursor: pointer;
 }
 
+.n-Button-Wrapper {
+  position: relative;
+}
+
 .n-ConfigureButton-icon {
   min-width: 22px;
   justify-content: center;
