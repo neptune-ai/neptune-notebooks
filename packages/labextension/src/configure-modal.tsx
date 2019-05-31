@@ -410,6 +410,13 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
         .catch(error => {
           this.props.onCreateFail();
           this.setState({error});
+        })
+        .then(() => {
+          this.localConnection
+              .getNotebook()
+              .then(notebook => {
+                this.setState({ notebook });
+              });
         });
   }
 
@@ -440,7 +447,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
 
   createCheckpointFlow = (notebookId) => {
     this.localConnection.updateParams({ notebookId });
-    this.content
+    return this.content
         .getNotebookContent()
         .then(content => this.localConnection.createCheckpoint(this.content.getNotebookPath(), content))
         .then(() => {
