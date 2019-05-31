@@ -59,7 +59,11 @@ export class NeptuneContent {
           neptuneMetadata.notebookId = update.notebookId;
         }
         this.context.model.metadata.set('neptune', neptuneMetadata as JSONObject);
-    });
+        return this.context.save();
+    }).catch(err => {
+        // eslint-disable-next-line no-console
+        console.debug('err', err);
+        });
   }
 }
 
