@@ -159,7 +159,11 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
     connection
       .getNotebook()
       .then(notebook => {
+        if (!notebook.id) {
+          return this.createNotebook();
+        }
         this.setState({notebook});
+
         if (notebook.path !== path) {
           return showDialog({
               body: <UploadDialog onUpdateResolveStrategyChange={this.updateResolveStrategy} />,
@@ -171,9 +175,7 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
             .then(result => {
               if (result.button.accept) {
                 if (this.state.conflictResolveStrategy === STRATEGY.create) {
-                  return connection
-                    .createNotebook(content.getNotebookPath())
-                    .then(notebookId => connection.updateParams({ notebookId }));
+                  return this.createNotebook();
                 }
               } else {
                 return Promise.reject();
@@ -190,6 +192,17 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
       .then(() => this.setUploaded() )
       .catch(() => this.setRejected() );
   };
+
+  createNotebook = () => {
+    const {
+      connection,
+      content,
+    } = this.props;
+
+    return connection
+        .createNotebook(content.getNotebookPath())
+        .then(notebookId => connection.updateParams({ notebookId }));
+  }
 
   resetUploadState() {
     clearTimeout(this.timeout);
