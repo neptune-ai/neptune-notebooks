@@ -132,36 +132,32 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
     } = this.props;
 
     content.updateMetadata({ notebookId: params.notebookId })
-        .then(() => this.validateConfiguration())
-        .then( () => connection.setParams(params))
-        .then( () => setGlobalApiToken(params.apiToken))
-        .then( () => this.uploadSuccess())
-        .catch(() => this.uploadFail())
+      .then(() => this.validateConfiguration())
+      .then(() => connection.setParams(params))
+      .then(() => setGlobalApiToken(params.apiToken))
+      .then(() => this.uploadSuccess())
+      .catch(() => this.uploadFail());
   };
 
   uploadFail = () => {
     this.resetUpload();
-
     this.setState({ uploadStatus: 'fail' });
     this.timeout = setTimeout(() => this.resetUpload(), TIMEOUT_TIME);
   };
 
   uploadSuccess = () => {
     this.resetUpload();
-
     this.setState({ uploadStatus: 'success' });
     this.timeout = setTimeout(() => this.resetUpload(), TIMEOUT_TIME);
   };
 
   uploadLoading = () => {
     this.resetUpload();
-
     this.setState({ uploadStatus: 'loading' });
   };
 
   resetUpload = () => {
     clearTimeout(this.timeout);
-
     this.setState({uploadStatus: null})
   };
 

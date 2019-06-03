@@ -200,8 +200,8 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
     } = this.props;
 
     return connection
-        .createNotebook(content.getNotebookPath())
-        .then(notebookId => connection.updateParams({ notebookId }));
+      .createNotebook(content.getNotebookPath())
+      .then(notebookId => connection.updateParams({ notebookId }));
   }
 
   resetUploadState() {
@@ -211,20 +211,17 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
 
   setLoading = () => {
     this.resetUploadState();
-
     this.setState({uploadStatus: 'loading'});
   };
 
   setUploaded = () => {
     this.resetUploadState();
-
     this.setState({uploadStatus: 'success'});
     this.timeout = setTimeout(() => this.resetUploadState(), TIMEOUT_TIME);
   };
 
   setRejected= () => {
     this.resetUploadState();
-
     this.setState({uploadStatus: 'fail'});
     this.timeout = setTimeout(() => this.resetUploadState(), TIMEOUT_TIME);
   };

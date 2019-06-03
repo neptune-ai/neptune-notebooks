@@ -49,8 +49,8 @@ export class NeptuneConnection {
             }
           )
           .then(response => response.json())
-          .then(data => data.entries as Array<INeptuneProject>)
-    });
+          .then(data => data.entries as Array<INeptuneProject>);
+      });
   };
 
   validate = () => {
@@ -89,22 +89,23 @@ export class NeptuneConnection {
           )
           .then(response => response.json())
           .then(data => data as INeptuneNotebook);
-    });
+      });
   };
 
   createCheckpoint = (path: string, content: string) => {
     return this.getAuthorizationHeader()
       .then(authorizationHeader => {
         return fetch(this.getApiAddress() + '/api/leaderboard/v1/notebooks/' + this.params.notebookId + '/checkpoints?jupyterPath=' + encodeURIComponent(path),
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': authorizationHeader,
-              'Content-Type': 'application/octet-stream'
-            },
-            body: content
-          }
-        ).then((response) => response.ok ? Promise.resolve(response) : Promise.reject('Could not create notebook'));
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': authorizationHeader,
+                'Content-Type': 'application/octet-stream'
+              },
+              body: content
+            }
+          )
+          .then((response) => response.ok ? Promise.resolve(response) : Promise.reject('Could not create notebook'));
       });
   };
 
