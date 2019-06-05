@@ -95,8 +95,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
 
   componentDidUpdate(
     prevProps: Readonly<IConfigureModal>,
-    prevState: Readonly<IConfigureModalState>,
-    snapshot?: any
+    prevState: Readonly<IConfigureModalState>
   ): void {
     if (prevState.apiToken !== this.state.apiToken) {
       this.initializeDialog();
@@ -135,11 +134,10 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
                 return notebook;
               })
         ])
-            .then(([projects, notebook]) => {
-              const project = projects.find(project => project.id === notebook.projectId);
-              this.setState({selectedProject: `${project.organizationName}/${project.name}`});
-            })
-
+        .then(([projects, notebook]) => {
+          const project = projects.find(project => project.id === notebook.projectId);
+          this.setState({selectedProject: `${project.organizationName}/${project.name}`});
+        });
 
       })
       .catch(() => this.setState({ isApiTokenValid: false }));
@@ -249,6 +247,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
   renderInputStatus(condition): React.ReactElement<any> {
     const glyphClass = condition ? 'fa-check-circle' : 'fa-times-circle';
     let iconVariant = '';
+
     if (condition === true) {
       iconVariant = 'n-input-status-icon--valid';
     } else if (condition === false) {
@@ -400,36 +399,36 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
         this.localConnection.getUsername(),
         this.localConnection.listProjects(),
         this.content.getMetadata(),
-    ])
-        .then(([notebook, username, projects, metadata]) => {
-          if (notebook.id === metadata.notebookId) {
-            if (notebook.owner === username) {
-              const project = projects.find(project => project.id === notebook.projectId);
-              if (`${project.organizationName}/${project.name}` === this.localConnection.getParams().project) {
-                if (this.content.getNotebookPath() === notebook.path) {
-                  return this.askUser('Nothing has changed.', notebook.id);
-                } else {
-                  return this.askUser('Notebook path has changed.', notebook.id);
-                }
+      ])
+      .then(([notebook, username, projects, metadata]) => {
+        if (notebook.id === metadata.notebookId) {
+          if (notebook.owner === username) {
+            const project = projects.find(project => project.id === notebook.projectId);
+            if (`${project.organizationName}/${project.name}` === this.localConnection.getParams().project) {
+              if (this.content.getNotebookPath() === notebook.path) {
+                return this.askUser('Nothing has changed.', notebook.id);
               } else {
-                return this.askUser('Project has changed.', notebook.id);
+                return this.askUser('Notebook path has changed.', notebook.id);
               }
+            } else {
+              return this.askUser('Project has changed.', notebook.id);
             }
           }
-          return this.createNotebookFlow();
-        })
-        .catch(error => {
-          this.props.onCreateFail();
-          this.setState({error});
-        })
-        .then(() => {
-          this.localConnection
-              .getNotebook()
-              .then(notebook => {
-                this.setState({ notebook });
-                window.localStorage.setItem('neptuneLabs:projectIdentifier', this.state.selectedProject);
-              });
-        });
+        }
+        return this.createNotebookFlow();
+      })
+      .catch(error => {
+        this.props.onCreateFail();
+        this.setState({error});
+      })
+      .then(() => {
+        this.localConnection
+          .getNotebook()
+          .then(notebook => {
+            this.setState({ notebook });
+            window.localStorage.setItem('neptuneLabs:projectIdentifier', this.state.selectedProject);
+          });
+      });
   }
 
   updateResolveStrategy = (conflictResolveStrategy) => {
@@ -438,41 +437,41 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
 
   askUser = (textPrompt, notebookId) => {
     return showDialog({
-      body: <UploadDialog header={textPrompt} onUpdateResolveStrategyChange={this.updateResolveStrategy} />,
-      buttons: [
-        Dialog.createButton({ label: 'Cancel', accept: false }),
-        Dialog.createButton({ label: 'Apply', accept: true })
-      ]
-    })
-        .then(result => {
-          if (result.button.accept) {
-            if (this.state.conflictResolveStrategy === STRATEGY.create) {
-              return this.createNotebookFlow();
-            } else {
-              return this.createCheckpointFlow(notebookId);
-            }
+        body: <UploadDialog header={textPrompt} onUpdateResolveStrategyChange={this.updateResolveStrategy} />,
+        buttons: [
+          Dialog.createButton({ label: 'Cancel', accept: false }),
+          Dialog.createButton({ label: 'Apply', accept: true })
+        ]
+      })
+      .then(result => {
+        if (result.button.accept) {
+          if (this.state.conflictResolveStrategy === STRATEGY.create) {
+            return this.createNotebookFlow();
           } else {
-            return Promise.reject();
+            return this.createCheckpointFlow(notebookId);
           }
-        });
+        } else {
+          return Promise.reject();
+        }
+      });
   }
 
   createCheckpointFlow = (notebookId) => {
     this.localConnection.updateParams({ notebookId });
     return this.content
-        .getNotebookContent()
-        .then(content => this.localConnection.createCheckpoint(this.content.getNotebookPath(), content))
-        .then(() => {
-          this.props.onCreateNotebook(this.localConnection.getParams());
-          this.completeConfigurationStep();
-          this.setState({ notebookId });
-        })
+      .getNotebookContent()
+      .then(content => this.localConnection.createCheckpoint(this.content.getNotebookPath(), content))
+      .then(() => {
+        this.props.onCreateNotebook(this.localConnection.getParams());
+        this.completeConfigurationStep();
+        this.setState({ notebookId });
+      });
   }
 
   createNotebookFlow = () => {
     return this.localConnection
-        .createNotebook(this.content.getNotebookPath())
-        .then(this.createCheckpointFlow);
+      .createNotebook(this.content.getNotebookPath())
+      .then(this.createCheckpointFlow);
   }
 
 

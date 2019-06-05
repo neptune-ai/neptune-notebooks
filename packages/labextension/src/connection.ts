@@ -49,8 +49,8 @@ export class NeptuneConnection {
             }
           )
           .then(response => response.json())
-          .then(data => data.entries as Array<INeptuneProject>)
-    });
+          .then(data => data.entries as Array<INeptuneProject>);
+      });
   };
 
   validate = () => {
@@ -89,7 +89,7 @@ export class NeptuneConnection {
           )
           .then(response => response.json())
           .then(data => data as INeptuneNotebook);
-    });
+      });
   };
 
   createCheckpoint = (path: string, content: string) => {

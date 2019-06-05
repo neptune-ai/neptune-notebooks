@@ -43,7 +43,7 @@ export class NeptuneContent {
           return Promise.resolve();
         }
         return Promise.reject('Missing `notebookId`');
-    })
+      });
   };
 
   updateMetadata = (update: Partial<INeptuneMetadata>) => {
@@ -60,10 +60,11 @@ export class NeptuneContent {
         }
         this.context.model.metadata.set('neptune', neptuneMetadata as JSONObject);
         return this.context.save();
-    }).catch(err => {
+      })
+      .catch(err => {
         // eslint-disable-next-line no-console
         console.debug('err', err);
-        });
+      });
   }
 }
 
