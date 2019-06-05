@@ -104,7 +104,7 @@ export class NeptuneConnection {
             },
             body: content
           }
-        ).then((response) => response.ok ? Promise.resolve(response) : Promise.reject('Could not create notebook'));
+        ).then((response) => response.ok ? Promise.resolve(response.json()) : Promise.reject('Could not create notebook'));
       });
   };
 

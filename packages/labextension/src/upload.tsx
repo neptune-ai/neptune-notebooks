@@ -183,12 +183,10 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
             });
         }
       })
-      .then(() => {
-        return content
-          .getNotebookContent()
-          .then(notebookContent => connection.createCheckpoint(path, notebookContent));
-      })
-      .then(() => connection.listProjects().then((entries: Array<INeptuneProject>) => this.setState({projects: entries})))
+      .then(content.getNotebookContent)
+      .then(notebookContent => connection.createCheckpoint(path, notebookContent))
+      .then(notebook => this.setState({notebook}))
+      .then(() => connection.listProjects().then((entries: Array<INeptuneProject>) => this.setState({projects: entries})) )
       .then(() => this.setUploaded() )
       .catch(() => this.setRejected() );
   };
