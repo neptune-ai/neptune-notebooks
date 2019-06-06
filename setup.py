@@ -44,19 +44,18 @@ except IOError:
     pass
 
 nbextension = pjoin(here, 'packages', 'nbextension')
-# labextension = pjoin(here, 'packages', 'labextension')
+labextension = pjoin(here, 'packages', 'labextension')
 
 # Representative files that should exist after a successful build
-
 jstargets = [
     pjoin(nbextension, 'neptune-notebook.js'),
-    # pjoin(labextension, 'dist', 'neptune-notebooks-{}.tgz'.format(version)),
+    pjoin(labextension, 'dist', 'neptune-notebooks-{}.tgz'.format(version)),
 ]
 
 cmdclass = create_cmdclass(('jsdeps',))
 
 cmdclass['jsdeps'] = combine_commands(
-    # install_npm(labextension, build_cmd='dist'),
+    install_npm(labextension, build_cmd='dist'),
     ensure_targets(jstargets),
 )
 
@@ -65,13 +64,13 @@ cmdclass['git_version'] = git_version.GitVersion
 package_data = {
     name: [
         'packages/nbextension/*.*js*',
-        # 'packages/labextension/dist/*.tgz'
+        'packages/labextension/dist/*.tgz'
     ]
 }
 
 data_files = expand_data_files([
     ('share/jupyter/nbextensions/neptune-notebooks', [pjoin(nbextension, '*.js*')]),
-    # ('share/jupyter/lab/extensions', [pjoin(labextension, 'dist', '*.tgz')]),
+    ('share/jupyter/lab/extensions', [pjoin(labextension, 'dist', '*.tgz')]),
 ])
 
 
