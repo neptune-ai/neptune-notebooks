@@ -1,43 +1,40 @@
-import {Kernel} from '@jupyterlab/services';
-import {IClientSession} from "@jupyterlab/apputils";
-import {NeptuneConnectionParams} from "./connection";
+import { Kernel } from '@jupyterlab/services';
+import { IClientSession } from '@jupyterlab/apputils';
+import { INeptuneConnectionParams } from './connection';
+
 
 export class NeptuneSession {
 
-    private readonly session: IClientSession;
+  private readonly session: IClientSession;
 
-    constructor(session: IClientSession) {
-        this.session = session;
-    }
+  constructor(session: IClientSession) {
+    this.session = session;
+  }
 
-    runInitializationCode(params: NeptuneConnectionParams): Kernel.IFuture {
-        return this.session.kernel.requestExecute({
-            code: getInitializationCode(params)
-        });
-    }
-
+  runInitializationCode(params: INeptuneConnectionParams): Kernel.IFuture {
+    return this.session.kernel.requestExecute({
+      code: getInitializationCode(params)
+    });
+  }
 }
 
-export function getInitializationCode(params: NeptuneConnectionParams): string {
-    let {apiToken, project, notebookId} = params;
+
+export function getInitializationCode(params: INeptuneConnectionParams): string {
+  const {
+    apiToken,
+    project,
+    notebookId
+  } = params;
+  return `import os
+${envEntry('NEPTUNE_API_TOKEN', apiToken)}
+${envEntry('NEPTUNE_PROJECT', project)}
+${envEntry('NEPTUNE_NOTEBOOK_ID', notebookId)}`;
+}
 
 
-    let code = "import os";
-    if (apiToken) {
-        code += "\nos.environ['NEPTUNE_API_TOKEN']=\"" + apiToken + "\"";
-    } else {
-        code += "\n# os.environ['NEPTUNE_API_TOKEN']"
-    }
-    if (project) {
-        code += "\nos.environ['NEPTUNE_PROJECT']=\"" + project + "\"";
-    } else {
-        code += "\n# os.environ['NEPTUNE_PROJECT']"
-    }
-    if (notebookId) {
-        code += "\nos.environ['NEPTUNE_NOTEBOOK_ID']=\"" + notebookId + "\"";
-    } else {
-        code += "\n# os.environ['NEPTUNE_NOTEBOOK_ID']"
-    }
+function envEntry(key, value) {
+  const disableComment = value ? '' : '# ';
+  const keyValue = value ? `="${value}"` : '';
 
-    return code;
+  return `${disableComment}os.environ['${key}']${keyValue}`;
 }

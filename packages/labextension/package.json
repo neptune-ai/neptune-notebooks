@@ -39,11 +39,16 @@
     "@jupyterlab/vdom": "^1.0.0-alpha.4",
     "@phosphor/disposable": "^1.1.2",
     "@types/codemirror": "0.0.74",
-    "react-codemirror2": "^6.0.0"
+    "@types/react-modal": "^3.8.2",
+    "codemirror": "^5.47.0",
+    "react-codemirror2": "^6.0.0",
+    "react-modal": "^3.8.1"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",
-    "typescript": "~3.1.1"
+    "tslint": "^5.16.0",
+    "typescript": "^3.1.1",
+    "typescript-tslint-plugin": "^0.3.1"
   },
   "jupyterlab": {
     "extension": true

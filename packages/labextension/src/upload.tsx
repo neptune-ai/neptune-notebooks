@@ -1,5 +1,5 @@
-import * as React from "react";
-import { ChangeEvent } from "react";
+import * as React from 'react';
+import { ChangeEvent } from 'react';
 import {
   Dialog,
   ReactElementWidget,
@@ -7,33 +7,50 @@ import {
   ToolbarButtonComponent
 } from '@jupyterlab/apputils';
 
-import { NeptuneConnection } from "./connection";
-import { NeptuneContent } from "./content";
+import { NeptuneConnection, INeptuneProject } from './connection';
+import { NeptuneContent } from './content';
 import '../style/upload.css';
-import createButton = Dialog.createButton;
 
 
-const STRATEGY = {
+export const STRATEGY = {
   continue: 'continue',
   create: 'create'
 };
 
-export class NeptuneUpload extends ReactElementWidget {
+export class NeptuneUploadButton extends ReactElementWidget {
   constructor(content: NeptuneContent, connection: NeptuneConnection) {
     super(<UploadButton connection={connection} content={content}/>);
   }
 }
 
 
-class UploadButton extends React.Component<UploadButtonProps, UploadButtonState> {
+interface IUploadButtonProps {
+  content: NeptuneContent;
+  connection: NeptuneConnection;
+}
 
-  constructor(props: Readonly<UploadButtonProps>) {
+interface IUploadButtonState {
+  isUploadAvailable: boolean;
+  uploadStatus?: string;
+  conflictResolveStrategy: string;
+  notebook?: any;
+  projects?: Array<INeptuneProject>;
+}
+
+const TIMEOUT_TIME = 4000;
+
+class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonState> {
+  timeout: number;
+
+  constructor(props: Readonly<IUploadButtonProps>) {
     super(props);
     this.state = {
+      conflictResolveStrategy: STRATEGY.continue,
       isUploadAvailable: false,
-      conflictResolveStrategy: STRATEGY.continue
     };
-    this.props.connection.paramsChanged.connect(() => this.validateUpload());
+    this.props.connection.paramsChanged.connect(() => {
+      this.validateUpload()
+    });
     this.validateUpload();
   }
 
@@ -42,25 +59,62 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
     let glyph = 'fa-arrow-circle-up';
 
     switch (this.state.uploadStatus) {
-      case true:
+      case 'loading':
+        glyph = 'fas fa-spinner fa-spin fa-w-14';
+        break;
+      case 'success':
         className += ' n-UploadButton--success';
         break;
-      case false:
+      case 'fail':
         className += ' n-UploadButton--failed';
         glyph = 'fa-times-circle';
         break;
     }
 
     return (
-      <ToolbarButtonComponent
-        className={className}
-        iconClassName={'fa fa-lg ' + glyph}
-        label='Upload'
-        onClick={this.onUploadButtonClick}
-        tooltip='Upload to Neptune'
-        enabled={this.state.isUploadAvailable}
-      />
+        <div className="n-Button-Wrapper">
+          <ToolbarButtonComponent
+              className={className}
+              iconClassName={'fa fa-lg ' + glyph}
+              label='Upload'
+              onClick={this.uploadNotebook}
+              tooltip='Upload to Neptune'
+              enabled={this.state.isUploadAvailable}
+          />
+          {
+            (this.state.uploadStatus === 'success') && (
+                <div className="n-upload-notice">
+                  Successfully uploaded! To see notebook in Neptune, go to <a href={this.getNotebookURI()} target="_blank" rel="noopener noreferrer">link</a>.
+                </div>
+            )
+          }
+          {
+            (this.state.uploadStatus === 'fail') && (
+                <div className="n-upload-notice">
+                  An error occurred during notebook upload. Please try again.
+                </div>
+            )
+          }
+        </div>
     );
+  }
+
+  getNotebookURI = () => {
+    if (!this.state.notebook) {
+      return null;
+    }
+
+    const {
+      id,
+      name,
+      lastCheckpointId,
+      projectId,
+    } = this.state.notebook;
+
+    const apiAddress = this.props.connection.getApiAddress();
+    const project = this.state.projects.find(project => project.id === projectId);
+
+    return `${apiAddress}\/${project.organizationName}/${project.name}\/n\/${name}\-${id}\/${lastCheckpointId}`;
   }
 
   private validateUpload = () => {
@@ -76,7 +130,7 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
         return connection.getNotebook().then(notebook => {
           return connection.getUsername().then(username => {
             if (notebook.owner !== username) {
-              return Promise.reject("Notebook has different owner");
+              return Promise.reject('Notebook has different owner');
             }
           });
         });
@@ -93,30 +147,35 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
   }
 
 
-  private onUploadButtonClick = () => {
+  private uploadNotebook = () => {
     const {
       connection,
       content
     } = this.props;
     const path = content.getNotebookPath();
 
+    this.setLoading();
+
     connection
       .getNotebook()
       .then(notebook => {
+        if (!notebook.id) {
+          return this.createNotebook();
+        }
+        this.setState({notebook});
+
         if (notebook.path !== path) {
           return showDialog({
               body: <UploadDialog onUpdateResolveStrategyChange={this.updateResolveStrategy} />,
               buttons: [
-                createButton({ label: "Cancel", accept: false }),
-                createButton({ label: "Apply", accept: true })
+                Dialog.createButton({ label: 'Cancel', accept: false }),
+                Dialog.createButton({ label: 'Apply', accept: true })
               ]
             })
             .then(result => {
               if (result.button.accept) {
                 if (this.state.conflictResolveStrategy === STRATEGY.create) {
-                  return connection
-                    .createNotebook(content.getNotebookPath())
-                    .then(notebookId => connection.updateParams({ notebookId }));
+                  return this.createNotebook();
                 }
               } else {
                 return Promise.reject();
@@ -124,32 +183,65 @@ class UploadButton extends React.Component<UploadButtonProps, UploadButtonState>
             });
         }
       })
-      .then(() => {
-        return content
-          .getNotebookContent()
-          .then(notebookContent => connection.createCheckpoint(path, notebookContent));
-      })
-      .then(() => this.setState({ uploadStatus: true }) )
-      .catch(() => this.setState({ uploadStatus: false }) );
+      .then(content.getNotebookContent)
+      .then(notebookContent => connection.createCheckpoint(path, notebookContent))
+      .then(notebook => this.setState({notebook}))
+      .then(() => connection.listProjects().then((entries: Array<INeptuneProject>) => this.setState({projects: entries})) )
+      .then(() => this.setUploaded() )
+      .catch(() => this.setRejected() );
+  };
+
+  createNotebook = () => {
+    const {
+      connection,
+      content,
+    } = this.props;
+
+    return connection
+      .createNotebook(content.getNotebookPath())
+      .then(notebookId => connection.updateParams({ notebookId }));
+  }
+
+  resetUploadState() {
+    clearTimeout(this.timeout);
+    this.setState({ uploadStatus: null});
+  };
+
+  setLoading = () => {
+    this.resetUploadState();
+    this.setState({uploadStatus: 'loading'});
+  };
+
+  setUploaded = () => {
+    this.resetUploadState();
+    this.setState({uploadStatus: 'success'});
+    this.timeout = setTimeout(() => this.resetUploadState(), TIMEOUT_TIME);
+  };
+
+  setRejected= () => {
+    this.resetUploadState();
+    this.setState({uploadStatus: 'fail'});
+    this.timeout = setTimeout(() => this.resetUploadState(), TIMEOUT_TIME);
   };
 }
 
 
-interface UploadDialogProps {
-  onUpdateResolveStrategyChange: (strategy: string) => void
+interface IUploadDialogProps {
+  header?: string;
+  onUpdateResolveStrategyChange: (strategy: string) => void;
 }
 
-
-class UploadDialog extends React.Component<UploadDialogProps> {
+export class UploadDialog extends React.Component<IUploadDialogProps> {
   updateResolveStrategy = (event: ChangeEvent<HTMLInputElement>) => {
     this.props.onUpdateResolveStrategyChange(event.target.value);
-  }
+  };
 
   render(): React.ReactElement<any> {
+    const text = this.props.header || 'Notebook name has changed.';
     return (
       <div className="n-UploadDialog">
         <p className="n-UploadDialog__note">
-          Notebook name has changed. How would you like to continue?
+          {text} How would you like to continue?
         </p>
 
         <label className="n-UploadDialog__option-label">
@@ -177,17 +269,4 @@ class UploadDialog extends React.Component<UploadDialogProps> {
       </div>
     );
   }
-}
-
-
-interface UploadButtonProps {
-  content: NeptuneContent;
-  connection: NeptuneConnection;
-}
-
-
-interface UploadButtonState {
-  isUploadAvailable: boolean;
-  uploadStatus?: boolean;
-  conflictResolveStrategy: string;
 }

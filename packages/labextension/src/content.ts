@@ -1,7 +1,7 @@
-import {INotebookModel} from "@jupyterlab/notebook";
-import {DocumentRegistry} from "@jupyterlab/docregistry";
-import {JSONObject} from "@phosphor/coreutils";
-import {ContentsManager} from "@jupyterlab/services";
+import { INotebookModel } from '@jupyterlab/notebook';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { JSONObject } from '@phosphor/coreutils';
+import { ContentsManager } from '@jupyterlab/services';
 
 export class NeptuneContent {
 
@@ -29,7 +29,7 @@ export class NeptuneContent {
 
   getMetadata = () => {
     return this.context.ready.then(() => {
-      let metadata = this.context.model.metadata.get("neptune") as NeptuneMetadata;
+      let metadata = this.context.model.metadata.get('neptune') as INeptuneMetadata;
 
       return metadata || {};
     });
@@ -42,28 +42,33 @@ export class NeptuneContent {
         if (metadata.notebookId) {
           return Promise.resolve();
         }
-        return Promise.reject("Missing `notebookId`");
-    })
+        return Promise.reject('Missing `notebookId`');
+      });
   };
 
-  updateMetadata = (update: Partial<NeptuneMetadata>) => {
+  updateMetadata = (update: Partial<INeptuneMetadata>) => {
     return this.context.ready
       .then(() => {
         let metadata = this.context.model.metadata;
 
-        if (!metadata.has("neptune")) {
-          metadata.set("neptune", {});
+        if (!metadata.has('neptune')) {
+          metadata.set('neptune', {});
         }
-        let neptuneMetadata = this.context.model.metadata.get("neptune") as NeptuneMetadata;
+        let neptuneMetadata = this.context.model.metadata.get('neptune') as INeptuneMetadata;
         if (update.notebookId) {
           neptuneMetadata.notebookId = update.notebookId;
         }
-        this.context.model.metadata.set("neptune", neptuneMetadata as JSONObject);
-    });
+        this.context.model.metadata.set('neptune', neptuneMetadata as JSONObject);
+        return this.context.save();
+      })
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.debug('err', err);
+      });
   }
 }
 
 
-interface NeptuneMetadata {
+interface INeptuneMetadata {
   notebookId?: string;
 }
