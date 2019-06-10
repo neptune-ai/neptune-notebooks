@@ -24,7 +24,7 @@ export class NeptuneContent {
   getNotebookContent = () => {
     return this.contentsManager
       .get(this.context.path, {content: true})
-      .then(content => JSON.stringify(content));
+      .then(file => JSON.stringify(file.content));
   };
 
   getMetadata = () => {
