@@ -157,6 +157,10 @@
   height: 30px;
   line-height: 30px;
   font-size: 13px;
+  cursor: pointer;
+}
+.n-ConfigureModalButton.is-disabled {
+  cursor: default;
 }
 .n-ConfigureModalButton--primary {
   color: #fff;

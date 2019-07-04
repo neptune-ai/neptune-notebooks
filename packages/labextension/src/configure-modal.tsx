@@ -116,31 +116,46 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
     this.localConnection
       .validate()
       .then(() => {
-        this.setState({ isApiTokenValid: true });
+        this.setState({
+          isApiTokenValid: true,
+          projectsList: null
+        });
 
-        Promise.all([
-          this.localConnection
-              .listProjects()
-              .then(projects => {
-                this.setState({
-                  projectsList: projects.map(project => `${project.organizationName}/${project.name}`)
-                });
-                return projects;
-              }),
-          this.localConnection
-              .getNotebook()
-              .then(notebook => {
-                this.setState({ notebook });
-                return notebook;
-              })
-        ])
+        const promises = [];
+        promises.push(this.localConnection
+          .listProjects()
+          .then(projects => {
+            this.setState({
+              projectsList: projects.map(project => `${project.organizationName}/${project.name}`)
+            });
+            return projects;
+          })
+        );
+
+        if (this.localConnection.getParams().notebookId) {
+          promises.push(this.localConnection
+            .getNotebook()
+            .then(notebook => {
+              this.setState({ notebook });
+              return notebook;
+            })
+          );
+        }
+
+        Promise.all(promises)
         .then(([projects, notebook]) => {
-          const project = projects.find(project => project.id === notebook.projectId);
-          this.setState({selectedProject: `${project.organizationName}/${project.name}`});
+          if (notebook && notebook.projectId) {
+            const project = projects.find(project => project.id === notebook.projectId);
+            this.setState({selectedProject: `${project.organizationName}/${project.name}`});
+          }
         });
 
       })
-      .catch(() => this.setState({ isApiTokenValid: false }));
+      .catch(() => this.setState({
+        isApiTokenValid: false,
+        projectsList: null,
+        selectedProject: undefined
+      }));
   };
 
 
@@ -232,7 +247,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
         ) : (
           [
             <option value="" key="--">--Please choose the project--</option>,
-            ...projectsList.map(project => <option key={project} label={project} value={project} />)
+            ...projectsList.map(project => <option key={project} value={project}>{project}</option>)
           ]
         )
       }
