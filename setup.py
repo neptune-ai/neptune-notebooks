@@ -30,7 +30,7 @@ from glob import glob
 from setuptools import setup, find_packages
 
 from setupbase import (create_cmdclass, install_npm, ensure_targets,
-                       combine_commands, expand_data_files)
+                       combine_commands, expand_data_files, set_version_npm)
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -55,8 +55,9 @@ jstargets = [
 cmdclass = create_cmdclass(('jsdeps',))
 
 cmdclass['jsdeps'] = combine_commands(
+    set_version_npm(path=labextension, version=version, allow_same_version=True),
     install_npm(labextension, build_cmd='dist'),
-    ensure_targets(jstargets),
+    ensure_targets(jstargets)
 )
 
 cmdclass['git_version'] = git_version.GitVersion

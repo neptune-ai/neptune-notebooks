@@ -20,20 +20,20 @@ contains a set of useful utilities for including npm packages
 within a Python package.
 """
 
-import os
-from os.path import join as pjoin
 import functools
+import os
 import pipes
 import sys
+from distutils import log
 from glob import glob
+from os.path import join as pjoin
 from subprocess import check_call
 
 from setuptools import Command
-from setuptools.command.build_py import build_py
-from setuptools.command.sdist import sdist
-from setuptools.command.develop import develop
 from setuptools.command.bdist_egg import bdist_egg
-from distutils import log
+from setuptools.command.build_py import build_py
+from setuptools.command.develop import develop
+from setuptools.command.sdist import sdist
 
 try:
     from wheel.bdist_wheel import bdist_wheel
@@ -282,6 +282,38 @@ def install_npm(path=None, build_dir=None, source_dir=None, build_cmd='build', f
                 should_build = True
             if should_build:
                 run(['npm', 'run', build_cmd], cwd=node_package)
+
+    return NPM
+
+
+def set_version_npm(version, path=None, allow_same_version=True):
+    """Return a Command for setting npm version.
+
+    Note: The command is skipped if the `--skip-npm` flag is used.
+
+    Parameters
+    ----------
+    path: str, optional
+        The base path of the node package.  Defaults to the repo root.
+    """
+
+    class NPM(BaseCommand):
+        description = 'install package.json dependencies using npm'
+
+        def run(self):
+            if skip_npm:
+                log.info('Skipping npm-installation')
+                return
+            node_package = path or here
+
+            if not which("npm"):
+                log.error("`npm` unavailable.  If you're running this command "
+                          "using sudo, make sure `npm` is availble to sudo")
+                return
+            if allow_same_version:
+                run(['npm', 'version', '--allow-same-version', version], cwd=node_package)
+            else:
+                run(['npm', 'version', version], cwd=node_package)
 
     return NPM
 
