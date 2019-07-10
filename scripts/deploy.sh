@@ -8,5 +8,6 @@ then
 
     # npm package
     cd packages/labextension
+    echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
     npm publish
 fi
