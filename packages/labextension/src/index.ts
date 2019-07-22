@@ -4,14 +4,14 @@ import {
 } from '@phosphor/disposable';
 import {
   JupyterLab,
-  JupyterLabPlugin
+  JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import {
   NotebookPanel,
   INotebookModel
 } from '@jupyterlab/notebook';
-import { ReactElementWidget } from '@jupyterlab/apputils';
+import { ReactWidget } from '@jupyterlab/apputils';
 
 import { NeptuneContent } from './content';
 import { NeptuneSession } from './kernel';
@@ -73,7 +73,7 @@ export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtensi
               neptuneUploadNotebookButton
             ];
           });
-    }) as Promise<Array<ReactElementWidget>>;
+    }) as Promise<Array<ReactWidget>>;
 
     return new DisposableDelegate(() => {
       return buttonsPromise.then(buttons =>
@@ -87,7 +87,7 @@ export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtensi
 /**
  * The plugin registration information.
  */
-const plugin: JupyterLabPlugin<void> = {
+const plugin: JupyterFrontEndPlugin<void> = {
   id: 'neptune-notebook',
   autoStart: true,
   activate: (app: JupyterLab) => {

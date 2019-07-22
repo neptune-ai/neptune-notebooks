@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ReactElementWidget, ToolbarButtonComponent } from "@jupyterlab/apputils";
+import { ReactWidget, ToolbarButtonComponent } from "@jupyterlab/apputils";
 
 import {
   NeptuneConnection,
@@ -12,10 +12,23 @@ import { ConfigureModal } from './configure-modal';
 import '../style/configure-button.css';
 
 
-export class NeptuneConfigureButton extends ReactElementWidget {
+export class NeptuneConfigureButton extends ReactWidget {
+
+  private readonly content: NeptuneContent;
+  private readonly session: NeptuneSession;
+  private readonly connection: NeptuneConnection;
+
   constructor(content: NeptuneContent, session: NeptuneSession, connection: NeptuneConnection) {
-    super(<ConfigureButton content={content} session={session} connection={connection} />);
+    super();
+    this.content = content;
+    this.session = session;
+    this.connection = connection;
   }
+
+  public render() {
+    return (<ConfigureButton content={this.content} session={this.session} connection={this.connection} />);
+  }
+
 }
 
 

@@ -1,4 +1,4 @@
-import { Kernel } from '@jupyterlab/services';
+import { Kernel, KernelMessage } from '@jupyterlab/services';
 import { IClientSession } from '@jupyterlab/apputils';
 import { INeptuneConnectionParams } from './connection';
 
@@ -11,7 +11,7 @@ export class NeptuneSession {
     this.session = session;
   }
 
-  runInitializationCode(params: INeptuneConnectionParams): Kernel.IFuture {
+  runInitializationCode(params: INeptuneConnectionParams): Kernel.IShellFuture<KernelMessage.IExecuteRequestMsg, KernelMessage.IExecuteReplyMsg> {
     return this.session.kernel.requestExecute({
       code: getInitializationCode(params)
     });
