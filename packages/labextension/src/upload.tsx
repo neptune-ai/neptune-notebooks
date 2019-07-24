@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ChangeEvent } from 'react';
 import {
   Dialog,
-  ReactElementWidget,
+  ReactWidget,
   showDialog,
   ToolbarButtonComponent
 } from '@jupyterlab/apputils';
@@ -17,10 +17,21 @@ export const STRATEGY = {
   create: 'create'
 };
 
-export class NeptuneUploadButton extends ReactElementWidget {
+export class NeptuneUploadButton extends ReactWidget {
+
+  private readonly content: NeptuneContent;
+  private readonly connection: NeptuneConnection;
+
   constructor(content: NeptuneContent, connection: NeptuneConnection) {
-    super(<UploadButton connection={connection} content={content}/>);
+    super();
+    this.content = content;
+    this.connection = connection;
   }
+
+  public render() {
+    return (<UploadButton connection={this.connection} content={this.content}/>);
+  }
+
 }
 
 
@@ -75,7 +86,7 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
         <div className="n-Button-Wrapper">
           <ToolbarButtonComponent
               className={className}
-              iconClassName={'fa fa-lg ' + glyph}
+              iconClassName={'fa ' + glyph}
               label='Upload'
               onClick={this.uploadNotebook}
               tooltip='Upload to Neptune'

@@ -1,6 +1,6 @@
 {
   "name": "neptune-notebooks",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A JupyterLab extension for Neptune",
   "keywords": [
     "jupyter",
@@ -31,11 +31,11 @@
     "dist": "rimraf dist && npm run build && mkdir dist && cd dist && npm pack .."
   },
   "dependencies": {
-    "@jupyterlab/application": "^0.19.1",
-    "@jupyterlab/apputils": "^0.19.1",
-    "@jupyterlab/docregistry": "^0.19.1",
-    "@jupyterlab/notebook": "^0.19.2",
-    "@jupyterlab/running": "^0.19.1",
+    "@jupyterlab/application": "^1.0.0",
+    "@jupyterlab/apputils": "^1.0.0",
+    "@jupyterlab/docregistry": "^1.0.0",
+    "@jupyterlab/notebook": "^1.0.0",
+    "@jupyterlab/running": "^1.0.0",
     "@jupyterlab/vdom": "^1.0.0-alpha.4",
     "@phosphor/disposable": "^1.1.2",
     "@types/codemirror": "0.0.74",
