@@ -26,9 +26,14 @@ export class NeptuneConfigureButton extends ReactWidget {
   }
 
   public render() {
-    return (<ConfigureButton content={this.content} session={this.session} connection={this.connection} />);
+    return (
+      <ConfigureButton
+        content={this.content}
+        session={this.session}
+        connection={this.connection}
+      />
+    );
   }
-
 }
 
 
@@ -67,33 +72,36 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
     const {
       isConfigurationValid,
       isModalOpen,
-        uploadStatus,
+      uploadStatus,
     } = this.state;
-    let label = '';
     let cssClass = 'n-ConfigureButton';
+    let iconCssClass;
 
     if (typeof isConfigurationValid !== 'boolean') {
       return null;
     }
 
-    if (!isConfigurationValid) {
-      label = 'Configure';
-    }
-    let glyph = '';
+    const label = isConfigurationValid ? ' ' : 'Configure';
 
     switch (uploadStatus) {
-      case 'loading':
+      case 'loading': {
         cssClass += ' n-ConfigureButton--loading';
-        glyph = 'fas fa-spinner fa-spin fa-w-14';
+        // 'n-ConfigureButton-icon fa fa-lg ' + glyph
+        iconCssClass = 'n-ConfigureButton-icon fa fas fa-spinner fa-spin fa-w-14'
         break;
-      case 'success':
-        glyph = 'fa-check-circle';
+      }
+
+      case 'success': {
         cssClass += ' n-ConfigureButton--success';
+        iconCssClass = 'n-ConfigureButton-icon fa fa-check-circle'
         break;
-      case 'fail':
+      }
+
+      case 'fail': {
         cssClass += ' n-ConfigureButton--failed';
-        glyph = 'fa-times-circle';
+        iconCssClass = 'n-ConfigureButton-icon fa fa-times-circle'
         break;
+      }
     }
 
     return (
@@ -101,7 +109,7 @@ class ConfigureButton extends React.Component<IConfigureButtonProps, IConfigureB
         <div className="n-Button-Wrapper">
           <ToolbarButtonComponent
             className={cssClass}
-            iconClassName={'n-ConfigureButton-icon fa fa-lg ' + glyph}
+            iconClassName={iconCssClass}
             label={label}
             onClick={this.openModal}
             tooltip='Connect to Neptune'
