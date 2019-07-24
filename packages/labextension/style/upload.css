@@ -42,6 +42,11 @@ input.n-UploadDialog__option {
   padding: 0 4px;
 }
 
+.n-upload-notice a {
+  text-decoration: underline;
+  color: #337ab7;
+}
+
 .jp-Toolbar,
 .jp-Toolbar-item {
   overflow: visible;

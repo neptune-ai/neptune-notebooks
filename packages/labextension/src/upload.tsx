@@ -86,7 +86,7 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
         <div className="n-Button-Wrapper">
           <ToolbarButtonComponent
               className={className}
-              iconClassName={'fa fa-lg ' + glyph}
+              iconClassName={'fa ' + glyph}
               label='Upload'
               onClick={this.uploadNotebook}
               tooltip='Upload to Neptune'
