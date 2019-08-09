@@ -21,6 +21,10 @@ export class NeptuneContent {
     return this.context.path;
   };
 
+  saveContent = () => {
+      return this.context.save();
+  };
+
   getNotebookContent = () => {
     return this.contentsManager
       .get(this.context.path, {content: true})
