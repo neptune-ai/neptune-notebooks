@@ -474,7 +474,8 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
   createCheckpointFlow = (notebookId) => {
     this.localConnection.updateParams({ notebookId });
     return this.content
-      .getNotebookContent()
+      .saveContent()
+      .then(this.content.getNotebookContent)
       .then(content => this.localConnection.createCheckpoint(this.content.getNotebookPath(), content))
       .then(() => {
         this.props.onCreateNotebook(this.localConnection.getParams());

@@ -194,6 +194,7 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
             });
         }
       })
+      .then(content.saveContent)
       .then(content.getNotebookContent)
       .then(notebookContent => connection.createCheckpoint(path, notebookContent))
       .then(notebook => this.setState({notebook}))
