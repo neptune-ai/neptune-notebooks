@@ -7,9 +7,9 @@
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/neptune.ml/neptune-notebooks",
+  "homepage": "https://github.com/neptune-ml/neptune-notebooks",
   "bugs": {
-    "url": "https://github.com/neptune.ml/neptune-notebooks/issues"
+    "url": "https://github.com/neptune-ml/neptune-notebooks/issues"
   },
   "license": "Apache-2.0",
   "author": "Neptune",
@@ -21,7 +21,7 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/neptune.ml/neptune-notebooks.git"
+    "url": "https://github.com/neptune-ml/neptune-notebooks.git"
   },
   "scripts": {
     "build": "tsc",
