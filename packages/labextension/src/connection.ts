@@ -78,9 +78,13 @@ export class NeptuneConnection {
   };
 
   getNotebook = () => {
+
     return this
       .getAuthorizationHeader()
-      .then(authorizationHeader => {
+      .then((authorizationHeader) => {
+        if (!this.params.notebookId) {
+          return {};
+        }
         return fetch(
             this.getApiAddress() + '/api/leaderboard/v1/notebooks/' + this.params.notebookId,
             {
