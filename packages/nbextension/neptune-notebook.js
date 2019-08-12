@@ -224,7 +224,11 @@ define([
                 updateNotebookLinks(data, apiAdress);
             },
             error: function(data) {
-                errorNbSave(data);
+                var errorText;
+                if (data.status === 422) {
+                    errorText = 'Storage limit has been reached. Checkpoint can\'t be uploaded. ';
+                }
+                errorNbSave(data, errorText);
                 status && status.fail('Failed to create new notebook, please try again');
                 if (typeof errorCallback === 'function') {
                     errorCallback(data);
@@ -468,7 +472,14 @@ define([
                         updateTextArea();
                         configSave();
                         setStep('step2');
-                    }, function () {
+                    }, function (error) {
+                        var text;
+                        if (error.status === 422) {
+                            text = 'Storage limit has been reached. Notebook can\'t be created.';
+                        } else {
+                            text = 'An error occured, please try again.';
+                        }
+                        errorText.text(text);
                         errorText.show();
                     });
                     event.stopPropagation();
