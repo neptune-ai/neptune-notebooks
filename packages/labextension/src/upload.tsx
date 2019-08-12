@@ -112,7 +112,7 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
       case 422: {
         return (
             <div className="n-upload-notice">
-              Storage limit reached.
+              Storage limit has been reached. Checkpoint can't be uploaded.
             </div>
         );
       }

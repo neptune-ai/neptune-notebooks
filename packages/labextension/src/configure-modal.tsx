@@ -434,7 +434,7 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
       })
       .catch((status) => {
         this.props.onCreateFail();
-        this.setState({error : status === 422 ? 'Storage limit reached' : 'Could not create notebook'});
+        this.setState({error : status === 422 ? 'Storage limit has been reached. Notebook can\'t be created.' : 'Could not create notebook'});
       })
       .then(() => {
         this.localConnection
