@@ -432,9 +432,9 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
         }
         return this.createNotebookFlow();
       })
-      .catch(error => {
+      .catch((status) => {
         this.props.onCreateFail();
-        this.setState({error});
+        this.setState({error : status === 422 ? 'Storage limit reached' : 'Could not create notebook'});
       })
       .then(() => {
         this.localConnection
