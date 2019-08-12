@@ -104,7 +104,9 @@ export class NeptuneConnection {
             },
             body: content
           }
-        ).then((response) => response.ok ? Promise.resolve(response.json()) : Promise.reject('Could not create notebook'));
+        ).then((response) => response.ok
+              ? Promise.resolve(response.json())
+              : Promise.reject(response.status === 422 ? 'Storage limit reached' : 'Could not create notebook'));
       });
   };
 
