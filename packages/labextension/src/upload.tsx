@@ -43,6 +43,7 @@ interface IUploadButtonProps {
 interface IUploadButtonState {
   isUploadAvailable: boolean;
   uploadStatus?: string;
+  errorStatus?: number;
   conflictResolveStrategy: string;
   notebook?: any;
   projects?: Array<INeptuneProject>;
@@ -100,15 +101,31 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
             )
           }
           {
-            (this.state.uploadStatus === 'fail') && (
-                <div className="n-upload-notice">
-                  An error occurred during notebook upload. Please try again.
-                </div>
-            )
+            (this.state.uploadStatus === 'fail') && this.getErrorText(this.state.errorStatus)
           }
         </div>
     );
   }
+
+  getErrorText = (status) => {
+    switch (status) {
+      case 422: {
+        return (
+            <div className="n-upload-notice">
+              Storage limit reached.
+            </div>
+        );
+      }
+
+      default: {
+        return (
+            <div className="n-upload-notice">
+              An error occurred during notebook upload. Please try again.
+            </div>
+        )
+      }
+    }
+  };
 
   getNotebookURI = () => {
     if (!this.state.notebook) {
@@ -200,7 +217,7 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
       .then(notebook => this.setState({notebook}))
       .then(() => connection.listProjects().then((entries: Array<INeptuneProject>) => this.setState({projects: entries})) )
       .then(() => this.setUploaded() )
-      .catch(() => this.setRejected() );
+      .catch((error) => this.setRejected(error));
   };
 
   createNotebook = () => {
@@ -216,7 +233,7 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
 
   resetUploadState() {
     clearTimeout(this.timeout);
-    this.setState({ uploadStatus: null});
+    this.setState({ uploadStatus: null, errorStatus: null });
   };
 
   setLoading = () => {
@@ -230,9 +247,9 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
     this.timeout = setTimeout(() => this.resetUploadState(), TIMEOUT_TIME);
   };
 
-  setRejected= () => {
+  setRejected= (status) => {
     this.resetUploadState();
-    this.setState({uploadStatus: 'fail'});
+    this.setState({uploadStatus: 'fail', errorStatus: status});
     this.timeout = setTimeout(() => this.resetUploadState(), TIMEOUT_TIME);
   };
 }
