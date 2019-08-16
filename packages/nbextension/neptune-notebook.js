@@ -159,8 +159,9 @@ define([
     }
 
     function checkForNewestVersion() {
+        const apiAdress = window.localStorage.getItem('neptune_api_address');
         // Disable for on prem installations
-        if (window.localStorage.getItem('neptune_api_address') !== 'https://ui.stage.neptune.ml') {
+        if (apiAdress && !apiAdress.endsWith('neptune.ml')) {
             return;
         }
 
