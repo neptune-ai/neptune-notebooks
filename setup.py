@@ -90,7 +90,7 @@ def main():
         author='Neptune',
         author_email='contact@neptune.ml',
         url='http://jupyter.org',
-        license='BSD',
+        license='Apache-2.0',
         platforms='any',
         install_requires=requirements,
         keywords=['ipython', 'jupyter'],
