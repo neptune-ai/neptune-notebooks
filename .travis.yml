@@ -8,22 +8,19 @@ cache:
   pip: true
   directories:
   - "$HOME/.npm"
-#before_install:
-#  - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > packages/labextension/.npmrc
 install:
 - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 - bash -c "source ~/.nvm/nvm.sh; nvm install 6"
 - make prepare
-#- pip install tox-travis jupyter jupyterlab twine
-- pip install tox-travis jupyter twine
+- pip install tox-travis jupyter jupyterlab twine
 - python setup.py sdist && pip install -v .
 script:
 - make tests
 - jupyter nbextension list
 - jupyter nbextension enable --py --sys-prefix neptune-notebooks
-#- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list; fi
-#- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list 2>&1 | grep -q neptune-notebooks; fi
-#- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then cd packages/labextension && jupyter labextension link && cd ../..; fi
+- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list; fi
+- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list 2>&1 | grep -q neptune-notebooks; fi
+- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then cd packages/labextension && jupyter labextension link && cd ../..; fi
 deploy:
 - provider: script
   script: bash scripts/deploy.sh

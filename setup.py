@@ -34,14 +34,9 @@ from setupbase import (create_cmdclass, install_npm, ensure_targets,
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-import git_version
+import versioneer
 
-version = '0.0.0'
-try:
-    with open('VERSION') as f:
-        version = f.readline().strip()
-except IOError:
-    pass
+version = versioneer.get_version()
 
 nbextension = pjoin(here, 'packages', 'nbextension')
 labextension = pjoin(here, 'packages', 'labextension')
@@ -52,7 +47,7 @@ jstargets = [
     pjoin(labextension, 'dist', 'neptune-notebooks-{}.tgz'.format(version)),
 ]
 
-cmdclass = create_cmdclass(('jsdeps',))
+cmdclass = create_cmdclass(base_cmdclass=versioneer.get_cmdclass(), wrappers=('jsdeps',))
 
 cmdclass['jsdeps'] = combine_commands(
     set_version_npm(path=labextension, version=version, allow_same_version=True),
@@ -60,8 +55,6 @@ cmdclass['jsdeps'] = combine_commands(
     install_npm(labextension, build_cmd='dist'),
     ensure_targets(jstargets)
 )
-
-cmdclass['git_version'] = git_version.GitVersion
 
 package_data = {
     name: [
