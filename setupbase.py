@@ -46,7 +46,6 @@ else:
     def list2cmdline(cmd_list):
         return ' '.join(map(pipes.quote, cmd_list))
 
-
 __version__ = '0.1.0'
 
 # ---------------------------------------------------------------------------
@@ -68,6 +67,7 @@ if "--skip-npm" in sys.argv:
     sys.argv.remove("--skip-npm")
 else:
     skip_npm = False
+
 
 # ---------------------------------------------------------------------------
 # Public Functions
@@ -190,6 +190,7 @@ def combine_commands(*commands):
         def run(self):
             for c in self.commands:
                 c.run()
+
     return CombinedCommand
 
 
@@ -298,7 +299,8 @@ def set_version_npm(version, path=None, allow_same_version=True):
     """
 
     class NPM(BaseCommand):
-        description = 'install package.json dependencies using npm'
+
+        description = 'set version in package.json using npm'
 
         def run(self):
             if skip_npm:
@@ -308,7 +310,7 @@ def set_version_npm(version, path=None, allow_same_version=True):
 
             if not which("npm"):
                 log.error("`npm` unavailable.  If you're running this command "
-                          "using sudo, make sure `npm` is availble to sudo")
+                          "using sudo, make sure `npm` is available to sudo")
                 return
             if allow_same_version:
                 run(['npm', 'version', '--allow-same-version', version], cwd=node_package)
@@ -316,6 +318,30 @@ def set_version_npm(version, path=None, allow_same_version=True):
                 run(['npm', 'version', version], cwd=node_package)
 
     return NPM
+
+
+def set_version_js(version, path=None):
+    """Return a Command for setting version in jupyter notebook extension file.
+
+    Parameters
+    ----------
+    path: str, optional
+        The base path of the jupyter notebook package.  Defaults to the repo root.
+    """
+
+    class SetVersion(BaseCommand):
+        description = 'set version in neptune-notebook.js file'
+
+        @staticmethod
+        def run():
+            log.info("Set nbextension version = {} in {}/neptune-notebook.js".format(version, path))
+            run(["sed",
+                 "-iE",
+                 "s/var CURRENT_VERSION = '.*';/var CURRENT_VERSION = '{}';/".format(version),
+                 "neptune-notebook.js"],
+                cwd=path)
+
+    return SetVersion
 
 
 def ensure_targets(targets):
@@ -407,6 +433,7 @@ def wrap_command(cmds, cls, strict=True):
     strict: boolean, optional
         Wether to raise errors when a pre-command fails.
     """
+
     class WrappedCommand(cls):
 
         def run(self):
@@ -423,6 +450,7 @@ def wrap_command(cmds, cls, strict=True):
             # update package data
             update_package_data(self.distribution)
             return result
+
     return WrappedCommand
 
 
