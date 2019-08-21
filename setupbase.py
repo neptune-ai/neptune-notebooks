@@ -46,7 +46,6 @@ else:
     def list2cmdline(cmd_list):
         return ' '.join(map(pipes.quote, cmd_list))
 
-
 __version__ = '0.1.0'
 
 # ---------------------------------------------------------------------------
@@ -68,6 +67,7 @@ if "--skip-npm" in sys.argv:
     sys.argv.remove("--skip-npm")
 else:
     skip_npm = False
+
 
 # ---------------------------------------------------------------------------
 # Public Functions
@@ -123,15 +123,12 @@ def create_cmdclass(wrappers=None):
     egg = bdist_egg if 'bdist_egg' in sys.argv else bdist_egg_disabled
     wrappers = wrappers or []
     wrapper = functools.partial(wrap_command, wrappers)
-    cmdclass = dict(
+    return dict(
         build_py=wrapper(build_py, strict=is_repo),
         sdist=wrapper(sdist, strict=True),
         bdist_egg=egg,
         develop=wrapper(develop, strict=True)
     )
-    if bdist_wheel:
-        cmdclass['bdist_wheel'] = wrapper(bdist_wheel, strict=True)
-    return cmdclass
 
 
 def run(cmd, *args, **kwargs):
@@ -190,6 +187,7 @@ def combine_commands(*commands):
         def run(self):
             for c in self.commands:
                 c.run()
+
     return CombinedCommand
 
 
@@ -407,6 +405,7 @@ def wrap_command(cmds, cls, strict=True):
     strict: boolean, optional
         Wether to raise errors when a pre-command fails.
     """
+
     class WrappedCommand(cls):
 
         def run(self):
@@ -423,6 +422,7 @@ def wrap_command(cmds, cls, strict=True):
             # update package data
             update_package_data(self.distribution)
             return result
+
     return WrappedCommand
 
 
