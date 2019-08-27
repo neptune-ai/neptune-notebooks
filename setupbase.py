@@ -112,22 +112,27 @@ def update_package_data(distribution):
     build_py.finalize_options()
 
 
-def create_cmdclass(wrappers=None):
+def create_cmdclass(base_cmdclass=None, wrappers=None):
     """Create a command class with the given optional wrappers.
 
     Parameters
     ----------
+    base_cmdclass: dict, optional
+        A dictionary with base cmd class commands
     wrappers: list(str), optional
         The cmdclass names to run before running other commands
     """
-    egg = bdist_egg if 'bdist_egg' in sys.argv else bdist_egg_disabled
+    if base_cmdclass is None:
+        base_cmdclass = dict()
+    egg = base_cmdclass.get('bdist_egg', bdist_egg) if 'bdist_egg' in sys.argv else bdist_egg_disabled
     wrappers = wrappers or []
     wrapper = functools.partial(wrap_command, wrappers)
+
     return dict(
-        build_py=wrapper(build_py, strict=is_repo),
-        sdist=wrapper(sdist, strict=True),
+        build_py=wrapper(base_cmdclass.get('build_py', build_py), strict=is_repo),
+        sdist=wrapper(base_cmdclass.get('sdist', sdist), strict=True),
         bdist_egg=egg,
-        develop=wrapper(develop, strict=True)
+        develop=wrapper(base_cmdclass.get('develop', develop), strict=True)
     )
 
 

@@ -1,6 +1,6 @@
 include requirements.txt
-include VERSION
-include git_version.py
 include setupbase.py
 graft packages/nbextension
 include packages/labextension/dist/*.tgz
+include versioneer.py
+include neptune_notebooks/_version.py
