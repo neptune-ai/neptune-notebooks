@@ -168,13 +168,26 @@ define([
         $.ajax({
             url: 'https://pypi.org/pypi/neptune-notebooks/json',
             success: function (data) {
-                const latestVersion = Object.keys(data.releases).sort().pop();
+                const latestVersion = Object.keys(data.releases).sort(sortVersion).pop();
                 if (CURRENT_VERSION !== latestVersion) {
                     $('#neptune-upgrade-notice').show();
                 }
             },
             catch: function () {},
         })
+    }
+
+    function sortVersion(a, b) {
+        var partsA = a.split('.');
+        var partsB = b.split('.');
+        for (var i = 0; i < 3; i++) {
+            var numberA = parseInt(partsA[i], 10);
+            var numberB = parseInt(partsB[i], 10);
+            if (numberA !== numberB) {
+                return numberA - numberB;
+            }
+        }
+        return 0;
     }
 
     function getAccessToken(status, apiToken, callback, errorCallback) {
