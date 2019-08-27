@@ -18,7 +18,7 @@ define([
     var uploadTimer = new Timer();
     var configTimer = new Timer();
 
-    var CURRENT_VERSION = '0.0.7';
+    var CURRENT_VERSION = '0.0.10';
 
     return {
         'load_jupyter_extension': loadJupyterExtensions,

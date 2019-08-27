@@ -338,7 +338,8 @@ def set_version_js(version, path=None):
         def run():
             log.info("Set nbextension version = {} in {}/neptune-notebook.js".format(version, path))
             run(["sed",
-                 "-iE",
+                 "-i",
+                 "-E",
                  "s/var CURRENT_VERSION = '.*';/var CURRENT_VERSION = '{}';/".format(version),
                  "neptune-notebook.js"],
                 cwd=path)

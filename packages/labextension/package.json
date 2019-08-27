@@ -1,6 +1,6 @@
 {
   "name": "neptune-notebooks",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A JupyterLab extension for Neptune",
   "keywords": [
     "jupyter",
