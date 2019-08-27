@@ -18,6 +18,8 @@ define([
     var uploadTimer = new Timer();
     var configTimer = new Timer();
 
+    var CURRENT_VERSION = '0.0.7';
+
     return {
         'load_jupyter_extension': loadJupyterExtensions,
         'load_ipython_extension': loadJupyterExtensions
@@ -97,6 +99,82 @@ define([
         $(buttonGroup)
             .find('#neptune-authorize-status')
             .css('margin-left', '0px');
+
+        injectUpgradeNotice();
+        checkForNewestVersion();
+    }
+
+    function injectUpgradeNotice() {
+        var upgradeNotice = $('<div id="neptune-upgrade-notice"></div>')
+            .css({
+                'position': 'fixed',
+                'display': 'flex',
+                'background': '#FFF8E5',
+                'bottom': '25px',
+                'right': '25px',
+                'padding': '10px',
+                'max-width': '320px'
+            });
+
+        var icon = $('<i />')
+            .addClass('fa fas fa-exclamation-triangle fa-lg')
+            .css({
+                'margin-top': '5px',
+                'color': '#FFBF00',
+            });
+
+        var text = $('<p>New version of neptune-notebooks is now available! To upgrade, use this command:</p>')
+            .css({
+                'padding': '0 10px',
+                'font-size': '12px',
+                'color': '#333'
+            });
+
+        var command = $('<p>pip install -U neptune-notebooks</p>')
+            .css({
+                'background': 'white',
+                'font-family': 'monospace',
+                'margin-top': '10px',
+                'padding': '5px',
+            });
+
+        var close = $('<i />')
+            .addClass('fa fas fa-times-circle fa-lg')
+            .css({
+                'color': '#ccc',
+                'margin-top': '5px',
+                'cursor': 'pointer',
+            })
+            .click(function() {
+                upgradeNotice.hide();
+            });
+
+        upgradeNotice.append(
+            icon,
+            text.append(command),
+            close,
+        );
+
+        $('body').append(upgradeNotice.hide());
+    }
+
+    function checkForNewestVersion() {
+        const apiAdress = window.localStorage.getItem('neptune_api_address');
+        // Disable for on prem installations
+        if (apiAdress && !apiAdress.endsWith('neptune.ml')) {
+            return;
+        }
+
+        $.ajax({
+            url: 'https://pypi.org/pypi/neptune-notebooks/json',
+            success: function (data) {
+                const latestVersion = Object.keys(data.releases).sort().pop();
+                if (CURRENT_VERSION !== latestVersion) {
+                    $('#neptune-upgrade-notice').show();
+                }
+            },
+            catch: function () {},
+        })
     }
 
     function getAccessToken(status, apiToken, callback, errorCallback) {
@@ -128,6 +206,7 @@ define([
                 globalApiAddress = decodedToken.api_address;
                 globalAccessToken = data.accessToken;
                 globalUsername = data.username;
+                window.localStorage.setItem('neptune_api_address', decodedToken.api_address);
                 status && status.ok();
                 callback(decodedToken.api_address, data.accessToken, data.username);
             },
