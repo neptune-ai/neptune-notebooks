@@ -1,0 +1,37 @@
+{
+  "name": "neptune-notebook-nb-extension",
+  "description": "Jupyter notebook extension",
+  "private": true,
+  "main": "dist/neptune-notebook.js",
+  "module": "src/neptune-notebook.js",
+  "scripts": {
+    "build": "webpack",
+    "build-rollup": "rollup -c",
+    "build-babel-only": "babel src/ -d dist",
+    "lint": "standard src/**/*.js",
+    "lint:fix": "standard --fix src/**/*.js",
+    "install": "jupyter nbextension install dist/neptune-notebook.js --user && jupyter nbextension enable neptune-notebook --user"
+  },
+  "dependencies": {
+    "react": "~16.8.0",
+    "react-dom": "~16.8.0",
+    "styled-components": "^4.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.0",
+    "rollup": "^1.0.0",
+    "rollup-plugin-babel": "^4.0.0",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-node-resolve": "^5.0.0",
+    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-uglify": "^6.0.0",
+    "standard": "^14.0.0",
+    "webpack": "^4.0.0",
+    "webpack-cli": "^3.0.0"
+  }
+}
