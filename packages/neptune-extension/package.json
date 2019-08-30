@@ -1,0 +1,25 @@
+{
+  "name": "neptune-extension",
+  "description": "Jupyter neptune extension",
+  "private": true,
+  "main": "dist/neptune-notebook.js",
+  "module": "src/index.js",
+  "scripts": {
+    "build": "webpack",
+    "install-nbextension": "jupyter nbextension install dist/neptune-notebook.js --user && jupyter nbextension enable neptune-notebook --user"
+  },
+  "dependencies": {
+    "react": "~16.8.0",
+    "react-dom": "~16.8.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.0",
+    "webpack": "^4.0.0",
+    "webpack-cli": "^3.0.0"
+  }
+}
