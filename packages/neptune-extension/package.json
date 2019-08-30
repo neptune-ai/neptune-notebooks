@@ -1,12 +1,19 @@
 {
   "name": "neptune-extension",
   "description": "Jupyter neptune extension",
+  "version": "0.1.0",
   "private": true,
-  "main": "dist/neptune-notebook.js",
-  "module": "src/index.js",
+  "license": "Apache-2.0",
+  "author": "Neptune Labs",
+  "main": "dist/labextension/neptune-notebook.js",
   "scripts": {
-    "build": "webpack",
-    "install-nbextension": "jupyter nbextension install dist/neptune-notebook.js --user && jupyter nbextension enable neptune-notebook --user"
+    "build": "npm run build-nbextension && npm run build-labextension",
+    "build-nbextension": "webpack --config webpack.nbextension.config.js",
+    "build-labextension": "webpack --config webpack.labextension.config.js",
+    "start-nbextension": "webpack --watch --config webpack.nbextension.config.js",
+    "start-labextension": "webpack --watch --config webpack.labextension.config.js",
+    "install-nbextension": "jupyter nbextension install dist/nbextension/neptune-notebook.js --user && jupyter nbextension enable neptune-notebook --user",
+    "install-labextension": "jupyter labextension link ."
   },
   "dependencies": {
     "react": "~16.8.0",
@@ -21,5 +28,8 @@
     "babel-loader": "^8.0.0",
     "webpack": "^4.0.0",
     "webpack-cli": "^3.0.0"
+  },
+  "jupyterlab": {
+    "extension": true
   }
 }

@@ -22,9 +22,9 @@ const path = require('path')
  * encounter with "define" keyword.
  */
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/nbextension/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(process.cwd(), 'dist/nbextension'),
     filename: 'neptune-notebook.js',
     /*
      * Step 1: Instruct to generate AMD module.
@@ -55,7 +55,7 @@ module.exports = {
         test: /\.jsx?$/,
         use: 'babel-loader',
         include: [
-          path.resolve(__dirname, 'src')
+          path.resolve(process.cwd(), 'src')
         ]
       }
     ]
