@@ -1,12 +1,9 @@
-import { toStr } from 'src/dummy';
-
-let counter = 1;
 
 class Extension {
 
   constructor(app) {
     this.app = app;
-    console.log('Running neptune labextension for the', toStr(counter++), 'time');
+    console.log('Running neptune labextension');
   }
 
   createNew(panel, context) {
