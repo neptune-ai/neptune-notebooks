@@ -27,7 +27,6 @@ import ReactDOM from 'react-dom';
  */
 
 /* Here starts the code.... */
-
 function loadJupyterExtension() {
   console.log('Running neptune extension...');
 }

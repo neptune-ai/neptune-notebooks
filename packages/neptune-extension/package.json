@@ -7,6 +7,9 @@
   "author": "Neptune Labs",
   "main": "dist/labextension/neptune-notebook.js",
   "scripts": {
+    "check-types": "tsc",
+    "check-types-watch": "tsc --watch",
+    "prebuild": "npm run check-types",
     "build": "npm run build-nbextension && npm run build-labextension",
     "build-nbextension": "webpack --config webpack.nbextension.config.js",
     "build-labextension": "webpack --config webpack.labextension.config.js",
@@ -16,6 +19,8 @@
     "install-labextension": "jupyter labextension link ."
   },
   "dependencies": {
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.9.0",
     "react": "~16.8.0",
     "react-dom": "~16.8.0"
   },
@@ -25,7 +30,9 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.3.3",
     "babel-loader": "^8.0.0",
+    "typescript": "^3.6.2",
     "webpack": "^4.0.0",
     "webpack-cli": "^3.0.0"
   },

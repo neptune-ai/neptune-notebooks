@@ -1,5 +1,8 @@
+// Libs
 const webpack = require('webpack')
-const path = require('path')
+
+// Config
+const project = require('./config/project');
 
 /*
  * In AMD we would write (which is pretty simple):
@@ -22,9 +25,10 @@ const path = require('path')
  * encounter with "define" keyword.
  */
 module.exports = {
-  entry: './src/nbextension/index.js',
+  mode: 'development',
+  entry: project.src.resolve('nbextension/index.js'),
   output: {
-    path: path.resolve(process.cwd(), 'dist/nbextension'),
+    path: project.dist.resolve('nbextension'),
     filename: 'neptune-notebook.js',
     /*
      * Step 1: Instruct to generate AMD module.
@@ -52,17 +56,20 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         use: 'babel-loader',
         include: [
-          path.resolve(process.cwd(), 'src')
+          project.src.resolve()
         ]
       }
     ]
   },
   resolve: {
     modules: ['src', 'node_modules'],
-    extensions: ['.js']
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    alias: {
+      src: project.src.resolve(),
+    },
   },
   plugins: [
     /*
