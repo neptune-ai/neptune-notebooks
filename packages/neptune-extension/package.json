@@ -7,6 +7,9 @@
   "author": "Neptune Labs",
   "main": "dist/labextension/neptune-notebook.js",
   "scripts": {
+    "check-types": "tsc",
+    "check-types-watch": "tsc --watch",
+    "prebuild": "npm run check-types",
     "build": "npm run build-nbextension && npm run build-labextension",
     "build-nbextension": "webpack --config webpack.nbextension.config.js",
     "build-labextension": "webpack --config webpack.labextension.config.js",
