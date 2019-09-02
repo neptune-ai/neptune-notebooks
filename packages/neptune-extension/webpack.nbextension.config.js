@@ -69,6 +69,7 @@ module.exports = {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       src: project.src.resolve(),
+      'platform': path.resolve(__dirname, 'src/nbextension')
     },
   },
   plugins: [
@@ -77,10 +78,15 @@ module.exports = {
      */
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify('production')
+        /* TODO: change to 'production' or read from process. */
+        NODE_ENV: JSON.stringify('development')
       }
+    }),
+    new webpack.DefinePlugin({
+      'NEPTUNE_BUILD_DATE': JSON.stringify(new Date()),
     })
   ],
+  devtool: 'cheap-eval-module-source-map',
   /* TODO: enable */
   optimization: {
     minimize: false
