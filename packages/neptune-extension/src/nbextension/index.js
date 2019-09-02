@@ -27,9 +27,11 @@ import ReactDOM from 'react-dom';
  */
 
 /* Here starts the code.... */
+import { toStr } from 'src/dummy';
+let counter = 1;
 
 function loadJupyterExtension() {
-  console.log('Running neptune extension...');
+  console.log('Running neptune extension for the', toStr(counter++), 'time');
 }
 
 /* Here ends the code. */

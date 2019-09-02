@@ -1,5 +1,8 @@
+// Libs
 const webpack = require('webpack')
-const path = require('path')
+
+// Config
+const project = require('./config/project');
 
 /*
  * Jupyter Lab extension (labextension) is a standard npm package.
@@ -10,9 +13,10 @@ const path = require('path')
  * for labextension.
  */
 module.exports = {
-  entry: './src/labextension/index.js',
+  mode: 'development',
+  entry: project.src.resolve('labextension/index.js'),
   output: {
-    path: path.resolve(process.cwd(), 'dist/labextension'),
+    path: project.dist.resolve('labextension'),
     filename: 'neptune-notebook.js',
     libraryTarget: 'commonjs2',
     libraryExport: 'default'
@@ -20,17 +24,20 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         use: 'babel-loader',
         include: [
-          path.resolve(process.cwd(), 'src')
+          project.src.resolve()
         ]
       }
     ]
   },
   resolve: {
     modules: ['src', 'node_modules'],
-    extensions: ['.js']
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    alias: {
+      src: project.src.resolve(),
+    },
   },
   plugins: [
     /*
