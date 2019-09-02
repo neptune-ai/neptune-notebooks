@@ -1,5 +1,6 @@
 // Libs
 const webpack = require('webpack')
+const path = require('path')
 
 // Config
 const project = require('./config/project');
