@@ -1,37 +1,21 @@
-/*
- * The modules below will defined as dependencies.
- */
-import $ from 'jquery'
-import Jupyter from 'base/js/namespace'
-import events from 'base/js/events'
-import dialog from 'base/js/dialog'
-
-/*
- * The modules below will be bundled.
- */
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Jupyter from 'base/js/namespace'
 
-/*
- * The React code could look like this:
- *
- * const container = document.createElement('div')
- * document.body.appendChild(container)
- *
- * const exit = () => {
- *   ReactDOM.unmountComponentAtNode(container)
- *   document.body.removeChild(container)
- * }
- *
- * React.DOM.render(<App onExit={exit} />, container)
- */
+import App from 'common/components/App';
 
-/* Here starts the code.... */
-function loadJupyterExtension() {
-  console.log('Running neptune extension...');
+function initializeExtension() {
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+
+  ReactDOM.render(<App />, container);
 }
 
-/* Here ends the code. */
+function loadJupyterExtension() {
+  console.log('Running neptune extension...'); // eslint-disable-line no-console
+
+  return Jupyter.notebook.config.loaded.then(initializeExtension);
+}
 
 /*
  * This is the AMD module's factory return.
