@@ -1,6 +1,6 @@
 // Libs
 const webpack = require('webpack');
-const path = require('path');
+
 
 // Config
 const project = require('./config/project');
@@ -57,7 +57,7 @@ module.exports = {
         test: /\.svg?$/,
         use: 'file-loader',
         include: [
-          path.resolve(__dirname, 'node_modules')
+          project.home.resolve('node_modules'),
         ],
       },
       {
@@ -66,14 +66,14 @@ module.exports = {
           loader: 'url-loader',
           options: {
             limit: 8000, // Convert images < 8kb to base64 strings
-            name: 'images/[hash]-[name].[ext]'
-          }
+            name: 'images/[hash]-[name].[ext]',
+          },
         }],
         include: [
-          project.src.resolve()
+          project.src.resolve(),
         ],
-      }
-    ]
+      },
+    ],
   },
   resolve: {
     modules: ['src', 'node_modules'],
