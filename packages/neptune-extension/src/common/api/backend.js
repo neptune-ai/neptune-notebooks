@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-export function getAccessToken() {
-  /* TODO: local storage is only temporary. */
-  const apiToken = window.localStorage.getItem('neptune_api_token');
+export function getAccessToken(apiToken) {
   const decodedToken = JSON.parse(atob(apiToken));
 
   axios.defaults.baseURL = decodedToken.api_address;
@@ -12,8 +10,10 @@ export function getAccessToken() {
       'X-Neptune-Api-Token': apiToken,
     },
   })
-    .then(({ data }) => {
+    .then((response) => {
+      const { data } = response;
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+      return response;
     });
 }
 
@@ -25,10 +25,7 @@ export function getNotebookData(notebookId) {
   return axios.get(`/api/leaderboard/v1/notebooks/${notebookId}`);
 }
 
-export function createNotebook() {
-  /* TODO: local storage is only temporary. */
-  const projectId = window.localStorage.getItem('neptune_api_project');
-
+export function createNotebook(projectId) {
   return axios.post(`/api/leaderboard/v1/notebooks?projectIdentifier=${projectId}`);
 }
 

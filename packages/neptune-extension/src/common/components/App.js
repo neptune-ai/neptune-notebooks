@@ -1,13 +1,19 @@
 import React from 'react';
 
+import ConfigForm from 'common/components/ConfigForm';
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
 
 import {
-  getAccessToken,
-  createNotebook,
-  createCheckpoint,
-} from 'common/api/backend';
+  uploadNotebook,
+  uploadCheckpoint,
+} from 'common/core/notebook';
+
+import { showErrorMessage } from 'platform/utils/modal';
+
+import { validateConfiguration } from 'common/core/configuration';
+
+import useLocalStorage from 'common/hooks/useLocalStorage';
 
 const App = ({
   platformNotebook,
@@ -15,24 +21,54 @@ const App = ({
 
   const [ metadata, setMetadata ] = React.useState(platformNotebook.getMetadata);
 
+  const [ token, setToken ] = useLocalStorage('neptune_api_token');
+  const [ projectId, setProjectId ] = useLocalStorage('neptune_api_project');
+
+  const [ configOpen, setConfigOpen ] = React.useState(false);
+  
+  const updateConfig = ({ token, projectId }) => {
+    setToken(token);
+    setProjectId(projectId);
+
+    platformNotebook.getContent().then(content => {
+      uploadNotebook(metadata, token, projectId, content)
+        .then((data) => platformNotebook.saveNotebookId(data.id))
+        // metadata changed...
+        .then(() => setMetadata(platformNotebook.getMetadata()));
+        // TODO: implement success msg.
+    });
+  };
+
   const handleConfigure = () => {
-    getAccessToken()
-      .then(() => Promise.all([ createNotebook(), platformNotebook.getContent() ]))
-      .then(([ { data: neptuneData }, notebookData ]) => {
-        createCheckpoint(neptuneData.id, notebookData, metadata.path)
-          /* metadata changed... */
-          .then(() => platformNotebook.saveNotebookId(neptuneData.id))
-          .then(() => setMetadata(platformNotebook.getMetadata()));
+
+    validateConfiguration(metadata, token)
+      .then(() => {
+        // Configuration is ok.
+        // TODO: display step 2 modal;
+        // TODO: implement success msg.
+      })
+      .catch(() => {
+        // Need to setup.
+        setConfigOpen(true);
       });
   };
 
   const handleUpload = () => {
-    getAccessToken()
-      .then(() => platformNotebook.getContent())
-      .then((notebookData) => createCheckpoint(metadata.notebookId, notebookData, metadata.path));
+
+    platformNotebook.getContent().then(content => {
+
+      uploadCheckpoint(metadata, token, content)
+        .then(() => {
+          // TODO: Implement success msg.
+        })
+        .catch((error) => {
+          // TODO: Implement error msg.
+          showErrorMessage(error);
+        });
+    });
   };
 
-  const initialized = !!window.localStorage.getItem('neptune_api_token') && !!metadata.notebookId;
+  const initialized = !!token && !!metadata.notebookId;
 
   return (
     <div id="neptune-app">
@@ -52,6 +88,14 @@ const App = ({
           onClick={handleUpload}
         />
       </ToolbarWrapper>
+      { configOpen && (
+        <ConfigForm
+          metadata={metadata}
+          initialData={{ token, projectId }}
+          onClose={() => setConfigOpen(false)}
+          onSave={updateConfig}
+        />
+      )}
     </div>
   );
 };
