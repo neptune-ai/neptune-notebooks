@@ -16,6 +16,7 @@ const App = () => {
           compact={clicked}
           onClick={() => {
             setClicked(true);
+            // eslint-disable-next-line no-console
             console.log('neptune button clicked.');
           }}
         />
@@ -24,12 +25,15 @@ const App = () => {
           title="Upload to Neptune"
           icon="fa-cloud-upload"
           visible={clicked}
-          onClick={() => console.log('upload button clicked.')}
+          onClick={() => {
+            // eslint-disable-next-line no-console
+            console.log('upload button clicked.');
+          }}
         />
       </ToolbarWrapper>
     </div>
   );
-}
+};
 
 export default App;
 

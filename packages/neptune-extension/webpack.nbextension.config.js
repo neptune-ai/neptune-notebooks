@@ -1,6 +1,5 @@
 // Libs
-const webpack = require('webpack')
-const path = require('path')
+const webpack = require('webpack');
 
 // Config
 const project = require('./config/project');
@@ -39,7 +38,7 @@ module.exports = {
      * Step 2: Tell webpack to take the default export and return it from the
      * AMD module's factory function.
      */
-    libraryExport: 'default'
+    libraryExport: 'default',
   },
   /*
    * Step 3: Enter AMD module dependencies here. The "key" is the module alias,
@@ -52,25 +51,33 @@ module.exports = {
     jquery: 'jquery',
     'base/js/namespace': 'base/js/namespace',
     'base/js/events': 'base/js/events',
-    'base/js/dialog': 'base/js/dialog'
+    'base/js/dialog': 'base/js/dialog',
   },
   module: {
     rules: [
       {
+        test: /\.(js|jsx)$/,
+        enforce: 'pre',
+        include: [
+          project.src.resolve(),
+        ],
+        use: ['eslint-loader'],
+      },
+      {
         test: /\.(js|jsx|ts|tsx)$/,
         use: 'babel-loader',
         include: [
-          project.src.resolve()
-        ]
-      }
-    ]
+          project.src.resolve(),
+        ],
+      },
+    ],
   },
   resolve: {
     modules: ['src', 'node_modules'],
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       src: project.src.resolve(),
-      'platform': path.resolve(__dirname, 'src/nbextension')
+      'platform': project.src.resolve('nbextension'),
     },
   },
   plugins: [
@@ -80,16 +87,16 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         /* TODO: change to 'production' or read from process. */
-        NODE_ENV: JSON.stringify('development')
-      }
+        NODE_ENV: JSON.stringify('development'),
+      },
     }),
     new webpack.DefinePlugin({
       'NEPTUNE_BUILD_DATE': JSON.stringify(new Date()),
-    })
+    }),
   ],
   devtool: 'cheap-eval-module-source-map',
   /* TODO: enable */
   optimization: {
-    minimize: false
-  }
-}
+    minimize: false,
+  },
+};

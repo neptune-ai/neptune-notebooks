@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Jupyter from 'base/js/namespace'
+import Jupyter from 'base/js/namespace';
 
 import App from 'common/components/App';
 
@@ -22,6 +22,6 @@ function loadJupyterExtension() {
  */
 export default {
   load_jupyter_extension: loadJupyterExtension,
-  load_ipython_extension: loadJupyterExtension
-}
+  load_ipython_extension: loadJupyterExtension,
+};
 

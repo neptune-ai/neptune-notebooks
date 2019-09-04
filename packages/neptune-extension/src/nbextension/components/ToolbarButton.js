@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import $ from 'jquery';
+
 
 import NEPTUNE_LOGO_URL from 'common/assets/neptuneLogo';
 
@@ -38,7 +38,7 @@ const ToolbarButton = ({
    * Other props has to be set on target ref.
    */
   return ReactDOM.createPortal(content, target);
-}
+};
 
 export default ToolbarButton;
 

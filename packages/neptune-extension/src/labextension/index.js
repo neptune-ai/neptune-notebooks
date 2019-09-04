@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { DisposableDelegate } from '@phosphor/disposable';
-import { Widget } from '@phosphor/widgets'
+import { Widget } from '@phosphor/widgets';
 
 import App from 'common/components/App';
 
@@ -11,10 +11,11 @@ class Extension {
 
   constructor(app) {
     this.app = app;
+    // eslint-disable-next-line no-console
     console.log('Running neptune labextension...');
   }
 
-  createNew(panel, context) {
+  createNew(panel) {
     const widget = new Widget();
     widget.id = 'neptune-app-container';
 
@@ -25,7 +26,6 @@ class Extension {
     return new DisposableDelegate(() => {
       ReactDOM.unmountComponentAtNode(widget.node);
       widget.dispose();
-      resolve();
     });
   }
 }
@@ -35,6 +35,6 @@ export default {
   autoStart: true,
   activate: (app) => {
     app.docRegistry.addWidgetExtension('Notebook', new Extension(app));
-  }
-}
+  },
+};
 
