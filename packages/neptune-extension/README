@@ -11,7 +11,7 @@ Run `npm run start-nbextension` to build and put webpack in watch mode.
 
 Then you have to options:
  1. Create a symlink to "./dist/nbextension/neptune-notebook.js" from something
-    like this: "~/.local/share/jupyter/nbextensions/".
+    like this: "~/.local/share/jupyter/nbextensions/". Run `npm run build-nbextension`.
     Running `npm run install-nbextension` will create the filename and enable
     the extension.
  2. Edit the "../../setup.py" file and use python installer for hot-reload.

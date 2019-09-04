@@ -1,10 +1,12 @@
 import React from 'react';
 
+import './ToolbarWrapper.less';
+
 const ToolbarWrapper = ({
   children,
 }) => {
   return (
-    <div style={{ display: 'flex' }}>
+    <div className="toolbar-wrapper">
       { children }
     </div>
   );

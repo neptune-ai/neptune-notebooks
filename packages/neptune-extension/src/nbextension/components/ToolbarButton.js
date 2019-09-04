@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { bemBlock} from 'src/common/utils/bem';
 
+import './ToolbarButton.less';
 
-import NEPTUNE_LOGO_URL from 'common/assets/neptuneLogo';
+const block = bemBlock('toolbar-button');
 
 const ToolbarButton = ({
   target,
@@ -12,18 +14,25 @@ const ToolbarButton = ({
   visible = true,
 }) => {
 
+  target.classList.add(block());
+
   React.useEffect(() => {
-    target.style.display = visible ? 'block' : 'none';
+    const visibleClass = block({modifiers: {visible: true}}).split(' ')[1];
+
+    (visible)
+        ? target.classList.add( visibleClass )
+        : target.classList.remove( visibleClass );
+
   }, [visible]);
 
-  if (icon === 'neptune') {
-    React.useEffect(() => {
-      target.style.background = `${NEPTUNE_LOGO_URL} 7px 4px no-repeat`;
-      target.style.paddingLeft = '20px';
+  React.useEffect(() => {
+    const hasIconClass = block({modifiers: {icon: true}}).split(' ')[1];
 
-      target.querySelector('i').classList.remove('fa-check');
-    }, []);
-  }
+    (icon === 'neptune')
+        ? target.classList.add( hasIconClass )
+        : target.classList.remove( hasIconClass );
+
+  }, [icon]);
 
   if (compact) {
     return null;

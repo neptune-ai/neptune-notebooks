@@ -38,7 +38,7 @@ const App = ({
     <div id="neptune-app">
       <ToolbarWrapper>
         <ToolbarButton
-          label={'Configure'}
+          label="Configure"
           title="Connect to Neptune"
           icon="neptune"
           compact={initialized}
