@@ -16,7 +16,7 @@ class Extension {
     console.log('Running neptune labextension...');
   }
 
-  createNew(panel) {
+  createNew(panel, context) {
     const widget = new Widget();
     widget.id = 'neptune-app-container';
 

@@ -21,7 +21,7 @@ export function createPlatformNotebook(context, app) {
       path: context.path,
       name: null,
       notebookId,
-    }
+    };
   }
 
   function saveNotebookId(notebookId) {
