@@ -6,6 +6,7 @@ import { Widget } from '@phosphor/widgets';
 import App from 'common/components/App';
 
 import { findButtonIdx } from './utils/iterator';
+import { createPlatformNotebook } from './utils/notebook';
 
 class Extension {
 
@@ -21,7 +22,11 @@ class Extension {
 
     panel.toolbar.insertItem(findButtonIdx(panel), 'neptune:configure', widget);
 
-    ReactDOM.render(<App />, widget.node);
+    context.ready.then(() => {
+      const platformNotebook = createPlatformNotebook(context, this.app);
+
+      ReactDOM.render(<App platformNotebook={platformNotebook} />, widget.node);
+    });
 
     return new DisposableDelegate(() => {
       ReactDOM.unmountComponentAtNode(widget.node);
