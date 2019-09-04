@@ -40,13 +40,40 @@ module.exports = {
         ],
       },
       {
+        test: /\.less$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'postcss-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              javascriptEnabled: true,
+            },
+          },
+        ],
+      },
+      {
         test: /\.svg?$/,
         use: 'file-loader',
         include: [
-          path.resolve(__dirname, 'node_modules'),
+          path.resolve(__dirname, 'node_modules')
         ],
       },
-    ],
+      {
+        test: /\.svg?$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 8000, // Convert images < 8kb to base64 strings
+            name: 'images/[hash]-[name].[ext]'
+          }
+        }],
+        include: [
+          project.src.resolve()
+        ],
+      }
+    ]
   },
   resolve: {
     modules: ['src', 'node_modules'],
