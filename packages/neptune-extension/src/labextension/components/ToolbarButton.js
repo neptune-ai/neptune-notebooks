@@ -1,7 +1,7 @@
 import React from 'react';
-import { ToolbarButtonComponent } from "@jupyterlab/apputils";
+import { ToolbarButtonComponent } from '@jupyterlab/apputils';
 
-import NEPTUNE_LOGO_URL from 'common/assets/neptuneLogo';
+// import NEPTUNE_LOGO_URL from 'common/assets/neptuneLogo';
 
 const ToolbarButton = ({
   label,
@@ -16,9 +16,9 @@ const ToolbarButton = ({
   }
 
   /* TODO: add neptune logo. */
-  const style = icon === 'neptune'
-    ? { background: `${NEPTUNE_LOGO_URL} 1px 1px no-repeat`, paddingLeft: '18px' }
-    : undefined;
+  // const style = icon === 'neptune'
+  //   ? { background: `${NEPTUNE_LOGO_URL} 1px 1px no-repeat`, paddingLeft: '18px' }
+  //   : undefined;
 
   return (
     <ToolbarButtonComponent
@@ -28,7 +28,7 @@ const ToolbarButton = ({
       onClick={onClick}
     />
   );
-}
+};
 
 export default ToolbarButton;
 

@@ -1,3 +1,5 @@
+/* global IPython:readonly */
+
 import { get } from 'lodash';
 
 export function createPlatformNotebook() {
@@ -19,7 +21,7 @@ export function createPlatformNotebook() {
       path: notebook_path,
       name: notebook_name,
       notebookId,
-    }
+    };
   }
 
   function saveNotebookId(notebookId) {

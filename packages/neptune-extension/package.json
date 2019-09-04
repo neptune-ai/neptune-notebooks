@@ -16,7 +16,8 @@
     "start-nbextension": "webpack --watch --config webpack.nbextension.config.js",
     "start-labextension": "webpack --watch --config webpack.labextension.config.js",
     "install-nbextension": "jupyter nbextension install dist/nbextension/neptune-notebook.js --user && jupyter nbextension enable neptune-notebook --user",
-    "install-labextension": "jupyter labextension link ."
+    "install-labextension": "jupyter labextension link .",
+    "lint": "eslint *.js .*.js ./config ./src"
   },
   "dependencies": {
     "@jupyterlab/application": "^1.0.0",
@@ -26,6 +27,7 @@
     "@jupyterlab/running": "^1.0.0",
     "@jupyterlab/vdom": "^1.0.0-alpha.4",
     "@phosphor/disposable": "^1.1.2",
+    "@types/lodash": "^4.14.138",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "axios": "~0.19.0",
@@ -40,7 +42,11 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.3.3",
+    "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.0",
+    "eslint": "^6.3.0",
+    "eslint-loader": "^3.0.0",
+    "eslint-plugin-react": "^7.14.3",
     "file-loader": "^4.0.0",
     "typescript": "^3.6.2",
     "webpack": "^4.0.0",

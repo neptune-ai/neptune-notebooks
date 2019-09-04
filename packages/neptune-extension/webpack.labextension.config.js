@@ -1,6 +1,6 @@
 // Libs
-const webpack = require('webpack')
-const path = require('path')
+const webpack = require('webpack');
+const path = require('path');
 
 // Config
 const project = require('./config/project');
@@ -20,32 +20,40 @@ module.exports = {
     path: project.dist.resolve('labextension'),
     filename: 'neptune-notebook.js',
     libraryTarget: 'commonjs2',
-    libraryExport: 'default'
+    libraryExport: 'default',
   },
   module: {
     rules: [
       {
+        test: /\.(js|jsx)$/,
+        enforce: 'pre',
+        include: [
+          project.src.resolve(),
+        ],
+        use: ['eslint-loader'],
+      },
+      {
         test: /\.(js|jsx|ts|tsx)$/,
         use: 'babel-loader',
         include: [
-          project.src.resolve()
-        ]
+          project.src.resolve(),
+        ],
       },
       {
         test: /\.svg?$/,
         use: 'file-loader',
         include: [
-          path.resolve(__dirname, 'node_modules')
-        ]
-      }
-    ]
+          path.resolve(__dirname, 'node_modules'),
+        ],
+      },
+    ],
   },
   resolve: {
     modules: ['src', 'node_modules'],
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {
       src: project.src.resolve(),
-      'platform': path.resolve(__dirname, 'src/labextension')
+      'platform': project.src.resolve('labextension'),
     },
   },
   plugins: [
@@ -55,16 +63,16 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         /* TODO: change to 'production' or read from process. */
-        NODE_ENV: JSON.stringify('development')
-      }
+        NODE_ENV: JSON.stringify('development'),
+      },
     }),
     new webpack.DefinePlugin({
       'NEPTUNE_BUILD_DATE': JSON.stringify(new Date()),
-    })
+    }),
   ],
   devtool: 'eval-source-map',
   /* TODO: enable */
   optimization: {
-    minimize: false
-  }
-}
+    minimize: false,
+  },
+};

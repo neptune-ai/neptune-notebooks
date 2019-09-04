@@ -54,7 +54,7 @@ const App = ({
       </ToolbarWrapper>
     </div>
   );
-}
+};
 
 export default App;
 

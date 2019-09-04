@@ -1,3 +1,5 @@
+/* global Jupyter:readonly */
+
 import React from 'react';
 
 const ToolbarWrapper = ({
@@ -9,7 +11,7 @@ const ToolbarWrapper = ({
 
   if (group.current === null) {
 
-    const buttons = React.Children.map(children, (child, idx) => {
+    const buttons = React.Children.map(children, (child) => {
       return Jupyter.keyboard_manager.actions.register({
         help: child.props.title,
         icon: child.props.icon === 'neptune' ? 'fa-check' : child.props.icon,
@@ -28,7 +30,7 @@ const ToolbarWrapper = ({
       target: group.current[idx],
     });
   });
-}
+};
 
 export default ToolbarWrapper;
 
