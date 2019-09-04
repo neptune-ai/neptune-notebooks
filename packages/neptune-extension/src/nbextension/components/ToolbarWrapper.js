@@ -14,7 +14,7 @@ const ToolbarWrapper = ({
     const buttons = React.Children.map(children, (child) => {
       return Jupyter.keyboard_manager.actions.register({
         help: child.props.title,
-        icon: child.props.icon === 'neptune' ? 'fa-check' : child.props.icon,
+        icon: child.props.icon === 'neptune' ? undefined : child.props.icon,
         handler: child.props.onClick,
       });
     });

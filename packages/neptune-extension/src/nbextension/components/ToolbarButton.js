@@ -6,15 +6,20 @@ import './ToolbarButton.less';
 
 const block = bemBlock('toolbar-button');
 
+import { getIconClassNameArray } from 'common/utils/icon';
+
 const ToolbarButton = ({
   target,
   label,
   icon,
   compact,
   visible = true,
+  fetchStatus,
 }) => {
 
-  target.classList.add(block());
+  React.useEffect(() => {
+    target.classList.add(block());
+  }, []);
 
   React.useEffect(() => {
     const visibleClass = block({modifiers: {visible: true}}).split(' ')[1];
@@ -26,13 +31,15 @@ const ToolbarButton = ({
   }, [visible]);
 
   React.useEffect(() => {
-    const hasIconClass = block({modifiers: {icon: true}}).split(' ')[1];
+    const iconElement = target.querySelector('i');
+    const classNames = getIconClassNameArray(icon, fetchStatus);
 
-    (icon === 'neptune')
-        ? target.classList.add( hasIconClass )
-        : target.classList.remove( hasIconClass );
+    iconElement.classList.add(...classNames);
 
-  }, [icon]);
+    return () => {
+      iconElement.classList.remove(...classNames);
+    };
+  }, [fetchStatus]);
 
   if (compact) {
     return null;
