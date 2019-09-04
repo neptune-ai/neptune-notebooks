@@ -4,35 +4,56 @@ interface ToolbarWrapperProps {
   children: ReactElement[]
 }
 
+interface ToolbarWrapperRef {
+  targets: ChildNode[],
+  handlers: NbActionFunction[],
+}
+
 const ToolbarWrapper = ({
   children,
 }: ToolbarWrapperProps) => {
   /* We cannot embed button via react, so run custom initialization. */
 
-  const group = React.useRef<HTMLElement[]>();
+  const ref = React.useRef<ToolbarWrapperRef>();
 
-  if (group.current === undefined) {
+  if (ref.current === undefined) {
+    const actions : string[] = [];
 
-    const buttons = React.Children.map(children, (child) => {
-      return Jupyter.keyboard_manager.actions.register({
-        help: child.props.title,
-        icon: child.props.icon === 'neptune' ? 'fa-check' : child.props.icon,
-        handler: child.props.onClick,
-      });
+    ref.current = {
+      targets: [],
+      handlers: [],
+    }
+
+    React.Children.forEach(children, ({ props }, idx) => {
+      const current = ref.current as ToolbarWrapperRef;
+
+      const action = Jupyter.keyboard_manager.actions.register({
+        help: props.title,
+        icon: props.icon === 'neptune' ? 'fa-check' : props.icon,
+        handler: () => {
+          /* Make sure we call the latest onClick. */
+          current.handlers[idx]();
+        },
+      }, props.label);
+
+      actions.push(action);
+      current.handlers.push(props.onClick);
     });
 
-    const buttonGroup = Jupyter.toolbar.add_buttons_group(buttons);
+    const buttonGroup = Jupyter.toolbar.add_buttons_group(actions);
+    const childNodes = buttonGroup[0].querySelectorAll('button');
 
-    group.current = Array.from(
-      buttonGroup.find('button')
-    ) as any as HTMLElement[];
+    ref.current.targets.push(...Array.from(childNodes));
+  }
+  else {
+    ref.current.handlers = React.Children.map(children, ({ props }) => props.onClick);
   }
 
   return React.Children.map(children, (child, idx) => {
-    if (group.current) {
+    if (ref.current) {
       return React.cloneElement(child, {
         ...child.props,
-        target: group.current[idx],
+        target: ref.current.targets[idx],
       });
     }
   });
