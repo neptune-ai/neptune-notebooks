@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig",
+  "paths": {
+    "platform/*": [
+      "nbextension/*"
+    ]
+  }
+}
