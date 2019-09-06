@@ -72,9 +72,6 @@ module.exports = function ({ mode, platform, project }) {
        * Strip development code from react.
        */
       new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: mode,
-        },
         'NEPTUNE_BUILD_DATE': JSON.stringify(new Date()),
       }),
     ],

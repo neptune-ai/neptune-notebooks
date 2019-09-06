@@ -26,7 +26,7 @@ function validate(value, validValues, defaultValue) {
 
 
 module.exports = function (env, argv = {}) {
-  const mode = validate('dev' || env, MODES, DEFAULT_MODE);
+  const mode = validate(env, MODES, DEFAULT_MODE);
   const platform = validate(argv.platform, PLATFORMS);
 
   if (!platform) {
