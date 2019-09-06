@@ -11,7 +11,7 @@
     "check-types-lab": "tsc -p tsconfig.lab.json",
     "check-types-lab-watch": "npm run check-types-lab -- --watch",
     "check-types-nb": "tsc -p tsconfig.nb.json",
-    "check-types-nb-watch": "npm run check-types-nb --tsc --watch",
+    "check-types-nb-watch": "npm run check-types-nb -- --watch",
     "prebuild": "npm test",
     "build": "npm run build-lab && npm run build-nb",
     "prebuild-lab": "npm run check-types-lab",
