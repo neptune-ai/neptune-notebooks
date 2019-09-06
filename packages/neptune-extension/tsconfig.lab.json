@@ -1,8 +1,10 @@
 {
   "extends": "./tsconfig",
-  "paths": {
-    "platform/*": [
-      "labextension/*"
-    ]
+  "compilerOptions": {
+    "paths": {
+      "platform/*": [
+        "labextension/*"
+      ]
+    }
   }
 }
