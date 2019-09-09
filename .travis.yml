@@ -1,34 +1,46 @@
-sudo: false
-language: python
-python:
-- '2.7'
-- '3.5'
-- '3.6'
-cache:
-  pip: true
-  directories:
-  - "$HOME/.npm"
-install:
-- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
-- bash -c "source ~/.nvm/nvm.sh; nvm install 6"
-- make prepare
-- pip install tox-travis jupyter jupyterlab twine
-- python setup.py sdist && pip install -v .
-script:
-- make tests
-- jupyter nbextension list
-- jupyter nbextension enable --py --sys-prefix neptune-notebooks
-- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list; fi
-- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list 2>&1 | grep -q neptune-notebooks; fi
-- if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then cd packages/labextension && jupyter labextension link && cd ../..; fi
-deploy:
-- provider: script
-  script: bash scripts/deploy.sh
-  on:
-    tags: true
-  skip_cleanup: true
-env:
-  global:
-  - TWINE_USERNAME=neptune-deployer
-  - secure: BatFG4D4shyA0rXr0RjUn1vPoWU5+VObImS0u8oWWPg5hPEmZonREald93BxQOqD36BYnzgS7p9st5L6TfRCO30pBvRnBaGg92AB4u074cjyUD6+k6hF1HSXlaFn3Np1t/0G++FLXz1APqkIf4ZUkxYd8KcVdAvf46GBbHVJmNfQSI13d1K4KUzWCgN1zrHC19l/i4mDnhjrTDH+3HXPNyPnqZ0b7hMhLDoHWUOdQPBSDmYjCkH6jXQ9wfRF4kF0LnbC6gI0CXpsonmB0MJVPh2wAMi8JpPHaEAE+Oorpai6R1QtYIa7zEbIP6KaiBx2hzc1uE9Op2WL1ym4CYaAzqzPkUJZoQT2V3hQvPy2s9w3ojJfok/mc2tAS/QhM10PUZ866z5COXtlk7BB5tHgMzbhPe1nsP/3eAaCbKLI/f/cOFD2AgUcQFyMXV1Dl/n6OeX1+cHElXm6hD96vMkyGeoUzBacN6yQTG7TEe3PhfyuMhHlbTu8uAQCIkEztfeUESVKjwLVAd4cERH2dq5muX5INCB+N4SYIRVwB9XD8S/IUpVhWJTFM4zOJh5FayVA291gN2pQ558Q9buqa0Ga1G+Cmm/fmaeNIMiAafaG8wVstISfoPGsWwBAYNPpHOfjTSa3O487CdOV7Tdnx2fl7Gf9I+c4+novV8lvL1h19pE=
-  - secure: nBDL1xIm3QPi1KiioYsg9ckqNntxXczDGfmb2EvhgPQMAOYWcegjfGE1XZAjhE8gBIRpQ9tV5D/Ph7I+qgsEnJ0P+70lwVuEyzhx6A+hopIh6K/4e1kLIHtirJ9hAV3unmAD1ufdK0CTP2xuFeCO9IdWH1Lb5f5b8VXW86h+Wgl+b7/fc1DgenToSN7sFUpKjCnrdtaCaqF+wPNhwJ78oHYQqGdIW7v3lAO31o20VJOUXib5rTKuSRjSZ482ZVWKSl/t9j77LM3wKeLl0PwA6b01ZyTlrE6ztPpTzEdwHcfMwPahOfGZaFXJO4wUYwLNkonv9mTih9rm5Y/bv1RA9h4QkSi79Lc28p/m3H6HHTEOmTD6/PY1dR+QSw+pETJn7h6PvtOVzRwoCKe5WEmeBXo2UjctGEDNsFi28wiUQSGvjCKGaPYpBmrbdDypmV66mmapXhtkQhVfQhxgLurBbaaxWON+d2zUWMCR7igu7jM1YjpKq7crYAGE8QEK/58Ep+g/HQMKtvQCjnZb0UP/DhAC3yqQ5z8JX//K2fqz31qzlgfQKNqpN3CSjzvB1mTbNxZPmoV9HV3d1ou43p/3uvjilODBVELY0h2mC8rSkGre0KzOeUK18VBA4v8X99E+mbP//R82go98mz1lkXy+F+tIfA8jnos/05ffchEyGlc=
+matrix:
+  include:
+    - language: node_js
+      node_js:
+        - "6"
+      before_install:
+        - cd packages/neptune-extension
+      install:
+        - npm install
+      script:
+        - npm run build
+
+    - language: python
+      sudo: false
+      python:
+      - '2.7'
+      - '3.5'
+      - '3.6'
+      cache:
+        pip: true
+        directories:
+        - "$HOME/.npm"
+      env:
+        global:
+        - TWINE_USERNAME=neptune-deployer
+        - secure: BatFG4D4shyA0rXr0RjUn1vPoWU5+VObImS0u8oWWPg5hPEmZonREald93BxQOqD36BYnzgS7p9st5L6TfRCO30pBvRnBaGg92AB4u074cjyUD6+k6hF1HSXlaFn3Np1t/0G++FLXz1APqkIf4ZUkxYd8KcVdAvf46GBbHVJmNfQSI13d1K4KUzWCgN1zrHC19l/i4mDnhjrTDH+3HXPNyPnqZ0b7hMhLDoHWUOdQPBSDmYjCkH6jXQ9wfRF4kF0LnbC6gI0CXpsonmB0MJVPh2wAMi8JpPHaEAE+Oorpai6R1QtYIa7zEbIP6KaiBx2hzc1uE9Op2WL1ym4CYaAzqzPkUJZoQT2V3hQvPy2s9w3ojJfok/mc2tAS/QhM10PUZ866z5COXtlk7BB5tHgMzbhPe1nsP/3eAaCbKLI/f/cOFD2AgUcQFyMXV1Dl/n6OeX1+cHElXm6hD96vMkyGeoUzBacN6yQTG7TEe3PhfyuMhHlbTu8uAQCIkEztfeUESVKjwLVAd4cERH2dq5muX5INCB+N4SYIRVwB9XD8S/IUpVhWJTFM4zOJh5FayVA291gN2pQ558Q9buqa0Ga1G+Cmm/fmaeNIMiAafaG8wVstISfoPGsWwBAYNPpHOfjTSa3O487CdOV7Tdnx2fl7Gf9I+c4+novV8lvL1h19pE=
+        - secure: nBDL1xIm3QPi1KiioYsg9ckqNntxXczDGfmb2EvhgPQMAOYWcegjfGE1XZAjhE8gBIRpQ9tV5D/Ph7I+qgsEnJ0P+70lwVuEyzhx6A+hopIh6K/4e1kLIHtirJ9hAV3unmAD1ufdK0CTP2xuFeCO9IdWH1Lb5f5b8VXW86h+Wgl+b7/fc1DgenToSN7sFUpKjCnrdtaCaqF+wPNhwJ78oHYQqGdIW7v3lAO31o20VJOUXib5rTKuSRjSZ482ZVWKSl/t9j77LM3wKeLl0PwA6b01ZyTlrE6ztPpTzEdwHcfMwPahOfGZaFXJO4wUYwLNkonv9mTih9rm5Y/bv1RA9h4QkSi79Lc28p/m3H6HHTEOmTD6/PY1dR+QSw+pETJn7h6PvtOVzRwoCKe5WEmeBXo2UjctGEDNsFi28wiUQSGvjCKGaPYpBmrbdDypmV66mmapXhtkQhVfQhxgLurBbaaxWON+d2zUWMCR7igu7jM1YjpKq7crYAGE8QEK/58Ep+g/HQMKtvQCjnZb0UP/DhAC3yqQ5z8JX//K2fqz31qzlgfQKNqpN3CSjzvB1mTbNxZPmoV9HV3d1ou43p/3uvjilODBVELY0h2mC8rSkGre0KzOeUK18VBA4v8X99E+mbP//R82go98mz1lkXy+F+tIfA8jnos/05ffchEyGlc=
+      install:
+      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+      - bash -c "source ~/.nvm/nvm.sh; nvm install 6"
+      - make prepare
+      - pip install tox-travis jupyter jupyterlab twine
+      - python setup.py sdist && pip install -v .
+      script:
+      - make tests
+      - jupyter nbextension list
+      - jupyter nbextension enable --py --sys-prefix neptune-notebooks
+      - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list; fi
+      - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then jupyter labextension list 2>&1 | grep -q neptune-notebooks; fi
+      - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then cd packages/labextension && jupyter labextension link && cd ../..; fi
+      deploy:
+      - provider: script
+        script: bash scripts/deploy.sh
+        on:
+          tags: true
+        skip_cleanup: true
