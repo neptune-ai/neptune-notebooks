@@ -31,13 +31,6 @@
     "test": ""
   },
   "dependencies": {
-    "@jupyterlab/application": "^1.0.0",
-    "@jupyterlab/apputils": "^1.0.0",
-    "@jupyterlab/docregistry": "^1.0.0",
-    "@jupyterlab/notebook": "^1.0.0",
-    "@jupyterlab/running": "^1.0.0",
-    "@jupyterlab/vdom": "^1.0.0-alpha.4",
-    "@phosphor/disposable": "^1.1.2",
     "@types/jquery": "^3.3.31",
     "@types/lodash": "^4.14.138",
     "@types/react": "^16.9.2",
