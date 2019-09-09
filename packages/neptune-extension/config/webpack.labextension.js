@@ -15,7 +15,17 @@ module.exports = function ({ project }) {
       libraryTarget: 'commonjs2',
       libraryExport: 'default',
     },
-    // TODO: probably should be depenand of build mode
-    devtool: 'eval-source-map',
+    /*
+     * Important: This dependencies must be resolved on the platform and not
+     * bundled, otherwise plugin resolution will not work.
+     */
+    externals: [
+      /^@jupyterlab\/.+$/,
+      /^@phosphor\/.+$/,
+    ],
+    /*
+     * Be careful with devtool as this may break module resolution in jupyter lab.
+     */
+    devtool: 'none',
   };
 };
