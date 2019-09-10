@@ -3,33 +3,60 @@ import React from 'react';
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
 
-import {
-  getAccessToken,
-  createNotebook,
-  createCheckpoint,
-} from 'common/api/backend';
+import { leaderboardClient } from 'common/api/leaderboard-client';
 
 const App = ({
   platformNotebook,
 }) => {
+  /* TODO: local storage is only temporary. */
+  const projectIdentifier = window.localStorage.getItem('neptune_api_project');
 
   const [ metadata, setMetadata ] = React.useState(platformNotebook.getMetadata);
 
-  const handleConfigure = () => {
-    getAccessToken()
-      .then(() => Promise.all([ createNotebook(), platformNotebook.getContent() ]))
-      .then(([ { data: neptuneData }, notebookData ]) => {
-        createCheckpoint(neptuneData.id, notebookData, metadata.path)
-          /* metadata changed... */
-          .then(() => platformNotebook.saveNotebookId(neptuneData.id))
-          .then(() => setMetadata(platformNotebook.getMetadata()));
-      });
+  const handleConfigure = async () => {
+    if (!projectIdentifier) {
+      // todo remove this code when we have it handled in UI
+      // eslint-disable-next-line no-console
+      console.error('No project identifier in localStorage["neptune_api_project"]');
+      return;
+    }
+
+    const notebook = await leaderboardClient.api.createNotebook({ projectIdentifier });
+    const platformNotebookContent = await platformNotebook.getContent();
+
+    const checkpoint = await leaderboardClient.api.createCheckpoint2({
+      notebookId: notebook.id,
+      checkpoint: {
+        path: metadata.path,
+        // name, todo handle optional checkpoint name
+        // description, // todo handle optional checkpoint description
+      },
+    });
+
+    await leaderboardClient.api.uploadCheckpointContent({
+      id: checkpoint.id,
+      content: platformNotebookContent,
+    });
+
+    await platformNotebook.saveNotebookId(notebook.id);
+    setMetadata(platformNotebook.getMetadata());
   };
 
-  const handleUpload = () => {
-    getAccessToken()
-      .then(() => platformNotebook.getContent())
-      .then((notebookData) => createCheckpoint(metadata.notebookId, notebookData, metadata.path));
+  const handleUpload = async () => {
+    const notebookContent = await platformNotebook.getContent();
+    const checkpoint = await leaderboardClient.api.createCheckpoint2({
+      notebookId: metadata.notebookId,
+      checkpoint: {
+        path: metadata.path,
+        // name, // todo handle optional checkpoint name
+        // description, // todo handle optional checkpoint description
+      },
+    });
+
+    leaderboardClient.api.uploadCheckpointContent({
+      id: checkpoint.id,
+      content: notebookContent,
+    });
   };
 
   const initialized = !!window.localStorage.getItem('neptune_api_token') && !!metadata.notebookId;
