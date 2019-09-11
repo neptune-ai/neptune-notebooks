@@ -8,7 +8,7 @@
  */
 module.exports = function ({ project }) {
   return {
-    entry: project.src.resolve('labextension/index.js'),
+    entry: project.src.resolve('labextension/index.tsx'),
     output: {
       path: project.dist.resolve('labextension'),
       filename: 'neptune-notebook.js',
