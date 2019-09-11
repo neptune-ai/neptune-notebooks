@@ -2,21 +2,26 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { DisposableDelegate } from '@phosphor/disposable';
 import { Widget } from '@phosphor/widgets';
+import { JupyterLab } from "@jupyterlab/application";
+import {
+  INotebookModel,
+  NotebookPanel,
+} from "@jupyterlab/notebook";
+import { DocumentRegistry } from "@jupyterlab/docregistry";
 
 import App from 'common/components/App';
 
 import { findButtonIdx } from './utils/iterator';
 import { createPlatformNotebook } from './utils/notebook';
 
-class Extension {
+class Extension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
+  private readonly app: JupyterLab;
 
-  constructor(app) {
+  constructor(app: JupyterLab) {
     this.app = app;
-    // eslint-disable-next-line no-console
-    console.log('Running neptune labextension...');
   }
 
-  createNew(panel, context) {
+  createNew(panel: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>) {
     const widget = new Widget();
     widget.id = 'neptune-app-container';
 
@@ -24,7 +29,6 @@ class Extension {
 
     context.ready.then(() => {
       const platformNotebook = createPlatformNotebook(context, this.app);
-
       ReactDOM.render(<App platformNotebook={platformNotebook} />, widget.node);
     });
 
@@ -38,7 +42,7 @@ class Extension {
 export default {
   id: 'neptune-notebook',
   autoStart: true,
-  activate: (app) => {
+  activate: (app: JupyterLab) => {
     app.docRegistry.addWidgetExtension('Notebook', new Extension(app));
   },
 };
