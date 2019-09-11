@@ -32,7 +32,9 @@ Hint: The nbextension is an AMD module.
 Hint: The labextension is a standard npm package. Jupyter tools run "npm pack"
 by themselves during install.
 
+
 ## Generated code
+
 In order to properly build the extension you need to generate API clients from swagger files definitions.
 Use `npm run generate-api-clients` script.
 This script is also run after you install dependencies (as `postinstall` hook)
