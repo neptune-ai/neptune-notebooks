@@ -1,15 +1,17 @@
-/* global Jupyter:readonly */
+import React, {ReactElement} from 'react';
 
-import React from 'react';
+interface ToolbarWrapperProps {
+  children: ReactElement[]
+}
 
 const ToolbarWrapper = ({
   children,
-}) => {
+}: ToolbarWrapperProps) => {
   /* We cannot embed button via react, so run custom initialization. */
 
-  const group = React.useRef(null);
+  const group = React.useRef<HTMLElement[]>();
 
-  if (group.current === null) {
+  if (group.current === undefined) {
 
     const buttons = React.Children.map(children, (child) => {
       return Jupyter.keyboard_manager.actions.register({
@@ -21,16 +23,19 @@ const ToolbarWrapper = ({
 
     const buttonGroup = Jupyter.toolbar.add_buttons_group(buttons);
 
-    group.current = Array.from(buttonGroup.find('button'));
+    group.current = Array.from(
+      buttonGroup.find('button')
+    ) as any as HTMLElement[];
   }
 
   return React.Children.map(children, (child, idx) => {
-    return React.cloneElement(child, {
-      ...child.props,
-      target: group.current[idx],
-    });
+    if (group.current) {
+      return React.cloneElement(child, {
+        ...child.props,
+        target: group.current[idx],
+      });
+    }
   });
 };
 
 export default ToolbarWrapper;
-
