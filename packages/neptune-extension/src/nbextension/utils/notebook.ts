@@ -1,17 +1,15 @@
-/* global IPython:readonly */
-
 import { get } from 'lodash';
+import { PlatformNotebookMetadata } from 'types/platform';
 
 export function createPlatformNotebook() {
 
-  function getContent() {
-    return Promise.resolve(JSON.stringify(IPython.notebook.toJSON()));
+  function getContent(): Promise<string> {
+    return Promise.resolve(JSON.stringify(Jupyter.notebook.toJSON()));
   }
 
-  function getMetadata() {
-    const notebook = IPython.notebook;
+  function getMetadata(): PlatformNotebookMetadata {
+    const notebook = Jupyter.notebook;
     const {
-      notebook_name,
       notebook_path,
     } = notebook;
 
@@ -19,16 +17,15 @@ export function createPlatformNotebook() {
 
     return {
       path: notebook_path,
-      name: notebook_name,
       notebookId,
     };
   }
 
-  function saveNotebookId(notebookId) {
-    IPython.notebook.metadata.neptune = {
+  function saveNotebookId(notebookId: string) {
+    Jupyter.notebook.metadata.neptune = {
       notebookId,
     };
-    IPython.notebook.save_checkpoint();
+    Jupyter.notebook.save_checkpoint();
 
     return Promise.resolve();
   }

@@ -7,13 +7,6 @@ import jQuery = JQuery;
 
 declare const Jupyter: NbJupyter;
 
-/**
- * It seems that Jupyter and IPython are the same objects.
- * Jupyter source code says that IPython is deprecated and will be removed in the future.
- * @deprecated
- */
-declare const IPython = Jupyter;
-
 declare module 'base/js/namespace' {
   export default Jupyter;
 }
@@ -21,10 +14,39 @@ declare module 'base/js/namespace' {
 interface NbJupyter {
   keyboard_manager: NbKeyboardManager
   toolbar: NbToolbar
+  notebook: NbNotebook
 }
 
 interface NbKeyboardManager {
   actions: NbActions
+}
+
+interface NbNotebook {
+  config: NbConfig
+  notebook_name: string
+  notebook_path: string
+  metadata: NbMetadata
+  save_checkpoint: () => void
+  toJSON: () => NbNotebookJSON
+}
+
+interface NbConfig {
+  loaded: Promise<void>,
+}
+
+interface NbNotebookJSON {
+  cells: array
+  metadata: object
+  nbformat: number,
+  nbformat_minor: number,
+}
+
+interface NbMetadata {
+  neptune?: NbNeptuneMetadata
+}
+
+interface NbNeptuneMetadata {
+  notebookId?: string
 }
 
 interface NbActions {
