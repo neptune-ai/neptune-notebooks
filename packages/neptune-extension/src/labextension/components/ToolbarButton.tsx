@@ -2,18 +2,10 @@ import React from 'react';
 import { ToolbarButtonComponent } from '@jupyterlab/apputils';
 import { bemBlock } from 'common/utils/bem';
 
+import { ToolbarButtonProps } from "types/common-ui";
+
 import './ToolbarButton.less';
-
 const block = bemBlock('n-toolbar-button');
-
-interface ToolbarButtonProps {
-  compact: boolean
-  icon: string // maybe we should specify concrete strings of icons
-  label: string
-  title: string
-  visible: boolean
-  onClick: () => void
-}
 
 const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   compact,

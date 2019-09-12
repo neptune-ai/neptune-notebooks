@@ -1,12 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { bemBlock} from 'src/common/utils/bem';
+import { bemBlock } from 'common/utils/bem';
 
+import { ToolbarButtonProps } from "types/common-ui";
 import './ToolbarButton.less';
 
 const block = bemBlock('toolbar-button');
 
-const ToolbarButton = ({
+interface NBToolbarButtonProps {
+  target: HTMLButtonElement,
+}
+
+const ToolbarButton: React.FC<ToolbarButtonProps & NBToolbarButtonProps> = ({
   target,
   label,
   icon,
@@ -50,4 +55,3 @@ const ToolbarButton = ({
 };
 
 export default ToolbarButton;
-
