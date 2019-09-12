@@ -42,7 +42,7 @@ module.exports = function ({ project }) {
      * Dependencies not specified here will be resolved and bundled.
      */
     externals: {
-      jquery: 'jquery',
+      jquery: 'jQuery',
       'base/js/namespace': 'base/js/namespace',
       'base/js/events': 'base/js/events',
       'base/js/dialog': 'base/js/dialog',
