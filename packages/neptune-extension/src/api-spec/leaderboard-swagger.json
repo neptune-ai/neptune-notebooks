@@ -939,7 +939,7 @@
     "/api/leaderboard/v1/notebooks/{notebookId}/checkpoints2" : {
       "post" : {
         "summary" : "Create checkpoint",
-        "operationId" : "createCheckpoint2",
+        "operationId" : "createEmptyCheckpoint",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {

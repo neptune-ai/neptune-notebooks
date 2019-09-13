@@ -53,7 +53,7 @@ const App: React.FC<AppProps> = ({
     }
 
     const notebookContent = await platformNotebook.getContent();
-    const checkpoint = await leaderboardClient.api.createCheckpoint2({
+    const checkpoint = await leaderboardClient.api.createEmptyCheckpoint({
       notebookId: metadata.notebookId,
       checkpoint: {
         path: metadata.path,
