@@ -21,13 +21,13 @@ class Notebook implements PlatformNotebook {
     this.app = app;
   };
 
-  getContent = async () => {
+  async getContent() {
     const file = await this.app.serviceManager.contents.get(this.context.path, { content: true });
 
-    return JSON.stringify(file.content);
+    return file.content;
   };
 
-  getMetadata = () => {
+  getMetadata() {
     const neptuneMetadata = this.context.model.metadata.get('neptune');
     const notebookId = get(neptuneMetadata, 'notebookId');
 
@@ -37,7 +37,7 @@ class Notebook implements PlatformNotebook {
     };
   };
 
-  saveNotebookId = (notebookId: string) => {
+  async saveNotebookId(notebookId: string) {
     const metadata = this.context.model.metadata;
 
     const neptuneMetadata = metadata.has('neptune')

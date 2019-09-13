@@ -5,8 +5,8 @@ import {
 
 
 class Notebook implements PlatformNotebook {
-  getContent() {
-    return Promise.resolve(JSON.stringify(Jupyter.notebook.toJSON()));
+  async getContent() {
+    return Jupyter.notebook.toJSON();
   }
 
   getMetadata() {

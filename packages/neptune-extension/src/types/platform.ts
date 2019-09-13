@@ -1,10 +1,10 @@
 export interface PlatformNotebookMetadata {
-  path?: string
+  path: string
   notebookId?: string
 }
 
 export interface PlatformNotebook {
-  getContent: () => Promise<string>
+  getContent: () => Promise<any>
   getMetadata: () => PlatformNotebookMetadata
-  saveNotebookId: (notebookId:string) => Promise<void>
+  saveNotebookId: (notebookId: string) => Promise<void>
 }

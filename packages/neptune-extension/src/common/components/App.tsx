@@ -32,7 +32,7 @@ const App: React.FC<AppProps> = ({
     const checkpoint = await leaderboardClient.api.createCheckpoint2({
       notebookId: notebook.id,
       checkpoint: {
-        path: metadata.path || '',
+        path: metadata.path,
         // name, todo handle optional checkpoint name
         // description, // todo handle optional checkpoint description
       },
@@ -48,11 +48,15 @@ const App: React.FC<AppProps> = ({
   };
 
   const handleUpload = async () => {
+    if (!metadata.notebookId) {
+      return;
+    }
+
     const notebookContent = await platformNotebook.getContent();
     const checkpoint = await leaderboardClient.api.createCheckpoint2({
-      notebookId: metadata.notebookId || '',
+      notebookId: metadata.notebookId,
       checkpoint: {
-        path: metadata.path || '',
+        path: metadata.path,
         // name, // todo handle optional checkpoint name
         // description, // todo handle optional checkpoint description
       },
