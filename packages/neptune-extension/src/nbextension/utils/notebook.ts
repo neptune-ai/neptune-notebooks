@@ -1,13 +1,15 @@
 import { get } from 'lodash';
-import { PlatformNotebookMetadata } from 'types/platform';
+import {
+  PlatformNotebook,
+} from 'types/platform';
 
-export function createPlatformNotebook() {
 
-  function getContent(): Promise<string> {
+class Notebook implements PlatformNotebook {
+  getContent() {
     return Promise.resolve(JSON.stringify(Jupyter.notebook.toJSON()));
   }
 
-  function getMetadata(): PlatformNotebookMetadata {
+  getMetadata() {
     const notebook = Jupyter.notebook;
     const {
       notebook_path,
@@ -21,7 +23,7 @@ export function createPlatformNotebook() {
     };
   }
 
-  function saveNotebookId(notebookId: string) {
+  saveNotebookId(notebookId: string) {
     Jupyter.notebook.metadata.neptune = {
       notebookId,
     };
@@ -29,11 +31,7 @@ export function createPlatformNotebook() {
 
     return Promise.resolve();
   }
-
-  return {
-    getContent,
-    getMetadata,
-    saveNotebookId,
-  };
 }
+
+export default Notebook;
 

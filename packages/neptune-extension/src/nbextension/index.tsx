@@ -4,13 +4,13 @@ import Jupyter from 'base/js/namespace';
 
 import App from 'common/components/App';
 
-import { createPlatformNotebook } from './utils/notebook';
+import Notebook from './utils/notebook';
 
 function initializeExtension() {
   const container = document.createElement('div');
   document.body.appendChild(container);
 
-  const platformNotebook = createPlatformNotebook();
+  const platformNotebook = new Notebook();
 
   ReactDOM.render(<App platformNotebook={platformNotebook} />, container);
 }

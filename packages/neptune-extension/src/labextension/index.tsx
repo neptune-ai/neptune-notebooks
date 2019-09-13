@@ -12,7 +12,7 @@ import { DocumentRegistry } from "@jupyterlab/docregistry";
 import App from 'common/components/App';
 
 import { findButtonIdx } from './utils/iterator';
-import { createPlatformNotebook } from './utils/notebook';
+import Notebook from './utils/notebook';
 
 class Extension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
   private readonly app: JupyterLab;
@@ -28,7 +28,7 @@ class Extension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INot
     panel.toolbar.insertItem(findButtonIdx(panel), 'neptune:configure', widget);
 
     context.ready.then(() => {
-      const platformNotebook = createPlatformNotebook(context, this.app);
+      const platformNotebook = new Notebook(context, this.app);
       ReactDOM.render(<App platformNotebook={platformNotebook} />, widget.node);
     });
 

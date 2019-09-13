@@ -2,10 +2,15 @@ import React from 'react';
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
+import { PlatformNotebook } from 'types/platform';
 
 import { leaderboardClient } from 'common/api/leaderboard-client';
 
-const App = ({
+interface AppProps {
+  platformNotebook: PlatformNotebook
+}
+
+const App: React.FC<AppProps> = ({
   platformNotebook,
 }) => {
   /* TODO: local storage is only temporary. */
@@ -27,7 +32,7 @@ const App = ({
     const checkpoint = await leaderboardClient.api.createCheckpoint2({
       notebookId: notebook.id,
       checkpoint: {
-        path: metadata.path,
+        path: metadata.path || '',
         // name, todo handle optional checkpoint name
         // description, // todo handle optional checkpoint description
       },
@@ -45,9 +50,9 @@ const App = ({
   const handleUpload = async () => {
     const notebookContent = await platformNotebook.getContent();
     const checkpoint = await leaderboardClient.api.createCheckpoint2({
-      notebookId: metadata.notebookId,
+      notebookId: metadata.notebookId || '',
       checkpoint: {
-        path: metadata.path,
+        path: metadata.path || '',
         // name, // todo handle optional checkpoint name
         // description, // todo handle optional checkpoint description
       },

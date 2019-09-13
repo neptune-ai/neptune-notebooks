@@ -8,7 +8,7 @@ import './ToolbarButton.less';
 const block = bemBlock('toolbar-button');
 
 interface NBToolbarButtonProps {
-  target: HTMLButtonElement,
+  target?: HTMLButtonElement,
 }
 
 const ToolbarButton: React.FC<ToolbarButtonProps & NBToolbarButtonProps> = ({
@@ -18,6 +18,9 @@ const ToolbarButton: React.FC<ToolbarButtonProps & NBToolbarButtonProps> = ({
   compact,
   visible = true,
 }) => {
+  if (!target) {
+    return null;
+  }
 
   target.classList.add(block());
 
