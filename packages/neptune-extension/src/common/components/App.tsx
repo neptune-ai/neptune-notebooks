@@ -6,6 +6,8 @@ import { PlatformNotebook } from 'types/platform';
 
 import { leaderboardClient } from 'common/api/leaderboard-client';
 
+import Modal from 'common/components/Modal';
+
 interface AppProps {
   platformNotebook: PlatformNotebook
 }
@@ -16,7 +18,9 @@ const App: React.FC<AppProps> = ({
   /* TODO: local storage is only temporary. */
   const projectIdentifier = window.localStorage.getItem('neptune_api_project');
 
-  const [ metadata, setMetadata ] = React.useState(platformNotebook.getMetadata);
+  const [ metadata, setMetadata ] = React.useState(() => platformNotebook.getMetadata());
+
+  const [ open, setOpen ] = React.useState(true);
 
   const handleConfigure = async () => {
     if (!projectIdentifier) {
@@ -88,6 +92,13 @@ const App: React.FC<AppProps> = ({
           onClick={handleUpload}
         />
       </ToolbarWrapper>
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+      >
+        Welcome to Neptune!
+        <input />
+      </Modal>
     </div>
   );
 };
