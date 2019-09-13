@@ -15,11 +15,12 @@ This will also generate API clients. See [generated code](#generated-code) secti
 
 Run `npm run start-nb` to build and put webpack in watch mode.
 
-Create a symlink to `./dist/nbextension/neptune-notebook.js` from something like this:
+Create a symlink to `dist/nbextension/neptune-notebook.js` from something like this:
 
 * Unix `~/.local/share/jupyter/nbextensions/`.
 * Mac OS `~/Library/Jupyter/nbextensions/`
 
+Make sure that symlink is not relative.
 Hint: The nbextension is an AMD module.
 
 
