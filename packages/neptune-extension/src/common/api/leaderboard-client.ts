@@ -3,21 +3,39 @@ import {
   DefaultApi,
   UploadCheckpointContentRequest,
 } from 'generated/leaderboard-client/src';
+import * as runtime from "generated/leaderboard-client/src/runtime";
 
 import { getBasePath } from "./auth";
 import { updateTokenMiddleware } from "./update-token-middleware";
 
-interface UploadCheckpointContentRequestExtended extends UploadCheckpointContentRequest{
-  content: string
+interface UploadCheckpointContentRequestExtended extends UploadCheckpointContentRequest {
+  content: any
 }
 
 class LeaderboardApi extends DefaultApi {
+  /**
+   * This method is overridden because notebook content is sent as octet-stream and in such case there is no
+   * possibility to specify body of such request in swagger v2.
+   * Most of the code is copied from original method. Only Content-Type header and body was added.
+   */
   async uploadCheckpointContent(requestParameters: UploadCheckpointContentRequestExtended): Promise<void> {
-    // todo reimplement it using this.request because checkpoint content is not specified in swagger
-    // backend guys do the same in neptune-client codebase
+    if (requestParameters.id === null || requestParameters.id === undefined) {
+      throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling uploadCheckpointContent.');
+    }
 
-    console.error('uploadCheckpointContent not implemented yet', requestParameters);
-    return Promise.resolve();
+    const queryParameters: runtime.HTTPQuery = {};
+
+    const headerParameters: runtime.HTTPHeaders = {
+      'Content-Type': 'application/octet-stream',
+    };
+
+    this.request({
+      path: `/api/leaderboard/v1/notebooks/checkpoints/{id}/content`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+      method: 'POST',
+      headers: headerParameters,
+      query: queryParameters,
+      body: requestParameters.content
+    });
   }
 }
 
