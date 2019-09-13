@@ -3,35 +3,42 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { INotebookModel } from '@jupyterlab/notebook';
 
 import { get } from 'lodash';
-import { PlatformNotebookMetadata } from 'types/platform';
+import { PlatformNotebook } from "types/platform";
 
 interface NeptuneContextMetadata {
   notebookId?: string
 }
 
-export function createPlatformNotebook(
-  context: DocumentRegistry.IContext<INotebookModel>,
-  app: JupyterLab,
-) {
+class Notebook implements PlatformNotebook {
+  context: DocumentRegistry.IContext<INotebookModel>;
+  app: JupyterLab;
 
-  async function getContent(): Promise<string> {
-    const file = await app.serviceManager.contents.get(context.path, { content: true });
+  constructor(
+    context: DocumentRegistry.IContext<INotebookModel>,
+    app: JupyterLab,
+  ) {
+    this.context = context;
+    this.app = app;
+  };
 
-    return JSON.stringify(file.content);
-  }
+  async getContent() {
+    const file = await this.app.serviceManager.contents.get(this.context.path, { content: true });
 
-  function getMetadata(): PlatformNotebookMetadata {
-    const neptuneMetadata = context.model.metadata.get('neptune');
+    return file.content;
+  };
+
+  getMetadata() {
+    const neptuneMetadata = this.context.model.metadata.get('neptune');
     const notebookId = get(neptuneMetadata, 'notebookId');
 
     return {
-      path: context.path,
+      path: this.context.path,
       notebookId,
     };
-  }
+  };
 
-  function saveNotebookId(notebookId: string) {
-    const metadata = context.model.metadata;
+  async saveNotebookId(notebookId: string) {
+    const metadata = this.context.model.metadata;
 
     const neptuneMetadata = metadata.has('neptune')
       ? metadata.get('neptune') as NeptuneContextMetadata
@@ -39,12 +46,8 @@ export function createPlatformNotebook(
 
     metadata.set('neptune', { ...neptuneMetadata, notebookId });
 
-    return context.save();
-  }
-
-  return {
-    getContent,
-    getMetadata,
-    saveNotebookId,
+    return this.context.save();
   };
 }
+
+export default Notebook

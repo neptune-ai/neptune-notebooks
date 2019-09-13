@@ -2,10 +2,15 @@ import React from 'react';
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
+import { PlatformNotebook } from 'types/platform';
 
 import { leaderboardClient } from 'common/api/leaderboard-client';
 
-const App = ({
+interface AppProps {
+  platformNotebook: PlatformNotebook
+}
+
+const App: React.FC<AppProps> = ({
   platformNotebook,
 }) => {
   /* TODO: local storage is only temporary. */
@@ -43,6 +48,10 @@ const App = ({
   };
 
   const handleUpload = async () => {
+    if (!metadata.notebookId) {
+      return;
+    }
+
     const notebookContent = await platformNotebook.getContent();
     const checkpoint = await leaderboardClient.api.createCheckpoint2({
       notebookId: metadata.notebookId,

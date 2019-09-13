@@ -48,15 +48,20 @@ const ToolbarWrapper = ({
   else {
     ref.current.handlers = React.Children.map(children, ({ props }) => props.onClick);
   }
-
-  return React.Children.map(children, (child, idx) => {
-    if (ref.current) {
-      return React.cloneElement(child, {
-        ...child.props,
-        target: ref.current.targets[idx],
-      });
-    }
-  });
+  return (
+    <React.Fragment>
+      {
+        React.Children.map(children, (child, idx) => {
+          if (ref.current) {
+            return React.cloneElement(child, {
+              ...child.props,
+              target: ref.current.targets[idx],
+            });
+          }
+        })
+      }
+    </React.Fragment>
+  );
 };
 
 export default ToolbarWrapper;

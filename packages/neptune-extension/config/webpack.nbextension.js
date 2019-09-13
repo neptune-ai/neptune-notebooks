@@ -20,7 +20,7 @@
  */
 module.exports = function ({ project }) {
   return {
-    entry: project.src.resolve('nbextension/index.js'),
+    entry: project.src.resolve('nbextension/index.tsx'),
     output: {
       path: project.dist.resolve('nbextension'),
       filename: 'neptune-notebook.js',
