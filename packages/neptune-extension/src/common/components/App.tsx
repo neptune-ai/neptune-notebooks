@@ -29,7 +29,7 @@ const App: React.FC<AppProps> = ({
     const notebook = await leaderboardClient.api.createNotebook({ projectIdentifier });
     const platformNotebookContent = await platformNotebook.getContent();
 
-    const checkpoint = await leaderboardClient.api.createCheckpoint2({
+    const checkpoint = await leaderboardClient.api.createEmptyCheckpoint({
       notebookId: notebook.id,
       checkpoint: {
         path: metadata.path,
