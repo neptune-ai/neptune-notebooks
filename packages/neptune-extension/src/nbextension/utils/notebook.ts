@@ -23,13 +23,11 @@ class Notebook implements PlatformNotebook {
     };
   }
 
-  saveNotebookId(notebookId: string) {
+  async saveNotebookId(notebookId: string) {
     Jupyter.notebook.metadata.neptune = {
       notebookId,
     };
     Jupyter.notebook.save_checkpoint();
-
-    return Promise.resolve();
   }
 }
 
