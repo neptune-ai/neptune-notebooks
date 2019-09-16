@@ -1,8 +1,10 @@
 import React from 'react';
+import { Provider } from 'react-redux'
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
 import { PlatformNotebook } from 'types/platform';
+import configure from 'common/state/store';
 
 import { leaderboardClient } from 'common/api/leaderboard-client';
 
@@ -11,6 +13,8 @@ import Modal from 'common/components/Modal';
 interface AppProps {
   platformNotebook: PlatformNotebook
 }
+
+const store = configure();
 
 const App: React.FC<AppProps> = ({
   platformNotebook,
@@ -75,23 +79,24 @@ const App: React.FC<AppProps> = ({
   const initialized = !!window.localStorage.getItem('neptune_api_token') && !!metadata.notebookId;
 
   return (
-    <div id="neptune-app">
-      <ToolbarWrapper>
-        <ToolbarButton
-          label="Configure"
-          title="Connect to Neptune"
-          icon="neptune"
-          compact={initialized}
-          onClick={handleConfigure}
-        />
-        <ToolbarButton
-          label="Upload"
-          title="Upload to Neptune"
-          icon="fa-cloud-upload"
-          visible={initialized}
-          onClick={handleUpload}
-        />
-      </ToolbarWrapper>
+    <Provider store={store}>
+      <div id="neptune-app">
+        <ToolbarWrapper>
+          <ToolbarButton
+            label="Configure"
+            title="Connect to Neptune"
+            icon="neptune"
+            compact={initialized}
+            onClick={handleConfigure}
+          />
+          <ToolbarButton
+            label="Upload"
+            title="Upload to Neptune"
+            icon="fa-cloud-upload"
+            visible={initialized}
+            onClick={handleUpload}
+          />
+        </ToolbarWrapper>
       <Modal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -99,7 +104,8 @@ const App: React.FC<AppProps> = ({
         Welcome to Neptune!
         <input />
       </Modal>
-    </div>
+      </div>
+    </Provider>
   );
 };
 
