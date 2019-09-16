@@ -16,7 +16,7 @@ const App: React.FC<AppProps> = ({
   /* TODO: local storage is only temporary. */
   const projectIdentifier = window.localStorage.getItem('neptune_api_project');
 
-  const [ metadata, setMetadata ] = React.useState(platformNotebook.getMetadata);
+  const [ metadata, setMetadata ] = React.useState(() => platformNotebook.getMetadata());
 
   const handleConfigure = async () => {
     if (!projectIdentifier) {
