@@ -9,6 +9,12 @@ import { createNeptuneMessageHandler } from 'common/hooks/neptuneComm';
 import {getConfigurationState} from 'common//state/configuration/selectors';
 import {validateGlobalApiToken} from 'common/hooks/auth';
 
+import { NotebookDTO } from 'generated/leaderboard-client/src/models';
+
+import { loadInitialNotebook } from 'common/hooks/notebook';
+import { getNotebookState } from 'common/state/notebook/selectors'
+
+import UploadModal from 'common/components/upload-modal/UploadModal';
 
 export interface AppProps {
   platformNotebook: PlatformNotebook
@@ -22,18 +28,18 @@ const App: React.FC<AppProps> = ({
 
   validateGlobalApiToken();
 
+  loadInitialNotebook(platformNotebook);
+
   const {
     isApiTokenValid,
   } = useSelector(getConfigurationState);
 
   const [ configureModalOpen, setConfigureModalOpen ] = React.useState(false);
+  const [ uploadModalOpen, setUploadModalOpen ] = React.useState(false);
 
   const handleConfigure = () => setConfigureModalOpen(true);
 
-  const handleUpload = async () => {
-    // eslint-disable-next-line no-console
-    console.debug('@implement me');
-  };
+  const { loaded: notebookLoaded } = useSelector(getNotebookState);
 
   return (
     <div id="neptune-app">
@@ -49,13 +55,20 @@ const App: React.FC<AppProps> = ({
           label="Upload"
           title="Upload to Neptune"
           icon="fa-cloud-upload"
-          visible={isApiTokenValid}
-          onClick={handleUpload}
+          visible={isApiTokenValid && notebookLoaded}
+          onClick={() => setUploadModalOpen(true)}
         />
       </ToolbarWrapper>
       {configureModalOpen && (
         <ConfigureModal
           onClose={() => setConfigureModalOpen(false)}
+        />
+      )}
+
+      { uploadModalOpen && (
+        <UploadModal
+          platformNotebook={platformNotebook}
+          onClose={() => setUploadModalOpen(false)}
         />
       )}
     </div>
