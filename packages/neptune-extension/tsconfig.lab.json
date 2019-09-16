@@ -6,5 +6,8 @@
         "labextension/*"
       ]
     }
-  }
+  },
+  "exclude": [
+    "src/nbextension"
+  ]
 }
