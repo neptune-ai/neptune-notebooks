@@ -2,6 +2,7 @@ import React from 'react';
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
+import Input from 'common/components/input/Input';
 import { PlatformNotebook } from 'types/platform';
 
 import { leaderboardClient } from 'common/api/leaderboard-client';
@@ -88,6 +89,7 @@ const App: React.FC<AppProps> = ({
           onClick={handleUpload}
         />
       </ToolbarWrapper>
+      <Input value="for test only" error />
     </div>
   );
 };

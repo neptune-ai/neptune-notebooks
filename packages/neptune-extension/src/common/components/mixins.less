@@ -1,0 +1,31 @@
+@import '~src/common/components/variables.less';
+
+.neptune-input() {
+  // reset
+  outline: none;
+
+  background-color: @white;
+  border: 1px solid @grey-cc;
+  color: @text-color;
+  line-height: 22px;
+  font-size: @fs-xs;
+  font-weight: @fw-regular;
+  border-radius: @layoutUnit-xs;
+
+  padding: 0 @layoutUnit-xs;
+  height: 22px;
+
+  &--disabled {
+    border-color: @grey-disabled;
+    background-color: @grey-disabled;
+  }
+
+  &--error {
+    border: 1px solid @input-error-border;
+    background-color: @input-error-bg;
+
+    &:hover {
+      background-color: @white;
+    }
+  }
+}
