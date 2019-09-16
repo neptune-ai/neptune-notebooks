@@ -14,6 +14,8 @@ interface AppProps {
   platformNotebook: PlatformNotebook
 }
 
+const store = configure();
+
 const App: React.FC<AppProps> = ({
   platformNotebook,
 }) => {
@@ -75,7 +77,6 @@ const App: React.FC<AppProps> = ({
   };
 
   const initialized = !!window.localStorage.getItem('neptune_api_token') && !!metadata.notebookId;
-  const store = configure();
 
   return (
     <Provider store={store}>
