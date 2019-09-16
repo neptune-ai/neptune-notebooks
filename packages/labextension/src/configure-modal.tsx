@@ -1,23 +1,13 @@
 import * as React from 'react';
-import { ChangeEvent } from 'react';
+import {ChangeEvent} from 'react';
 import * as ReactModal from 'react-modal';
-import { UnControlled as CodeMirror } from 'react-codemirror2';
+import {UnControlled as CodeMirror} from 'react-codemirror2';
 import 'codemirror/mode/python/python';
 
-import {
-  NeptuneConnection,
-  INeptuneConnectionParams,
-  INeptuneNotebook
-} from './connection';
-import { NeptuneContent } from './content';
-import {
-  UploadDialog,
-  STRATEGY,
-} from './upload';
-import {
-  NeptuneSession,
-  getInitializationCode
-} from './kernel';
+import {INeptuneConnectionParams, INeptuneNotebook, NeptuneConnection} from './connection';
+import {NeptuneContent} from './content';
+import {STRATEGY, UploadDialog,} from './upload';
+import {getInitializationCode, NeptuneSession} from './kernel';
 import '../style/configure-modal.css';
 import {Dialog, showDialog} from "@jupyterlab/apputils";
 
@@ -306,7 +296,9 @@ export class ConfigureModal extends React.Component<IConfigureModal, IConfigureM
       apiToken,
       project: selectedProject,
       notebookId
-    });
+      },
+      this.content.getNotebookPath()
+    );
 
     return (
       <React.Fragment>

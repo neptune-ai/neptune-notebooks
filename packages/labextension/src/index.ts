@@ -1,28 +1,15 @@
-import {
-  IDisposable,
-  DisposableDelegate
-} from '@phosphor/disposable';
-import {
-  JupyterLab,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
-import { DocumentRegistry } from '@jupyterlab/docregistry';
-import {
-  NotebookPanel,
-  INotebookModel
-} from '@jupyterlab/notebook';
-import { ReactWidget } from '@jupyterlab/apputils';
+import {DisposableDelegate, IDisposable} from '@phosphor/disposable';
+import {JupyterFrontEndPlugin, JupyterLab} from '@jupyterlab/application';
+import {DocumentRegistry} from '@jupyterlab/docregistry';
+import {INotebookModel, NotebookPanel} from '@jupyterlab/notebook';
+import {ReactWidget} from '@jupyterlab/apputils';
 
-import { NeptuneContent } from './content';
-import { NeptuneSession } from './kernel';
-import {
-  createConnection,
-  createEmptyConnection,
-  getGlobalApiToken
-} from './connection';
+import {NeptuneContent} from './content';
+import {NeptuneSession} from './kernel';
+import {createConnection, createEmptyConnection, getGlobalApiToken} from './connection';
 
-import { NeptuneConfigureButton } from './configure-button';
-import { NeptuneUploadButton } from './upload';
+import {NeptuneConfigureButton} from './configure-button';
+import {NeptuneUploadButton} from './upload';
 
 
 /**
@@ -50,7 +37,7 @@ export class NeptuneNotebookExtension implements DocumentRegistry.IWidgetExtensi
     }
 
     let content = new NeptuneContent(context, this.app.serviceManager.contents);
-    let session = new NeptuneSession(context.session);
+    let session = new NeptuneSession(context.session, content);
 
     let buttonsPromise = content
       .getMetadata()
