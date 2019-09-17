@@ -34,6 +34,10 @@ class Notebook implements PlatformNotebook {
     Jupyter.notebook.save_checkpoint();
   }
 
+  executeKernelCode(code: string) {
+    Jupyter.notebook.kernel.execute(code);
+  }
+
   async registerNeptuneMessageListener(callback: (msg: NeptuneClientMsg) => void) {
     Jupyter.notebook.kernel.comm_manager.register_target(
       'neptune_comm',
