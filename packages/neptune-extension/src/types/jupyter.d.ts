@@ -19,6 +19,9 @@ interface NbJupyter {
 
 interface NbKeyboardManager {
   actions: NbActions
+  enable: () => void
+  disable: () => void
+  command_mode: () => void
 }
 
 interface NbNotebook {

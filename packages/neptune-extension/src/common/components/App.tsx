@@ -1,15 +1,21 @@
 import React from 'react';
+import { Provider } from 'react-redux'
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
 import Input from 'common/components/input/Input';
 import { PlatformNotebook } from 'types/platform';
+import configure from 'common/state/store';
 
 import { leaderboardClient } from 'common/api/leaderboard-client';
+
+import Modal from 'common/components/Modal';
 
 interface AppProps {
   platformNotebook: PlatformNotebook
 }
+
+const store = configure();
 
 const App: React.FC<AppProps> = ({
   platformNotebook,
@@ -17,7 +23,9 @@ const App: React.FC<AppProps> = ({
   /* TODO: local storage is only temporary. */
   const projectIdentifier = window.localStorage.getItem('neptune_api_project');
 
-  const [ metadata, setMetadata ] = React.useState(platformNotebook.getMetadata);
+  const [ metadata, setMetadata ] = React.useState(() => platformNotebook.getMetadata());
+
+  const [ open, setOpen ] = React.useState(true);
 
   const handleConfigure = async () => {
     if (!projectIdentifier) {
@@ -72,25 +80,33 @@ const App: React.FC<AppProps> = ({
   const initialized = !!window.localStorage.getItem('neptune_api_token') && !!metadata.notebookId;
 
   return (
-    <div id="neptune-app">
-      <ToolbarWrapper>
-        <ToolbarButton
-          label="Configure"
-          title="Connect to Neptune"
-          icon="neptune"
-          compact={initialized}
-          onClick={handleConfigure}
-        />
-        <ToolbarButton
-          label="Upload"
-          title="Upload to Neptune"
-          icon="fa-cloud-upload"
-          visible={initialized}
-          onClick={handleUpload}
-        />
-      </ToolbarWrapper>
-      <Input value="for test only" error />
-    </div>
+    <Provider store={store}>
+      <div id="neptune-app">
+        <ToolbarWrapper>
+          <ToolbarButton
+            label="Configure"
+            title="Connect to Neptune"
+            icon="neptune"
+            compact={initialized}
+            onClick={handleConfigure}
+          />
+          <ToolbarButton
+            label="Upload"
+            title="Upload to Neptune"
+            icon="fa-cloud-upload"
+            visible={initialized}
+            onClick={handleUpload}
+          />
+        </ToolbarWrapper>
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+      >
+        Welcome to Neptune!
+        <Input value="for test only" error />
+      </Modal>
+      </div>
+    </Provider>
   );
 };
 
