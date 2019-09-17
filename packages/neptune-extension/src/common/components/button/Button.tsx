@@ -2,7 +2,7 @@
 import React, { ButtonHTMLAttributes } from 'react';
 import { bemBlock } from 'common/utils/bem';
 
-import { getEventHandler } from 'common/utils/events';
+import { getEventHandler, EventHandler } from 'common/utils/events';
 
 // Module
 import './Button.less';
@@ -17,7 +17,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>{
   type?: 'button' | 'reset' | 'submit'
   variant?: 'primary' | 'secondary'
   component?: string | React.FC<any> | React.ComponentClass<any>
-  onClick?: React.MouseEventHandler
+  onClick?: EventHandler
 };
 
 const Button: React.FC<ButtonProps> = ({
