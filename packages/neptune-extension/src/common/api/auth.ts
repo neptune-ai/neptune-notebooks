@@ -12,19 +12,27 @@ const backendClient = new BackendApi(new Configuration({
   basePath: getBasePath(),
 }));
 
+export const API_TOKEN_LOCAL_STORAGE_KEY = 'neptune_api_token';
+
 export function getBasePath(): string {
-  const apiToken = window.localStorage.getItem('neptuneLabs:ApiToken');
-  let token: ApiTokenParsed | null = null;
+  const apiToken = window.localStorage.getItem(API_TOKEN_LOCAL_STORAGE_KEY);
+  const tokenParsed = parseApiToken(apiToken || '');
 
-  try {
-    token = JSON.parse(atob(apiToken || ''));
-  } catch (e) {}
-
-  return token && token.api_address || '';
+  return tokenParsed && tokenParsed.api_address || '';
 }
 
-export async function getAccessToken(){
-  const apiToken = window.localStorage.getItem('neptuneLabs:ApiToken');
+export function parseApiToken(apiTokenStr: string): ApiTokenParsed | undefined {
+  let token: ApiTokenParsed | undefined;
+
+  try {
+    token = JSON.parse(atob(apiTokenStr));
+  } catch (e) {}
+
+  return token
+}
+
+export async function getAccessToken() {
+  const apiToken = window.localStorage.getItem(API_TOKEN_LOCAL_STORAGE_KEY);
 
   if (typeof apiToken === 'string') {
     return await backendClient.exchangeApiToken({ xNeptuneApiToken: apiToken })

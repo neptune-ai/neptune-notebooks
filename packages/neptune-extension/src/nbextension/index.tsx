@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {Provider} from 'react-redux';
 import Jupyter from 'base/js/namespace';
 
 import App from 'common/components/App';
 
 import Notebook from './utils/notebook';
+import configureStore from 'common/state/store';
 
 function initializeExtension() {
   const container = document.createElement('div');
@@ -12,7 +14,13 @@ function initializeExtension() {
 
   const platformNotebook = new Notebook();
 
-  ReactDOM.render(<App platformNotebook={platformNotebook} />, container);
+  const store = configureStore();
+
+  ReactDOM.render((
+    <Provider store={store}>
+      <App platformNotebook={platformNotebook} />
+    </Provider>
+  ), container);
 }
 
 function loadJupyterExtension() {
