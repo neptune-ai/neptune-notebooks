@@ -53,6 +53,12 @@ class Notebook implements PlatformNotebook {
     return this.context.save();
   };
 
+  executeKernelCode(code: string) {
+    this.context.session.ready.then(() => {
+      (this.context.session.kernel as Kernel.IKernel).requestExecute({ code });
+    });
+  }
+
   async registerNeptuneMessageListener(callback: (msg: NeptuneClientMsg) => void) {
     this.context.session.ready.then(() => {
       (this.context.session.kernel as Kernel.IKernel).registerCommTarget(

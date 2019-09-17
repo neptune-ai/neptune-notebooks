@@ -11,13 +11,15 @@ import {validateGlobalApiToken} from 'common/hooks/auth';
 
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 
+import { createActivationHandler } from 'common/hooks/activation';
 import { loadInitialNotebook } from 'common/hooks/notebook';
 import { getNotebookState } from 'common/state/notebook/selectors'
 
 import UploadModal from 'common/components/upload-modal/UploadModal';
 import CheckoutModal from 'common/components/checkout-modal/CheckoutModal';
+import ActivationModal from 'common/components/activation-modal/ActivationModal';
 
-type ModalName = 'configure' | 'upload' | 'checkout' | 'activate' | undefined
+type ModalName = 'configure' | 'upload' | 'checkout' | 'activation' | undefined
 
 export interface AppProps {
   platformNotebook: PlatformNotebook
@@ -33,13 +35,18 @@ const App: React.FC<AppProps> = ({
 
   loadInitialNotebook(platformNotebook);
 
+  createActivationHandler(platformNotebook);
+
   const {
     isApiTokenValid,
   } = useSelector(getConfigurationState);
 
   const [ modalOpen, setModalOpen ] = React.useState<ModalName>();
 
-  const { loaded: notebookLoaded } = useSelector(getNotebookState);
+  const {
+    loaded: notebookLoaded,
+    notebook,
+  } = useSelector(getNotebookState);
 
   return (
     <div id="neptune-app">
@@ -65,6 +72,12 @@ const App: React.FC<AppProps> = ({
           visible={isApiTokenValid}
           onClick={() => setModalOpen('checkout')}
         />
+        <ToolbarButton
+          label="Activate"
+          title="Activate neptune-client configuration"
+          visible={isApiTokenValid && !!notebook}
+          onClick={() => setModalOpen('activation')}
+        />
       </ToolbarWrapper>
 
       { modalOpen === 'configure' && (
@@ -82,6 +95,13 @@ const App: React.FC<AppProps> = ({
 
       { modalOpen === 'checkout' && (
         <CheckoutModal
+          platformNotebook={platformNotebook}
+          onClose={() => setModalOpen(undefined)}
+        />
+      )}
+
+      { modalOpen === 'activation' && (
+        <ActivationModal
           platformNotebook={platformNotebook}
           onClose={() => setModalOpen(undefined)}
         />
