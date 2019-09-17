@@ -29,6 +29,7 @@ interface NbNotebook {
   notebook_name: string
   notebook_path: string
   metadata: NbMetadata
+  kernel: NbKernel
   save_checkpoint: () => void
   toJSON: () => NbNotebookJSON
 }
@@ -50,6 +51,28 @@ interface NbMetadata {
 
 interface NbNeptuneMetadata {
   notebookId?: string
+}
+
+interface NbKernel {
+  comm_manager: NbCommManager
+  execute: (code: string) => void
+}
+
+interface NbCommManager {
+  register_target: (name: string, callback: (comm: NbComm) => void) => void
+}
+
+interface NbComm {
+  on_msg: (callback: (msg: NbCommMsgMsg) => void) => void
+}
+
+interface NbCommMsgMsg {
+  content: NbCommMsgMsgContent
+}
+
+interface NbCommMsgMsgContent {
+  // json data - specyfing further types makes no sense
+  data: any
 }
 
 interface NbActions {

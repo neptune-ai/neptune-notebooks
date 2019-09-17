@@ -5,8 +5,10 @@ import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
 import { PlatformNotebook } from 'types/platform';
 import {ConfigureModal} from './configure-modal/ConfigureModal';
+import { createNeptuneMessageHandler } from 'common/hooks/neptuneComm';
 import {getConfigurationState} from 'common//state/configuration/selectors';
 import {validateGlobalApiToken} from 'common/hooks/auth';
+
 
 export interface AppProps {
   platformNotebook: PlatformNotebook
@@ -15,6 +17,9 @@ export interface AppProps {
 const App: React.FC<AppProps> = ({
   platformNotebook,
 }) => {
+  // Upload notebook when checkpoint created in neptune-client.
+  createNeptuneMessageHandler(platformNotebook);
+
   validateGlobalApiToken();
 
   const {
