@@ -5,12 +5,14 @@ import { bemBlock } from 'common/utils/bem';
 // Module
 import './Input.less';
 
+type FocusHandler = React.FocusEventHandler<HTMLInputElement>
+
 interface InputProps {
   className?: string
   disabled?: boolean
   error?: boolean
   selectOnFocus?: boolean
-  onFocus?: React.FocusEventHandler<HTMLInputElement>
+  onFocus?: FocusHandler
 }
 
 const block = bemBlock('neptune-input');
@@ -41,7 +43,7 @@ const Input: React.FC<InputProps & React.InputHTMLAttributes<HTMLInputElement>> 
   );
 };
 
-function getOnFocusHandler(onFocus?: React.FocusEventHandler<HTMLInputElement>, selectOnFocus?: boolean): React.FocusEventHandler<HTMLInputElement> {
+function getOnFocusHandler(onFocus?: FocusHandler, selectOnFocus?: boolean): FocusHandler {
   return (evt) => {
     if (selectOnFocus) {
       evt.target.select();
