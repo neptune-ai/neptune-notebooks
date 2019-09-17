@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import {
   PlatformNotebook,
+  NeptuneClientMsg,
 } from 'types/platform';
 
 
@@ -28,6 +29,17 @@ class Notebook implements PlatformNotebook {
       notebookId,
     };
     Jupyter.notebook.save_checkpoint();
+  }
+
+  async registerNeptuneMessageListener(callback: (msg: NeptuneClientMsg) => void) {
+    Jupyter.notebook.kernel.comm_manager.register_target(
+      'neptune_comm',
+      (comm: NbComm) => {
+        comm.on_msg((msg: NbCommMsgMsg) => {
+          callback(msg.content.data as NeptuneClientMsg);
+        });
+      }
+    );
   }
 }
 
