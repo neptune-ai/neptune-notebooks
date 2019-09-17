@@ -67,4 +67,5 @@ type NbActionFunction = () => void
 
 interface NbToolbar {
   add_buttons_group: (group: string[], groupId?: string) => jQuery
+  selector: string
 }
