@@ -3,6 +3,7 @@ import { Provider } from 'react-redux'
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
+import Input from 'common/components/input/Input';
 import { PlatformNotebook } from 'types/platform';
 import configure from 'common/state/store';
 
@@ -102,7 +103,7 @@ const App: React.FC<AppProps> = ({
         onClose={() => setOpen(false)}
       >
         Welcome to Neptune!
-        <input />
+        <Input value="for test only" error />
       </Modal>
       </div>
     </Provider>
