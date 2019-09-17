@@ -10,8 +10,7 @@ interface InputProps {
   disabled?: boolean
   error?: boolean
   selectOnFocus?: boolean
-  variant?: 'small' | 'big'
-  onFocus?: (ev?: React.FocusEvent<HTMLInputElement>) => void
+  onFocus?: React.FocusEventHandler<HTMLInputElement>
 }
 
 const block = bemBlock('neptune-input');
@@ -21,7 +20,6 @@ const Input: React.FC<InputProps & React.InputHTMLAttributes<HTMLInputElement>> 
   disabled,
   error,
   selectOnFocus,
-  variant,
   onFocus,
   ...props
 }) => {
@@ -29,7 +27,6 @@ const Input: React.FC<InputProps & React.InputHTMLAttributes<HTMLInputElement>> 
       modifiers: {
         disabled,
         error,
-        big: variant === 'big',
       },
       extra: className,
     });
@@ -44,21 +41,16 @@ const Input: React.FC<InputProps & React.InputHTMLAttributes<HTMLInputElement>> 
   );
 };
 
-function selectInputContent(ev: React.FocusEvent<HTMLInputElement>) {
-  ev.target.select();
-}
-
-function getOnFocusHandler(onFocus?: (ev: React.FocusEvent<HTMLInputElement>) => void, selectOnFocus?: boolean) {
-  if (selectOnFocus) {
-    if (onFocus) {
-      return (ev: React.FocusEvent<HTMLInputElement>) => {
-        selectInputContent(ev);
-        return onFocus(ev);
-      };
+function getOnFocusHandler(onFocus?: React.FocusEventHandler<HTMLInputElement>, selectOnFocus?: boolean): React.FocusEventHandler<HTMLInputElement> {
+  return (evt) => {
+    if (selectOnFocus) {
+      evt.target.select();
     }
-    return selectInputContent;
-  }
-  return onFocus;
+
+    if (onFocus) {
+      onFocus(evt);
+    }
+  };
 }
 
 export default Input;
