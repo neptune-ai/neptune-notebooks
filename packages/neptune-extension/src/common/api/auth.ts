@@ -3,17 +3,50 @@ import {
   DefaultApi as BackendApi
 } from 'generated/backend-client/src';
 
+import {updateTokenMiddleware} from "./update-token-middleware";
+
 export interface ApiTokenParsed {
   api_address: string
   api_key: string
 }
 
-const backendClient = new BackendApi(new Configuration({
-  basePath: getBasePath(),
-}));
-
 export const API_TOKEN_LOCAL_STORAGE_KEY = 'neptune_api_token';
 
+class AuthClient {
+  private backendClient: BackendApi;
+
+  constructor() {
+    this.backendClient = this.createClient(getBasePath());
+  }
+
+  createClient(basePath: string) {
+    return new BackendApi(new Configuration({
+      basePath,
+      middleware: [
+        updateTokenMiddleware,
+      ]
+    }));
+  }
+
+  setBasePath(path: string) {
+    this.backendClient = this.createClient(path);
+  }
+
+  async getAccessToken() {
+    const apiToken = window.localStorage.getItem(API_TOKEN_LOCAL_STORAGE_KEY);
+
+    if (typeof apiToken === 'string') {
+      return await this.backendClient.exchangeApiToken({ xNeptuneApiToken: apiToken })
+    }
+
+    return Promise.reject('Wrong apiToken');
+  }
+}
+
+export const authClient = new AuthClient();
+
+
+// static helpers }}
 export function getBasePath(): string {
   const apiToken = window.localStorage.getItem(API_TOKEN_LOCAL_STORAGE_KEY);
   const tokenParsed = parseApiToken(apiToken || '');
@@ -30,13 +63,4 @@ export function parseApiToken(apiTokenStr: string): ApiTokenParsed | undefined {
 
   return token
 }
-
-export async function getAccessToken() {
-  const apiToken = window.localStorage.getItem(API_TOKEN_LOCAL_STORAGE_KEY);
-
-  if (typeof apiToken === 'string') {
-    return await backendClient.exchangeApiToken({ xNeptuneApiToken: apiToken })
-  }
-
-  return Promise.reject('Wrong apiToken');
-}
+// static helpers {{

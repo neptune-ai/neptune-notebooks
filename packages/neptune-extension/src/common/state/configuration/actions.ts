@@ -6,7 +6,7 @@ import {Configuration as BackendApiConfiguration} from 'generated/backend-client
 
 import {backendClient} from 'common/api/backend-client';
 import {leaderboardClient} from 'common/api/leaderboard-client';
-import {API_TOKEN_LOCAL_STORAGE_KEY, ApiTokenParsed} from 'common/api/auth';
+import {API_TOKEN_LOCAL_STORAGE_KEY, ApiTokenParsed, authClient} from 'common/api/auth';
 import {AppState} from 'common/state/reducers';
 
 export function setApiToken(token: string) {
@@ -62,6 +62,7 @@ export function validateApiToken(apiToken: string, apiTokenParsed?: ApiTokenPars
         dispatch(setTokenUsername(accessToken.username));
 
         // everything set up properly, lets set all API clients to use proper base bath
+        authClient.setBasePath(apiTokenParsed.api_address);
         backendClient.setBasePath(apiTokenParsed.api_address);
         leaderboardClient.setBasePath(apiTokenParsed.api_address);
 

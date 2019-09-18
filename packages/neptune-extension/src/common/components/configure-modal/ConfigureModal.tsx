@@ -1,10 +1,3 @@
-/**
- * todo
- * - replace base path in auth client
- * - ui
- */
-
-
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
