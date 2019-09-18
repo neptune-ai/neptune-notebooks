@@ -1,12 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider} from 'react-redux';
 import Jupyter from 'base/js/namespace';
 
-import App from 'common/components/App';
-
 import Notebook from './utils/notebook';
-import configureStore from 'common/state/store';
+import {BootstrapApp} from 'common/components/BootstrapApp';
 
 function initializeExtension() {
   const container = document.createElement('div');
@@ -14,12 +11,8 @@ function initializeExtension() {
 
   const platformNotebook = new Notebook();
 
-  const store = configureStore();
-
   ReactDOM.render((
-    <Provider store={store}>
-      <App platformNotebook={platformNotebook} />
-    </Provider>
+    <BootstrapApp platformNotebook={platformNotebook}/>
   ), container);
 }
 

@@ -8,7 +8,7 @@ import {ConfigureModal} from './configure-modal/ConfigureModal';
 import {getConfigurationState} from 'common//state/configuration/selectors';
 import {validateApiToken} from 'common/state/configuration/actions';
 
-interface AppProps {
+export interface AppProps {
   platformNotebook: PlatformNotebook
 }
 

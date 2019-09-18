@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider} from 'react-redux';
 import { DisposableDelegate } from '@phosphor/disposable';
 import { Widget } from '@phosphor/widgets';
 import { JupyterLab } from '@jupyterlab/application';
@@ -10,11 +9,10 @@ import {
 } from '@jupyterlab/notebook';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 
-import App from 'common/components/App';
 
 import { findButtonIdx } from './utils/iterator';
 import Notebook from './utils/notebook';
-import configureStore from 'common/state/store';
+import {BootstrapApp} from "../common/components/BootstrapApp";
 
 class Extension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
   private readonly app: JupyterLab;
@@ -32,12 +30,8 @@ class Extension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INot
     context.ready.then(() => {
       const platformNotebook = new Notebook(context, this.app);
 
-      const store = configureStore();
-
       ReactDOM.render((
-        <Provider store={store}>
-          <App platformNotebook={platformNotebook} />
-        </Provider>
+        <BootstrapApp platformNotebook={platformNotebook}/>
       ), widget.node);
     });
 
