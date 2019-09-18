@@ -3,7 +3,7 @@ import {
   RequestContext,
 } from 'generated/backend-client/src';
 
-import { getAccessToken } from "./auth";
+import { authClient } from "./auth";
 
 
 export const updateTokenMiddleware: Middleware = {
@@ -11,7 +11,7 @@ export const updateTokenMiddleware: Middleware = {
     // Headers is global constructor, see https://developer.mozilla.org/en-US/docs/Web/API/Headers
     const headers = new Headers(context.init.headers);
 
-    const token = await getAccessToken();
+    const token = await authClient.getAccessToken();
     headers.set('Authorization', `Bearer ${token.accessToken}`);
 
     return {

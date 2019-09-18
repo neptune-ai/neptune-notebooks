@@ -2,9 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Jupyter from 'base/js/namespace';
 
-import App from 'common/components/App';
-
 import Notebook from './utils/notebook';
+import {BootstrapApp} from 'common/components/BootstrapApp';
 
 function initializeExtension() {
   const container = document.createElement('div');
@@ -12,7 +11,9 @@ function initializeExtension() {
 
   const platformNotebook = new Notebook();
 
-  ReactDOM.render(<App platformNotebook={platformNotebook} />, container);
+  ReactDOM.render((
+    <BootstrapApp platformNotebook={platformNotebook}/>
+  ), container);
 }
 
 function loadJupyterExtension() {
