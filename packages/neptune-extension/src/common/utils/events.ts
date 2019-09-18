@@ -4,7 +4,7 @@ import {
 } from 'lodash';
 
 export type EventHandler = (event: MouseEvent | object, params?: object) => void;
-export type HandlersArray = [EventHandler, HandlerObject?] | [];
+type HandlersArray = [EventHandler, HandlerObject?] | [];
 
 interface HandlerObject {
   handler: EventHandler
