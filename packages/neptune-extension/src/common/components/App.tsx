@@ -3,11 +3,8 @@ import { Provider } from 'react-redux'
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
-import Input from 'common/components/input/Input';
 import { PlatformNotebook } from 'types/platform';
 import configure from 'common/state/store';
-import Button from 'common/components/button/Button';
-import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
 
 import { leaderboardClient } from 'common/api/leaderboard-client';
 
@@ -105,16 +102,6 @@ const App: React.FC<AppProps> = ({
         onClose={() => setOpen(false)}
       >
         Welcome to Neptune!
-        <Input value="for test only" error />
-        <ButtonWithLoading>
-          Siemano
-        </ButtonWithLoading>
-        <Button variant="secondary" size="large">
-          Dobranoc
-        </Button>
-        <ButtonWithLoading size="large" loading variant="secondary">
-          Loading
-        </ButtonWithLoading>
       </Modal>
       </div>
     </Provider>

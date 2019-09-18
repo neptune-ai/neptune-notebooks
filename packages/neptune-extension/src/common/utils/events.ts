@@ -4,18 +4,19 @@ import {
 } from 'lodash';
 
 export type EventHandler = (event: MouseEvent | object, params?: object) => void;
+export type HandlersArray = [EventHandler, HandlerObject?] | [];
 
 interface HandlerObject {
   handler: EventHandler
   payload: any
 }
 
-function decomposeEventHandler(eventHandler?: EventHandler | HandlerObject) : [EventHandler?, HandlerObject?] {
+function decomposeEventHandler(eventHandler?: EventHandler | HandlerObject) : HandlersArray {
   if (isFunction(eventHandler)) {
-    return [eventHandler, undefined];
+    return [eventHandler];
   }
 
-  if (eventHandler && isPlainObject(eventHandler)) {
+  if (isHandlerObject(eventHandler)) {
     const {
       handler,
       payload,
@@ -25,7 +26,7 @@ function decomposeEventHandler(eventHandler?: EventHandler | HandlerObject) : [E
     }
   }
 
-  return [undefined, undefined];
+  return [];
 }
 
 export function getEventHandler(eventHandler?: EventHandler, eventParams?: object, returnEvent = true) {
@@ -41,4 +42,8 @@ export function getEventHandler(eventHandler?: EventHandler, eventParams?: objec
     return (event: MouseEvent) => handler(event, baseParams);
   }
   return (params: object) => handler({...baseParams, ...params});
+}
+
+function isHandlerObject(obj: any): obj is HandlerObject {
+  return isPlainObject(obj) && isFunction(obj.handler);
 }

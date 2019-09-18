@@ -25,7 +25,7 @@ const Button: React.FC<ButtonProps> = ({
   className,
   disabled = false,
   pressed = false,
-  size = 'medium',
+  size = 'large',
   type = 'button',
   variant = 'primary',
   component = 'button',
