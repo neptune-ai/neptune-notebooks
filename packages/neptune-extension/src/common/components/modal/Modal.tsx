@@ -23,6 +23,8 @@ const Modal: React.FC<ModalProps> = ({
    */
   return (
     <ReactModal
+      // even though we don't use aria, this prop is required
+      ariaHideApp={false}
       isOpen={isOpen}
       children={children}
       onRequestClose={onClose}
