@@ -1,4 +1,5 @@
 import {
+  Configuration as BackendApiConfiguration,
   Configuration,
   DefaultApi as BackendApi
 } from 'generated/backend-client/src';
@@ -40,6 +41,26 @@ class AuthClient {
     }
 
     return Promise.reject('Wrong apiToken');
+  }
+
+  async validateToken(apiToken: string) {
+    const apiTokenParsed = parseApiToken(apiToken);
+
+    if (apiTokenParsed === undefined) {
+      return Promise.reject("Can't parse provided token");
+    }
+
+    // we need local instance of backend api as we don't know the api address before user provides api token
+    const localBackendClient = new BackendApi(new BackendApiConfiguration({
+      basePath: apiTokenParsed.api_address,
+    }));
+
+    const accessToken = await localBackendClient.exchangeApiToken({ xNeptuneApiToken:apiToken });
+
+    return {
+      apiTokenParsed,
+      accessToken,
+    }
   }
 }
 

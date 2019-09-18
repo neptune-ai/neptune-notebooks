@@ -1,16 +1,11 @@
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {
-  Configuration as BackendApiConfiguration,
-  DefaultApi as BackendApi
-} from 'generated/backend-client/src';
-
 import Modal from 'common/components/modal/Modal';
 import Input from 'common/components/input/Input';
 import {getConfigurationState} from 'common/state/configuration/selectors';
 import {setApiToken} from 'common/state/configuration/actions';
-import {parseApiToken} from 'common/api/auth';
+import {authClient} from 'common/api/auth';
 
 interface ConfigureModalProps {
   onClose: () => void
@@ -24,10 +19,11 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
     isApiTokenValid,
   } = useSelector(getConfigurationState);
 
-  const [localApiToken, setLocalApiToken] = React.useState<string | undefined>(apiToken);
-  const [isLocalApiTokenValid, setLocalApiTokenValid] = React.useState<boolean | undefined>(isApiTokenValid);
-
-  validateLocalApiToken(localApiToken, setLocalApiTokenValid);
+  const {
+    apiToken: localApiToken,
+    apiTokenValid: isLocalApiTokenValid,
+    setApiToken: setLocalApiToken,
+  } = useLocalApiToken(apiToken, isApiTokenValid);
 
   const handleApiTokenChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLocalApiToken(event.target.value);
@@ -60,33 +56,38 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
       />
       <button
         children="Connect"
-        disabled={localApiToken === undefined || isLocalApiTokenValid === false}
+        disabled={localApiToken === undefined || isLocalApiTokenValid !== true}
         onClick={handleConnect}
       />
     </Modal>
   );
 };
 
-function validateLocalApiToken(apiToken: string | undefined, setValid: (valid: boolean) => void) {
+function useLocalApiToken(initialApiToken: string | undefined, initialApiTokenValid: boolean | undefined) {
+  const [ apiToken, setApiToken ] = React.useState(initialApiToken);
+  const [ apiTokenValid, setValid ] = React.useState(initialApiTokenValid);
+
   React.useEffect(() => {
+    let canValidate = true;
+
     // don't validate if user didn't provide any value
     if (apiToken !== undefined) {
-      const tokenParsed = parseApiToken(apiToken);
+      setValid(undefined);
 
-      if (tokenParsed === undefined) {
-        setValid(false);
-      } else {
+      authClient
+        .validateToken(apiToken)
+        .then(() => canValidate && setValid(true))
+        .catch(() => canValidate && setValid(false));
+    }
 
-        // we need local instance of backend api as we don't know the api address before user provides api token
-        const localBackendClient = new BackendApi(new BackendApiConfiguration({
-          basePath: tokenParsed.api_address,
-        }));
-
-        localBackendClient
-          .exchangeApiToken({xNeptuneApiToken: apiToken})
-          .then(() => setValid(true))
-          .catch(() => setValid(false));
-      }
+    return () => {
+      canValidate = false;
     }
   }, [apiToken]);
+
+  return {
+    apiToken,
+    apiTokenValid,
+    setApiToken,
+  }
 }
