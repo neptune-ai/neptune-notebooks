@@ -1,15 +1,12 @@
 import React from 'react';
-import {useDispatch, useSelector} from 'react-redux'
+import {useSelector} from 'react-redux'
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
 import { PlatformNotebook } from 'types/platform';
 import {ConfigureModal} from './configure-modal/ConfigureModal';
 import {getConfigurationState} from 'common//state/configuration/selectors';
-import {setApiTokenValid, setTokenUsername} from 'common/state/configuration/actions';
-import {authClient} from "../api/auth";
-import {backendClient} from "../api/backend-client";
-import {leaderboardClient} from "../api/leaderboard-client";
+import {validateGlobalApiToken} from 'common/hooks/auth';
 
 export interface AppProps {
   platformNotebook: PlatformNotebook
@@ -61,33 +58,3 @@ const App: React.FC<AppProps> = ({
 };
 
 export default App;
-
-function validateGlobalApiToken() {
-  const {
-    apiToken,
-  } = useSelector(getConfigurationState);
-
-  const dispatch = useDispatch();
-
-  React.useEffect(() => {
-    if (apiToken !== undefined) {
-      function invalidateToken() {
-        dispatch(setApiTokenValid(false));
-        dispatch(setTokenUsername(undefined));
-      }
-
-      authClient
-        .validateToken(apiToken)
-        .then(({ accessToken, apiTokenParsed }) => {
-          dispatch(setApiTokenValid(true));
-          dispatch(setTokenUsername(accessToken.username));
-
-          // everything set up properly, lets set all API clients to use proper base bath
-          authClient.setBasePath(apiTokenParsed.api_address);
-          backendClient.setBasePath(apiTokenParsed.api_address);
-          leaderboardClient.setBasePath(apiTokenParsed.api_address);
-        })
-        .catch(() => invalidateToken());
-    }
-  }, [apiToken]);
-}
