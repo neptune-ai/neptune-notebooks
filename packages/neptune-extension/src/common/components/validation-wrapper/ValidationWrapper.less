@@ -1,0 +1,18 @@
+@import '~src/common/components/mixins.less';
+
+.validation-wrapper {
+  &__icon-wrapper {
+    width: 20px;
+    text-align: center;
+  }
+
+  &__icon {
+    &--status-error {
+      color: @error-color;
+    }
+
+    &--status-success {
+      color: @success-color;
+    }
+  }
+}
