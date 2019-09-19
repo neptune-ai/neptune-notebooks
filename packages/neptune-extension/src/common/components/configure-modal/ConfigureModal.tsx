@@ -8,7 +8,6 @@ import {
 // App
 import Layout from 'common/components/layout';
 import Button from 'common/components/button/Button';
-import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
 import Modal from 'common/components/modal/Modal';
 import Input from 'common/components/input/Input';
 import ValidationWrapper from "../validation-wrapper/ValidationWrapper";
@@ -83,8 +82,7 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
             children="Cancel"
             onClick={onClose}
           />
-          <ButtonWithLoading
-            loading={/* to be implemented */ false}
+          <Button
             children="Connect"
             disabled={localApiToken === undefined || isLocalApiTokenValid !== true}
             onClick={handleConnect}
