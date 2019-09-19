@@ -75,6 +75,7 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
         <Layout.Row
           span="auto"
           justifyContent="end"
+          withGutter="xl"
           spacedChildren
         >
           <Button

@@ -24,7 +24,7 @@ const ValidationWrapper: React.FC<ValidationWrapperProps> = ({
       className={block()}
       span="auto"
       alignItems="center"
-      spacedChildren
+      spacedChildren="sm"
     >
       { children }
       <div className={block('icon-wrapper')}>
