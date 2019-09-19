@@ -8,7 +8,7 @@ import {
   SpacedChildrenValue,
 } from 'common/components/layout/types';
 import { bemBlock } from 'common/utils/bem';
-import { LayoutElementProps } from "common/components/layout/layout-element/LayoutElement";
+import { LayoutElementProps } from 'common/components/layout/layout-element/LayoutElement';
 import LayoutElement from 'common/components/layout/layout-element/LayoutElement';
 
 // Module
