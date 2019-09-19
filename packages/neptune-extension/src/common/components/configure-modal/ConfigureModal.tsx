@@ -6,7 +6,7 @@ import {
 } from 'react-redux';
 
 // App
-import Layout from 'common/components/layout';
+import * as Layout from 'common/components/layout';
 import Button from 'common/components/button/Button';
 import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
 import Modal from 'common/components/modal/Modal';
