@@ -1,0 +1,60 @@
+@import '~src/common/components/mixins.less';
+
+.n-layout-column {
+  display: flex;
+  flex-direction: column;
+
+  &--spacedChildren {
+    &-xs {
+      & > :not(:first-child) {
+        margin-top: @layoutUnit-xs;
+      }
+    }
+
+    &-sm {
+      & > :not(:first-child) {
+        margin-top: @layoutUnit-sm;
+      }
+    }
+
+    &,
+    &-md {
+      & > :not(:first-child) {
+        margin-top: @layoutUnit-md;
+      }
+    }
+
+    &-lg {
+      & > :not(:first-child) {
+        margin-top: @layoutUnit-lg;
+      }
+    }
+
+    &-xl {
+      & > :not(:first-child) {
+        margin-top: @layoutUnit-xl;
+      }
+    }
+  }
+
+  & > .n-layout-element--childSpacing-xs:not(:first-child) {
+    margin-top: @layoutUnit-xs;
+  }
+  & > .n-layout-element--childSpacing-sm:not(:first-child) {
+    margin-top: @layoutUnit-sm;
+  }
+  & > .n-layout-element--childSpacing:not(:first-child),
+  & > .n-layout-element--childSpacing-md:not(:first-child) {
+    margin-top: @layoutUnit-md;
+  }
+  & > .n-layout-element--childSpacing-lg:not(:first-child) {
+    margin-top: @layoutUnit-lg;
+  }
+  & > .n-layout-element--childSpacing-xl:not(:first-child) {
+    margin-top: @layoutUnit-xl;
+  }
+
+  .with-alignItems();
+
+  .with-justify-content();
+}
