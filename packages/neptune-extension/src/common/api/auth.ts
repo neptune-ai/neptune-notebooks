@@ -4,8 +4,6 @@ import {
   DefaultApi as BackendApi
 } from 'generated/backend-client/src';
 
-import {updateTokenMiddleware} from "./update-token-middleware";
-
 export interface ApiTokenParsed {
   api_address: string
   api_key: string
@@ -24,7 +22,6 @@ class AuthClient {
     return new BackendApi(new Configuration({
       basePath,
       middleware: [
-        updateTokenMiddleware,
       ]
     }));
   }

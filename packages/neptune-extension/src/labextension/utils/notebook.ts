@@ -1,9 +1,13 @@
 import { JupyterLab } from '@jupyterlab/application';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { INotebookModel } from '@jupyterlab/notebook';
+import { Kernel, KernelMessage } from '@jupyterlab/services'
 
 import { get } from 'lodash';
-import { PlatformNotebook } from "types/platform";
+import {
+  PlatformNotebook,
+  NeptuneClientMsg,
+} from "types/platform";
 
 interface NeptuneContextMetadata {
   notebookId?: string
@@ -48,6 +52,18 @@ class Notebook implements PlatformNotebook {
 
     return this.context.save();
   };
+
+  async registerNeptuneMessageListener(callback: (msg: NeptuneClientMsg) => void) {
+    this.context.session.ready.then(() => {
+      (this.context.session.kernel as Kernel.IKernel).registerCommTarget(
+        'neptune_comm',
+        (comm: Kernel.IComm, openMsg: KernelMessage.ICommOpenMsg) => {
+          comm.onMsg = (msg: KernelMessage.ICommMsgMsg): void => {
+            callback(msg.content.data as any as NeptuneClientMsg);
+          };
+        });
+    });
+  }
 }
 
 export default Notebook
