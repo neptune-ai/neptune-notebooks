@@ -2,7 +2,7 @@
 import React from 'react';
 
 // App
-import Layout from 'common/components/layout';
+import * as Layout from 'common/components/layout';
 
 const ValidationWrapper: React.FC = ({
   children,
