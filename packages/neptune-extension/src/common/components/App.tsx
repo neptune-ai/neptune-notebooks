@@ -15,6 +15,9 @@ import { loadInitialNotebook } from 'common/hooks/notebook';
 import { getNotebookState } from 'common/state/notebook/selectors'
 
 import UploadModal from 'common/components/upload-modal/UploadModal';
+import CheckoutModal from 'common/components/checkout-modal/CheckoutModal';
+
+type ModalName = 'configure' | 'upload' | 'checkout' | 'activate' | undefined
 
 export interface AppProps {
   platformNotebook: PlatformNotebook
@@ -34,10 +37,7 @@ const App: React.FC<AppProps> = ({
     isApiTokenValid,
   } = useSelector(getConfigurationState);
 
-  const [ configureModalOpen, setConfigureModalOpen ] = React.useState(false);
-  const [ uploadModalOpen, setUploadModalOpen ] = React.useState(false);
-
-  const handleConfigure = () => setConfigureModalOpen(true);
+  const [ modalOpen, setModalOpen ] = React.useState<ModalName>();
 
   const { loaded: notebookLoaded } = useSelector(getNotebookState);
 
@@ -49,26 +49,41 @@ const App: React.FC<AppProps> = ({
           title="Connect to Neptune"
           icon="neptune"
           compact={isApiTokenValid}
-          onClick={handleConfigure}
+          onClick={() => setModalOpen('configure')}
         />
         <ToolbarButton
           label="Upload"
           title="Upload to Neptune"
           icon="fa-cloud-upload"
           visible={isApiTokenValid && notebookLoaded}
-          onClick={() => setUploadModalOpen(true)}
+          onClick={() => setModalOpen('upload')}
+        />
+        <ToolbarButton
+          label="Checkout"
+          title="Checkout notebook from Neptune"
+          icon="fa-sign-out-alt"
+          visible={isApiTokenValid}
+          onClick={() => setModalOpen('checkout')}
         />
       </ToolbarWrapper>
-      {configureModalOpen && (
+
+      { modalOpen === 'configure' && (
         <ConfigureModal
-          onClose={() => setConfigureModalOpen(false)}
+          onClose={() => setModalOpen(undefined)}
         />
       )}
 
-      { uploadModalOpen && (
+      { modalOpen === 'upload' && (
         <UploadModal
           platformNotebook={platformNotebook}
-          onClose={() => setUploadModalOpen(false)}
+          onClose={() => setModalOpen(undefined)}
+        />
+      )}
+
+      { modalOpen === 'checkout' && (
+        <CheckoutModal
+          platformNotebook={platformNotebook}
+          onClose={() => setModalOpen(undefined)}
         />
       )}
     </div>

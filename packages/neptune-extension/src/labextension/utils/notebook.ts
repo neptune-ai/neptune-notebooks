@@ -1,7 +1,7 @@
 import { JupyterLab } from '@jupyterlab/application';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { INotebookModel } from '@jupyterlab/notebook';
-import { Kernel, KernelMessage } from '@jupyterlab/services'
+import { Contents, Kernel, KernelMessage } from '@jupyterlab/services'
 
 import { get } from 'lodash';
 import {
@@ -62,6 +62,29 @@ class Notebook implements PlatformNotebook {
             callback(msg.content.data as any as NeptuneClientMsg);
           };
         });
+    });
+  }
+
+  async openNotebookInNewWindow(content: any) {
+    const model = await this.app.commands
+      .execute('docmanager:new-untitled', { path: '', type: 'notebook' });
+
+    const file = await this.app.serviceManager.contents
+      .get(this.context.path, { content: true });
+
+    // context.save(); // TODO: save here ?
+
+    const data: Partial<Contents.IModel> = {
+      content: file.content,
+      type: 'notebook',
+    };
+
+    await this.app.serviceManager.contents
+      .save(model.path, data);
+
+    return await this.app.commands.execute('docmanager:open', {
+      path: model.path,
+      factory: 'Notebook',
     });
   }
 }
