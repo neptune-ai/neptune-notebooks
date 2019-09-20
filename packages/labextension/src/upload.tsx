@@ -134,7 +134,6 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
 
     const {
       id,
-      name,
       lastCheckpointId,
       projectId,
     } = this.state.notebook;
@@ -142,7 +141,7 @@ class UploadButton extends React.Component<IUploadButtonProps, IUploadButtonStat
     const apiAddress = this.props.connection.getApiAddress();
     const project = this.state.projects.find(project => project.id === projectId);
 
-    return `${apiAddress}\/${project.organizationName}/${project.name}\/n\/${name}\-${id}\/${lastCheckpointId}`;
+    return `${apiAddress}/${project.organizationName}/${project.name}/n/${id}/${lastCheckpointId}`;
   }
 
   private validateUpload = () => {

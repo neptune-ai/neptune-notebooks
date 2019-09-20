@@ -1110,7 +1110,7 @@ define([
         });
 
         return apiAddress + '/' + project.organizationName + '/' + project.name + '/n/' +
-            notebook.name + '-' + notebook.id + '/' + notebook.lastCheckpointId;
+            notebook.id + '/' + notebook.lastCheckpointId;
     }
 
     function Timer() {
