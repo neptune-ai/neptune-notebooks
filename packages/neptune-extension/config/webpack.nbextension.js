@@ -46,6 +46,8 @@ module.exports = function ({ project }) {
       'base/js/namespace': 'base/js/namespace',
       'base/js/events': 'base/js/events',
       'base/js/dialog': 'base/js/dialog',
+      'contents': 'contents',
+      'services/config': 'services/config',
     },
     // TODO: probably should be depenand of build mode
     devtool: 'cheap-eval-module-source-map',

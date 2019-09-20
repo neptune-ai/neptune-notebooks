@@ -9,6 +9,7 @@ export interface PlatformNotebook {
   getMetadata: () => PlatformNotebookMetadata
   saveNotebookId: (notebookId: string) => Promise<void>
   registerNeptuneMessageListener: (callback: (msg: NeptuneClientMsg) => void) => void
+  openNotebookInNewWindow: (content: any) => void
 }
 
 export interface NeptuneClientMsg {

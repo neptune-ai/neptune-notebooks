@@ -15,6 +15,8 @@ interface NbJupyter {
   keyboard_manager: NbKeyboardManager
   toolbar: NbToolbar
   notebook: NbNotebook
+  utils: NbUtils
+  _target: string
 }
 
 interface NbKeyboardManager {
@@ -91,3 +93,62 @@ type NbActionFunction = () => void
 interface NbToolbar {
   add_buttons_group: (group: string[], groupId?: string) => jQuery
 }
+
+interface NbUtils {
+  encode_uri_components: (path: string) => string
+  get_body_data: (name: string) => string
+  url_path_join: (url: string, name: string, path: string) => string
+}
+
+declare const ConfigService: NbConfigService;
+
+declare module 'services/config' {
+  export default ConfigService;
+}
+
+interface NbConfigService {
+  ConfigSection: NbConfigConstructor
+}
+
+interface NbConfigConstructor {
+  new(name: string, options: NbConfigOptions): NbConfig
+}
+
+interface NbConfig {
+}
+
+interface NbConfigOptions {
+  base_url: string
+  notebook_path: string
+}
+
+declare const Contents: NbContents;
+
+declare module 'contents' {
+  export default Contents;
+}
+
+interface NbContents {
+  Contents: NbContentsManagerConstructor
+}
+
+interface NbContentsManagerConstructor {
+  new(options: NbContentsOptions): NbContentsManager
+}
+
+interface NbContentsOptions {
+  base_url: string
+  common_config: NbConfig
+}
+
+interface NbContensManager {
+  save: (path: string, notebook: NbNotebookDescriptor) => void
+}
+
+interface NbNotebookDescriptor {
+  content: any
+  path: string
+  name: string
+  type: 'notebook'
+}
+

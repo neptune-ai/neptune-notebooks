@@ -4,6 +4,9 @@ import {
   NeptuneClientMsg,
 } from 'types/platform';
 
+import Jupyter from 'base/js/namespace';
+
+import { openNotebookInNewWindow } from './window';
 
 class Notebook implements PlatformNotebook {
   async getContent() {
@@ -40,6 +43,10 @@ class Notebook implements PlatformNotebook {
         });
       }
     );
+  }
+
+  openNotebookInNewWindow(content: any) {
+    openNotebookInNewWindow(content);
   }
 }
 
