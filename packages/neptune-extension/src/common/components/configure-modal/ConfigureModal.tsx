@@ -10,7 +10,8 @@ import Layout from 'common/components/layout';
 import Button from 'common/components/button/Button';
 import Modal from 'common/components/modal/Modal';
 import Input from 'common/components/input/Input';
-import ValidationWrapper from "../validation-wrapper/ValidationWrapper";
+import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
+import ValidationIcon from "common/components/validation-icon/ValidationIcon";
 import { bemBlock } from "common/utils/bem";
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import { setApiToken } from 'common/state/configuration/actions';
@@ -60,13 +61,14 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
           <label>
             <Layout.Column spacedChildren="xs">
               <span>API Token</span>
-              <ValidationWrapper status={isLocalApiTokenValid === false ? 'error' : 'success'}>
+              <ValidationWrapper>
                 <Input
                   className={block('input')}
                   error={isLocalApiTokenValid === false}
                   value={localApiToken}
                   onChange={handleApiTokenChange}
                 />
+                <ValidationIcon status={isLocalApiTokenValid === false ? 'error' : 'success'} />
               </ValidationWrapper>
             </Layout.Column>
           </label>
