@@ -6,12 +6,12 @@ import LayoutFill from './layout-fill/LayoutFill';
 import LayoutGrid from './layout-grid/LayoutGrid';
 import LayoutSeparator from './layout-separator/LayoutSeparator';
 
-export default {
-  Row: LayoutRow,
-  Column: LayoutColumn,
-  Element: LayoutElement,
-  Layout: Layout,
-  Fill: LayoutFill,
-  Grid: LayoutGrid,
-  Separator: LayoutSeparator
-}
+export {
+  LayoutRow as Row,
+  LayoutColumn as Column,
+  LayoutElement as Element,
+  Layout as Layout,
+  LayoutFill as Fill,
+  LayoutGrid as Grid,
+  LayoutSeparator as Separator
+};
