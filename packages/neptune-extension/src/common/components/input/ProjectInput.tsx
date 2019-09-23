@@ -2,14 +2,22 @@ import React from 'react';
 
 import { backendClient } from 'common/api/backend-client';
 import { ProjectWithRoleDTO } from 'generated/backend-client/src/models';
+import { bemBlock} from "common/utils/bem";
+
+import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
+import ValidationIcon from "common/components/validation-icon/ValidationIcon";
 
 interface ProjectInputProps {
+  className?: string,
   value: string
   disabled?: boolean
   onChange: (projectId: string) => void
 }
 
+const block = bemBlock('project-input');
+
 const ProjectInput: React.FC<ProjectInputProps> = ({
+  className,
   value,
   disabled,
   onChange: onChangeProp,
@@ -38,8 +46,9 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
   });
 
   return (
-    <React.Fragment>
+    <ValidationWrapper>
       <select
+        className={block({extra: className})}
         value={value}
         disabled={disabled}
         onChange={(event) => onChangeProp(event.target.value)}
@@ -52,10 +61,8 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
           />
         ))}
       </select>
-      { loading && (
-        <span className="fa fa-spin fa-spinner" />
-      )}
-    </React.Fragment>
+      <ValidationIcon status={loading ? 'pending' : undefined} />
+    </ValidationWrapper>
   );
 };
 

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { bemBlock} from "common/utils/bem";
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 
 import {
@@ -16,12 +17,21 @@ import {
 
 import { PROJECT_LOCAL_STORAGE_KEY } from 'common/utils/localStorage';
 
+import * as Layout from 'common/components/layout';
 import Modal from 'common/components/modal/Modal';
 import ProjectInput from 'common/components/input/ProjectInput';
+import Input from 'common/components/input/Input';
+import Button from 'common/components/button/Button';
+import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
+import ValidationIcon from "common/components/validation-icon/ValidationIcon";
+import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
+import Warning from "common/components/warning/Warning";
 
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import { getNotebookState } from 'common/state/notebook/selectors'
 import { setNotebook } from 'common/state/notebook/actions'
+
+import './UploadModal.less';
 
 interface UploadModalProps {
   platformNotebook: PlatformNotebook
@@ -29,6 +39,8 @@ interface UploadModalProps {
 }
 
 type UploadMode = 'notebook' | 'checkpoint'
+
+const block = bemBlock('upload-modal');
 
 const UploadModal: React.FC<UploadModalProps> = ({
   platformNotebook,
@@ -47,7 +59,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
    */
   const noAccess = !notebook && metadata.notebookId
 
-  // User from the api token is differed that the of remote notebook. 
+  // User from the api token is differed that the of remote notebook.
   const ownerChanged = notebook && notebook.owner !== inferredUsername
 
   // Current notebook was renamed but old path is stored in remote.
@@ -122,76 +134,148 @@ const UploadModal: React.FC<UploadModalProps> = ({
       isOpen
       onClose={onClose}
     >
-      { noAccess && (
-        <span>
-          You have no access to this notebook.
-          A copy of this notebook will be created with current checkpoint as the first one.
-        </span>
-      )}
+      <Layout.Column className={block()} spacedChildren>
+        <h1 className={block('header')}>
+          {
+            canUploadCheckpoint
+              ? 'Upload checkpoint to Neptune'
+              : 'Link new notebook to Neptune'
+          }
+        </h1>
 
-      { ownerChanged && (
-        <span>
-          You are not an owner of this notebook.
-          A copy of this notebook will be created with current checkpoint as the first one.
-        </span>
-      )}
+        { noAccess && (
+          <Warning>
+            You have no access to this notebook.
+            A copy of this notebook will be created with current checkpoint as the first one.
+          </Warning>
+        )}
 
-      { pathChanged && (
-        <span>
-          The path of this notebook changed.
-          A copy of this notebook will be created with current checkpoint as the first one.
-        </span>
-      )}
+        { ownerChanged && (
+          <Warning>
+            You are not an owner of this notebook.
+            A copy of this notebook will be created with current checkpoint as the first one.
+          </Warning>
+        )}
 
-      { canUploadCheckpoint && (
-        <React.Fragment>
-          <a href="#" onClick={() => changeMode('notebook')}>
-            Create new notebook in neptune
-          </a>
-          <a href="#" onClick={() => changeMode('checkpoint')}>
-            Upload a checkpoint to current notebook
-          </a>
-        </React.Fragment>
-      )}
+        { pathChanged && (
+          <Warning>
+            The path of this notebook changed.
+            A copy of this notebook will be created with current checkpoint as the first one.
+          </Warning>
+        )}
 
-      Project
-      <ProjectInput
-        value={projectId}
-        disabled={mode === 'checkpoint'}
-        onChange={setProjectId}
-      />
+        { canUploadCheckpoint && (
+          <Layout.Column
+            spacedChildren="xs"
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {changeMode(event.target.value as UploadMode)}}
+          >
+            <div>
+              <label>
+                <Layout.Row
+                  span="auto"
+                  spacedChildren="sm"
+                  alignItems="center"
+                >
+                <input
+                  className={block('radio')}
+                  type="radio"
+                  value="notebook"
+                  checked={mode === 'notebook'}
+                />
+                  <span>Create new notebook in neptune</span>
+                </Layout.Row>
+              </label>
+            </div>
+            <div>
+              <label>
+                <Layout.Row
+                  span="auto"
+                  spacedChildren="sm"
+                  alignItems="center"
+                >
+                  <input
+                    className={block('radio')}
+                    type="radio"
+                    value="checkpoint"
+                    checked={mode === 'checkpoint'}
+                   />
+                  <span>Upload a checkpoint to current notebook</span>
+                </Layout.Row>
+              </label>
+            </div>
+          </Layout.Column>
+        )}
 
-      Notebook name
-      <input
-        value={metadata.path}
-        disabled
-      />
 
-      Checkpoint name (optional)
-      <input
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-      />
+        <Layout.Column spacedChildren="xs">
+          <span>Project</span>
+          <ProjectInput
+            className={block('input')}
+            value={projectId}
+            disabled={mode === 'checkpoint'}
+            onChange={setProjectId}
+          />
+        </Layout.Column>
 
-      Checkpoint description (optional)
-      <input
-        value={description}
-        onChange={(event) => setDescription(event.target.value)}
-      />
-      
-      { loading && <span children="Loading" /> }
 
-      <button 
-        disabled={loading}
-        children="Cancel"
-        onClick={onClose}
-      />
+        <Layout.Column spacedChildren="xs">
+          <span>Notebook name</span>
+          <ValidationWrapper>
+            <Input
+              className={block('input')}
+              value={metadata.path}
+              disabled
+            />
+              <ValidationIcon />
+          </ValidationWrapper>
+        </Layout.Column>
 
-      <button 
-        disabled={disabled || loading}
-        children={mode === 'notebook' ? 'Create notebook' : 'Upload checkpoint'}
-        onClick={handleSubmit}
-      />
+
+        <Layout.Column spacedChildren="xs">
+          <span>Checkpoint name (optional)</span>
+          <ValidationWrapper>
+            <Input
+              className={block('input')}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+            <ValidationIcon />
+          </ValidationWrapper>
+        </Layout.Column>
+
+        <Layout.Column spacedChildren="xs">
+          <span>Checkpoint description (optional)</span>
+          <ValidationWrapper>
+            <Input
+              className={block('input')}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+            <ValidationIcon />
+          </ValidationWrapper>
+        </Layout.Column>
+
+        <Layout.Row
+          span="auto"
+          justifyContent="end"
+          spacedChildren
+          withGutter="xl"
+        >
+          <Button
+            variant="secondary"
+            disabled={loading}
+            children="Cancel"
+            onClick={onClose}
+          />
+
+          <ButtonWithLoading
+            loading={loading}
+            disabled={disabled || loading}
+            children={mode === 'notebook' ? 'Create notebook' : 'Upload checkpoint'}
+            onClick={handleSubmit}
+          />
+        </Layout.Row>
+      </Layout.Column>
     </Modal>
   );
 }
