@@ -34,12 +34,15 @@ const App: React.FC<AppProps> = ({
     isApiTokenValid,
   } = useSelector(getConfigurationState);
 
+  const metadata = React.useMemo(() => platformNotebook.getMetadata(), []);
+
   const [ configureModalOpen, setConfigureModalOpen ] = React.useState(false);
   const [ uploadModalOpen, setUploadModalOpen ] = React.useState(false);
 
   const handleConfigure = () => setConfigureModalOpen(true);
 
-  const { loaded: notebookLoaded } = useSelector(getNotebookState);
+  const { fetchStatus } = useSelector(getNotebookState);
+  const uploadVisible = (metadata.notebookId && ['success', 'failure'].includes(fetchStatus) || !metadata.notebookId);
 
   return (
     <div id="neptune-app">
@@ -55,7 +58,7 @@ const App: React.FC<AppProps> = ({
           label="Upload"
           title="Upload to Neptune"
           icon="fa-cloud-upload"
-          visible={isApiTokenValid && notebookLoaded}
+          visible={isApiTokenValid && uploadVisible}
           onClick={() => setUploadModalOpen(true)}
         />
       </ToolbarWrapper>

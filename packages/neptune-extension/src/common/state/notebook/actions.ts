@@ -5,6 +5,8 @@ import { leaderboardClient } from "common/api/leaderboard-client";
 
 export const fetchNotebook = (notebookId: string): ThunkAction<Promise<NotebookDTO | void>, {}, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+    dispatch(fetchNotebookRequest());
+
     try {
       const notebook =  await leaderboardClient.api.getNotebook({ id: notebookId });
 
@@ -18,6 +20,10 @@ export const fetchNotebook = (notebookId: string): ThunkAction<Promise<NotebookD
     }
   };
 };
+
+function fetchNotebookRequest() {
+  return { type: 'NOTEBOOK_FETCH_REQUEST' } as const;
+}
 
 function fetchNotebookSuccess(notebook: NotebookDTO) {
   return { type: 'NOTEBOOK_FETCH_SUCCESS', payload: {notebook} } as const;
@@ -107,7 +113,8 @@ function uploadCheckpointFailed() {
 }
 
 export type NotebookActions = ReturnType<
-  typeof fetchNotebookSuccess
+  typeof fetchNotebookRequest
+  | typeof fetchNotebookSuccess
   | typeof fetchNotebookFailed
   | typeof uploadNotebookRequest
   | typeof uploadNotebookSuccess

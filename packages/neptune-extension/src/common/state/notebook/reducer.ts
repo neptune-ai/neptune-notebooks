@@ -2,14 +2,14 @@ import { NotebookActions } from './actions'
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 
 interface NotebookState {
-  loaded: boolean
+  fetchStatus: 'none' | 'pending' | 'success' | 'failure'
   notebook?: NotebookDTO
   uploadNotebookStatus: 'none' | 'pending' | 'success' | 'failure'
   uploadCheckpointStatus: 'none' | 'pending' | 'success' | 'failure'
 }
 
 const initialState: NotebookState = {
-  loaded: false,
+  fetchStatus: 'none',
   notebook: undefined,
   uploadCheckpointStatus: 'none',
   uploadNotebookStatus: 'none',
@@ -60,11 +60,18 @@ export function notebookReducer(state: NotebookState = initialState, action: Not
       }
     }
 
+    case "NOTEBOOK_FETCH_REQUEST": {
+      return {
+        ...state,
+        fetchStatus: 'pending',
+      }
+    }
+
     case "NOTEBOOK_FETCH_FAILED" : {
       return {
         ...state,
         notebook: undefined,
-        loaded: false,
+        fetchStatus: 'failure',
       }
     }
 
@@ -72,7 +79,7 @@ export function notebookReducer(state: NotebookState = initialState, action: Not
       return {
         ...state,
         notebook: action.payload.notebook,
-        loaded: true,
+        fetchStatus: 'success',
       };
     }
 
