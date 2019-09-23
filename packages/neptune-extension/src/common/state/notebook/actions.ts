@@ -4,17 +4,18 @@ import {CheckpointDTO, NotebookDTO, NotebookWithNoContentDTO} from 'generated/le
 import { leaderboardClient } from "common/api/leaderboard-client";
 
 export const fetchNotebook = (notebookId: string): ThunkAction<Promise<NotebookDTO | void>, {}, {}, NotebookActions> => {
-  return (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
-    return leaderboardClient.api
-      .getNotebook({ id: notebookId })
-      .then((notebook) => {
-        dispatch(fetchNotebookSuccess(notebook));
-        return notebook;
-      })
-      .catch(() => {
-        dispatch(fetchNotebookFailed());
-        return;
-      })
+  return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+    try {
+      const notebook =  await leaderboardClient.api.getNotebook({ id: notebookId });
+
+      dispatch(fetchNotebookSuccess(notebook));
+
+      return notebook;
+    } catch (err) {
+      dispatch(fetchNotebookFailed());
+
+      return;
+    }
   };
 };
 
@@ -34,21 +35,22 @@ interface CheckpointMetadata {
 
 export const uploadNotebook = (projectId: string, checkpointMeta: CheckpointMetadata, content: any)
   : ThunkAction<Promise<NotebookWithNoContentDTO | void>, {}, {}, NotebookActions> => {
-  return (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
-
+  return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     dispatch(uploadNotebookRequest());
 
-    return leaderboardClient.api
-      .createNotebook({ projectIdentifier: projectId })
-      .then((notebook) => {
-        dispatch(uploadNotebookSuccess(notebook))
-        return dispatch(uploadCheckpoint(notebook.id, checkpointMeta, content))
-          .then(() => notebook);
-      })
-      .catch(() => {
-        dispatch(uploadNotebookFailed());
-        return;
-      })
+    try {
+      const notebook = await leaderboardClient.api.createNotebook({projectIdentifier: projectId});
+
+      await uploadCheckpoint(notebook.id, checkpointMeta, content);
+
+      dispatch(uploadNotebookSuccess(notebook));
+
+      return notebook
+    } catch (err) {
+      dispatch(uploadNotebookFailed());
+
+      return;
+    }
   };
 };
 
@@ -66,30 +68,30 @@ function uploadNotebookFailed() {
 
 export const uploadCheckpoint = (notebookId: string, checkpointMeta: CheckpointMetadata, content: any)
   : ThunkAction<Promise<CheckpointDTO | void>, {}, {}, NotebookActions> => {
-  return (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+  return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
 
     dispatch(uploadCheckpointRequest());
 
-    return leaderboardClient.api
-      .createEmptyCheckpoint({
+    try {
+      const checkpoint = await leaderboardClient.api.createEmptyCheckpoint({
         notebookId,
         checkpoint: checkpointMeta,
-      })
-      .then((checkpoint) => leaderboardClient.api.uploadCheckpointContent({
-          id: checkpoint.id,
-          content,
-        })
-        .then(() => checkpoint)
-      )
-      .then((checkpoint) => {
-        dispatch(uploadCheckpointSuccess(checkpoint));
-        return checkpoint;
-      })
-      .catch(() => {
-        dispatch(uploadCheckpointFailed());
-        return;
-      })
-  };
+      });
+
+      await leaderboardClient.api.uploadCheckpointContent({
+        id: checkpoint.id,
+        content,
+      });
+
+      dispatch(uploadCheckpointSuccess(checkpoint));
+
+      return checkpoint;
+
+    } catch (err) {
+      dispatch(uploadCheckpointFailed());
+      return;
+    }
+  }
 };
 
 function uploadCheckpointRequest() {

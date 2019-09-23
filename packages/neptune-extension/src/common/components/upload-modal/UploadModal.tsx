@@ -24,7 +24,7 @@ import {
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import {
   getNotebookState,
-  getLoadingState,
+  getNotebookLoadingState,
 } from 'common/state/notebook/selectors'
 
 interface UploadModalProps {
@@ -43,7 +43,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const dispatch = useDispatch();
   const thunkDispatch = dispatch as ThunkDispatch<{}, {}, AnyAction>;
   const { notebook } = useSelector(getNotebookState)
-  const loading = useSelector(getLoadingState)
+  const loading = useSelector(getNotebookLoadingState)
   const { inferredUsername } = useSelector(getConfigurationState)
 
   /*

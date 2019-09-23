@@ -13,6 +13,6 @@ export function loadInitialNotebook(platformNotebook: PlatformNotebook) {
     if (metadata.notebookId) {
       dispatch(fetchNotebook(metadata.notebookId))
     }
-  }, [() => platformNotebook.getMetadata()])
+  }, [])
 }
 
