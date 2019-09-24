@@ -4,6 +4,9 @@ import {
   NeptuneClientMsg,
 } from 'types/platform';
 
+import Jupyter from 'base/js/namespace';
+
+import { openNotebookInNewWindow } from './window';
 
 class Notebook implements PlatformNotebook {
   async getContent() {
@@ -31,6 +34,10 @@ class Notebook implements PlatformNotebook {
     Jupyter.notebook.save_checkpoint();
   }
 
+  executeKernelCode(code: string) {
+    Jupyter.notebook.kernel.execute(code);
+  }
+
   async registerNeptuneMessageListener(callback: (msg: NeptuneClientMsg) => void) {
     Jupyter.notebook.kernel.comm_manager.register_target(
       'neptune_comm',
@@ -40,6 +47,10 @@ class Notebook implements PlatformNotebook {
         });
       }
     );
+  }
+
+  openNotebookInNewWindow(content: any) {
+    openNotebookInNewWindow(content);
   }
 }
 

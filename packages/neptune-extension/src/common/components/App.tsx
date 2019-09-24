@@ -11,10 +11,15 @@ import {validateGlobalApiToken} from 'common/hooks/auth';
 
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 
+import { createActivationHandler } from 'common/hooks/activation';
 import { loadInitialNotebook } from 'common/hooks/notebook';
 import { getNotebookState } from 'common/state/notebook/selectors'
 
 import UploadModal from 'common/components/upload-modal/UploadModal';
+import CheckoutModal from 'common/components/checkout-modal/CheckoutModal';
+import ActivationModal from 'common/components/activation-modal/ActivationModal';
+
+type ModalName = 'configure' | 'upload' | 'checkout' | 'activation' | undefined
 
 export interface AppProps {
   platformNotebook: PlatformNotebook
@@ -30,16 +35,19 @@ const App: React.FC<AppProps> = ({
 
   loadInitialNotebook(platformNotebook);
 
+  createActivationHandler(platformNotebook);
+
   const {
     isApiTokenValid,
   } = useSelector(getConfigurationState);
 
   const metadata = React.useMemo(() => platformNotebook.getMetadata(), []);
 
-  const [ configureModalOpen, setConfigureModalOpen ] = React.useState(false);
-  const [ uploadModalOpen, setUploadModalOpen ] = React.useState(false);
+  const [ modalOpen, setModalOpen ] = React.useState<ModalName>();
 
-  const handleConfigure = () => setConfigureModalOpen(true);
+  const {
+    notebook,
+  } = useSelector(getNotebookState);
 
   const { fetchStatus } = useSelector(getNotebookState);
   const uploadVisible = (metadata.notebookId && ['success', 'failure'].includes(fetchStatus) || !metadata.notebookId);
@@ -52,26 +60,54 @@ const App: React.FC<AppProps> = ({
           title="Connect to Neptune"
           icon="neptune"
           compact={isApiTokenValid}
-          onClick={handleConfigure}
+          onClick={() => setModalOpen('configure')}
         />
         <ToolbarButton
           label="Upload"
           title="Upload to Neptune"
           icon="fa-cloud-upload"
           visible={isApiTokenValid && uploadVisible}
-          onClick={() => setUploadModalOpen(true)}
+          onClick={() => setModalOpen('upload')}
+        />
+        <ToolbarButton
+          label="Checkout"
+          title="Checkout notebook from Neptune"
+          icon="fa-sign-out-alt"
+          visible={isApiTokenValid}
+          onClick={() => setModalOpen('checkout')}
+        />
+        <ToolbarButton
+          label="Activate"
+          title="Activate neptune-client configuration"
+          visible={isApiTokenValid && !!notebook}
+          onClick={() => setModalOpen('activation')}
         />
       </ToolbarWrapper>
-      {configureModalOpen && (
+
+      { modalOpen === 'configure' && (
         <ConfigureModal
-          onClose={() => setConfigureModalOpen(false)}
+          onClose={() => setModalOpen(undefined)}
         />
       )}
 
-      { uploadModalOpen && (
+      { modalOpen === 'upload' && (
         <UploadModal
           platformNotebook={platformNotebook}
-          onClose={() => setUploadModalOpen(false)}
+          onClose={() => setModalOpen(undefined)}
+        />
+      )}
+
+      { modalOpen === 'checkout' && (
+        <CheckoutModal
+          platformNotebook={platformNotebook}
+          onClose={() => setModalOpen(undefined)}
+        />
+      )}
+
+      { modalOpen === 'activation' && (
+        <ActivationModal
+          platformNotebook={platformNotebook}
+          onClose={() => setModalOpen(undefined)}
         />
       )}
     </div>

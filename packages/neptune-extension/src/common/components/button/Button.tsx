@@ -40,7 +40,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled,
       pressed,
     },
-    extra: [className],
+    extra: [className, {disabled}],
   });
 
   const onClickHandler = getEventHandler(onClick);

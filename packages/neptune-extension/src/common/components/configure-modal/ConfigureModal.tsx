@@ -6,11 +6,12 @@ import {
 } from 'react-redux';
 
 // App
-import Layout from 'common/components/layout';
+import * as Layout from 'common/components/layout';
 import Button from 'common/components/button/Button';
-import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
 import Modal from 'common/components/modal/Modal';
 import Input from 'common/components/input/Input';
+import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
+import ValidationIcon from "common/components/validation-icon/ValidationIcon";
 import { bemBlock } from "common/utils/bem";
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import { setApiToken } from 'common/state/configuration/actions';
@@ -60,17 +61,22 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
           <label>
             <Layout.Column spacedChildren="xs">
               <span>API Token</span>
-              <Input
-                error={isLocalApiTokenValid === false}
-                value={localApiToken}
-                onChange={handleApiTokenChange}
-              />
+              <ValidationWrapper>
+                <Input
+                  className={block('input')}
+                  error={isLocalApiTokenValid === false}
+                  value={localApiToken}
+                  onChange={handleApiTokenChange}
+                />
+                <ValidationIcon status={isLocalApiTokenValid === false ? 'error' : 'success'} />
+              </ValidationWrapper>
             </Layout.Column>
           </label>
         </Layout.Column>
         <Layout.Row
           span="auto"
           justifyContent="end"
+          withGutter="xl"
           spacedChildren
         >
           <Button
@@ -78,8 +84,7 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
             children="Cancel"
             onClick={onClose}
           />
-          <ButtonWithLoading
-            loading={/* to be implemented */ false}
+          <Button
             children="Connect"
             disabled={localApiToken === undefined || isLocalApiTokenValid !== true}
             onClick={handleConnect}

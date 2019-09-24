@@ -6,11 +6,8 @@ import { bemBlock } from 'common/utils/bem';
 
 // Module
 import LayoutColumn from '../layout-column/LayoutColumn';
-import LayoutElement from '../layout-element/LayoutElement';
-import LayoutFill from '../layout-fill/LayoutFill';
 import LayoutGrid from '../layout-grid/LayoutGrid';
 import LayoutRow from '../layout-row/LayoutRow';
-import LayoutSeparator from '../layout-separator/LayoutSeparator';
 
 interface LayoutProps extends React.HTMLAttributes<any> {
   className: string

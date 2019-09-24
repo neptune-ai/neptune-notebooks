@@ -8,7 +8,7 @@ import {
   JustifyContentValue,
   SpacedChildrenValue,
 } from 'common/components/layout/types';
-import { LayoutElementProps } from "common/components/layout/layout-element/LayoutElement";
+import { LayoutElementProps } from 'common/components/layout/layout-element/LayoutElement';
 import LayoutElement from 'common/components/layout/layout-element/LayoutElement';
 
 // Module

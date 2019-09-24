@@ -8,7 +8,9 @@ export interface PlatformNotebook {
   getContent: () => Promise<any>
   getMetadata: () => PlatformNotebookMetadata
   saveNotebookId: (notebookId: string) => Promise<void>
+  executeKernelCode: (code: string) => void
   registerNeptuneMessageListener: (callback: (msg: NeptuneClientMsg) => void) => void
+  openNotebookInNewWindow: (content: any) => void
 }
 
 export interface NeptuneClientMsg {
