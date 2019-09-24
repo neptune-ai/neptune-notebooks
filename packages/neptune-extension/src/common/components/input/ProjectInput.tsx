@@ -6,12 +6,13 @@ import { bemBlock} from "common/utils/bem";
 
 import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
 import ValidationIcon from "common/components/validation-icon/ValidationIcon";
+import Select from 'common/components/input/Select';
 
 interface ProjectInputProps {
   className?: string,
   value: string
   disabled?: boolean
-  onChange: (projectId: string) => void
+  onChange: (projectId?: string) => void
 }
 
 const block = bemBlock('project-input');
@@ -22,7 +23,6 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
   disabled,
   onChange: onChangeProp,
 }) => {
-
   const [ loading, setLoading ] = React.useState(false);
 
   const [ projectList, setProjectList ] = React.useState<Array<ProjectWithRoleDTO>>(() => {
@@ -33,11 +33,9 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
 
         setProjectList(entries);
 
-        /* TODO: implement setting initial state
-        if (!value && entries.length > 0) {
+        if (entries.length > 0 && entries.some(project => project.id === value)) {
           onChangeProp(entries[0].id);
         }
-        */
 
         setLoading(false);
       });
@@ -45,9 +43,11 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
     return [];
   });
 
+  const status = loading ? 'pending' : 'success';
+
   return (
     <ValidationWrapper>
-      <select
+      <Select
         className={block({extra: className})}
         value={value}
         disabled={disabled}
@@ -60,8 +60,8 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
             children={`${project.organizationName}/${project.name}`}
           />
         ))}
-      </select>
-      <ValidationIcon status={loading ? 'pending' : undefined} />
+      </Select>
+      <ValidationIcon status={status} />
     </ValidationWrapper>
   );
 };
