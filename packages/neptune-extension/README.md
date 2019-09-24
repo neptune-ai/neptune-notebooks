@@ -1,41 +1,43 @@
-# Neptune extension for Jupyter Notebook & Lab
+# Neptune extension for JupyterLab
 
-This extension can be build for both Jupyter Notebook (nbextension) and
-Jupyter Lab (labextension) platform.
+This extension brings an integration between Neptune and JupyterLab.
 
+It allows you to upload notebooks to Neptune, checkout previously uploaded
+notebooks, and track experiments and metrics directly from the Jupyter
+interface. Neptune will version the notebook automatically once an experiment
+is started. Go to [Neptune](https://neptune.ml) to compare different notebooks
+and checkpoints in a diff-like format.
 
-## Install dependencies
+For a Jupyter Notebook extension please see
+[Neptune nbextension](https://pypi.org/project/neptune-notebooks/).
 
-Run `npm install`.
+## Installation
 
-This will also generate API clients. See [generated code](#generated-code) section.
+```bash
+jupyter labextension install neptune-notebooks
+```
 
+## Configuration
 
-## Develop nbextension (for Jupyter Notebook)
+Login to Neptune application to get your private API token and copy it to
+the extension to configure the connection.
 
-Run `npm run start-nb` to build and put webpack in watch mode.
+See [Configuration](https://docs.neptune.ml/notebooks/configuration.html) for 
+further information.
 
-Create a symlink to `dist/nbextension/neptune-notebook.js` from something like this:
+## Example code
 
-* Unix `~/.local/share/jupyter/nbextensions/`.
-* Mac OS `~/Library/Jupyter/nbextensions/`
+Run this code in notebook to create an experiment in Neptune. The source of the
+notebook will be uploaded and associated with the very experiment.
 
-Make sure that symlink is not relative.
-Hint: The nbextension is an AMD module.
+```
+import neptune
+neptune.init()
+neptune.create_experiment()
+neptune.send_metric('some_metric', 0.5)
+```
 
+## Documentation
 
-## Develop labextension (for Jupyter Lab)
+For online docs please go to [Neptune notebook docs](https://docs.neptune.ml/notebooks/introduction.html)
 
-1.  `npm run start-lab` to build and put webpack in watch mode.
-2.  `jupyter labextension link .` (this is both install and watch command).
-3.  `jupyter lab --watch` to start jupyter in watch mode.
-
-Hint: The labextension is a standard npm package. Jupyter tools run "npm pack"
-by themselves during install.
-
-
-## Generated code
-
-In order to properly build the extension you need to generate API clients from swagger files definitions.
-Use `npm run generate-api-clients` script.
-This script is also run after you install dependencies (as `postinstall` hook)
