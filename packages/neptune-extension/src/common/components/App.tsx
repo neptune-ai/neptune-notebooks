@@ -50,7 +50,7 @@ const App: React.FC<AppProps> = ({
   } = useSelector(getNotebookState);
 
   const { fetchStatus } = useSelector(getNotebookState);
-  const uploadVisible = (metadata.notebookId && ['success', 'failure'].includes(fetchStatus) || !metadata.notebookId);
+  const notebookInitialized = (metadata.notebookId && ['success', 'failure'].includes(fetchStatus) || !metadata.notebookId);
 
   return (
     <div id="neptune-app">
@@ -66,14 +66,14 @@ const App: React.FC<AppProps> = ({
           label="Upload"
           title="Upload to Neptune"
           icon="fa-cloud-upload"
-          visible={isApiTokenValid && uploadVisible}
+          visible={isApiTokenValid && notebookInitialized}
           onClick={() => setModalOpen('upload')}
         />
         <ToolbarButton
           label="Checkout"
           title="Checkout notebook from Neptune"
           icon="fa-sign-out-alt"
-          visible={isApiTokenValid}
+          visible={isApiTokenValid && notebookInitialized}
           onClick={() => setModalOpen('checkout')}
         />
         <ToolbarButton

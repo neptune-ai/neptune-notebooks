@@ -697,7 +697,10 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/CheckpointContentFix"
+            }
           },
           "401" : {
             "description" : "Unauthorized"
@@ -1513,6 +1516,10 @@
         }
       },
       "title" : "ChannelWithValueDTO"
+    },
+    "CheckpointContentFix": {
+      "type": "object",
+      "title": "CheckpointContentFix"
     },
     "CheckpointDTO" : {
       "type" : "object",
