@@ -1,21 +1,21 @@
 import React, {ChangeEvent} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from "redux-thunk";
 
 import { bemBlock} from "common/utils/bem";
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 
 import {
   PlatformNotebook,
-  PlatformNotebookMetadata,
 } from 'types/platform';
+
+import { PROJECT_LOCAL_STORAGE_KEY } from 'common/utils/localStorage';
 
 import {
   uploadNotebook,
   uploadCheckpoint,
-  getNotebook,
-} from 'common/utils/upload';
-
-import { PROJECT_LOCAL_STORAGE_KEY } from 'common/utils/localStorage';
+} from 'common/state/notebook/actions';
 
 import * as Layout from 'common/components/layout';
 import Modal from 'common/components/modal/Modal';
@@ -28,8 +28,10 @@ import ValidationWrapper from "common/components/validation-wrapper/ValidationWr
 import Warning from "common/components/warning/Warning";
 
 import { getConfigurationState } from 'common/state/configuration/selectors';
-import { getNotebookState } from 'common/state/notebook/selectors'
-import { setNotebook } from 'common/state/notebook/actions'
+import {
+  getNotebookState,
+  getNotebookLoadingState,
+} from 'common/state/notebook/selectors'
 
 import './UploadModal.less';
 
@@ -48,8 +50,10 @@ const UploadModal: React.FC<UploadModalProps> = ({
 }) => {
   const metadata = React.useMemo(() => platformNotebook.getMetadata(), []);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const thunkDispatch = dispatch as ThunkDispatch<{}, {}, AnyAction>;
   const { notebook } = useSelector(getNotebookState)
+  const loading = useSelector(getNotebookLoadingState)
   const { inferredUsername } = useSelector(getConfigurationState)
 
   /*
@@ -71,8 +75,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
    */
   const canUploadCheckpoint = notebook && !ownerChanged
 
-  const [ loading, setLoading ] = React.useState(false);
-
   // By default always try to create new checkpoint
   const [ mode, setMode ] = React.useState<UploadMode>(canUploadCheckpoint ? 'checkpoint' : 'notebook');
 
@@ -93,8 +95,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }
 
   async function handleSubmit() {
-    setLoading(true);
-
     const content = await platformNotebook.getContent();
 
     const checkpointMeta = {
@@ -104,26 +104,10 @@ const UploadModal: React.FC<UploadModalProps> = ({
     };
 
     if (mode === 'notebook' || metadata.notebookId === undefined) {
-      const notebookMeta = await uploadNotebook(projectId, checkpointMeta, content);
-
-      await platformNotebook.saveNotebookId(notebookMeta.id);
-
-      const notebook = await getNotebook(notebookMeta.id)
-      dispatch(setNotebook(notebook))
+     await thunkDispatch(uploadNotebook(projectId, checkpointMeta, content, platformNotebook));
+    } else {
+      await thunkDispatch(uploadCheckpoint(metadata.notebookId, checkpointMeta, content));
     }
-    else {
-      // notebook id is always defined if we can upload a new checkpoint.
-      await uploadCheckpoint(metadata.notebookId, checkpointMeta, content);
-
-      if (pathChanged) {
-        // Reload notebook
-        const notebook = await getNotebook(metadata.notebookId as string)
-        dispatch(setNotebook(notebook))
-      }
-    }
-
-    setLoading(false);
-
     onClose();
   }
 
