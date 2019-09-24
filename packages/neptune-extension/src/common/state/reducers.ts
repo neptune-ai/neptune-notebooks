@@ -2,10 +2,12 @@
 import { combineReducers } from 'redux';
 
 // Module
+import { checkoutReducer as checkout } from './checkout/reducer';
 import { notebookReducer as notebook } from './notebook/reducer';
 import { configurationReducer as configuration } from './configuration/reducer';
 
 const reducers = {
+  checkout,
   configuration,
   notebook,
 };

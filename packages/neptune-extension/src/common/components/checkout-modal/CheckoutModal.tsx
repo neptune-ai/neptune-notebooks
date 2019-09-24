@@ -1,11 +1,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ThunkDispatch } from "redux-thunk";
+import { AnyAction } from "redux";
 
 import {
   PlatformNotebook,
 } from 'types/platform';
-
-import { leaderboardClient } from 'common/api/leaderboard-client';
 
 import {
   getDefaultProjectId,
@@ -18,9 +18,11 @@ import Modal from 'common/components/modal/Modal';
 import useSelectInputValue from 'common/hooks/useSelectInputValue';
 import SelectInput from 'common/components/input/SelectInput';
 
-import { getNotebookState } from 'common/state/notebook/selectors'
+import { getNotebookState } from 'common/state/notebook/selectors';
+import { getCheckoutState } from "common/state/checkout/selectors";
+import { fetchCheckpointContent } from 'common/state/checkout/actions';
 
-import { 
+import {
   fetchProjectOptions,
   fetchNotebookOptions,
   fetchCheckpointOptions,
@@ -36,9 +38,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   platformNotebook,
   onClose,
 }) => {
-  const [ loading, setLoading ] = React.useState(false);
+  const dispatch = useDispatch();
+  const thunkDispatch = dispatch as ThunkDispatch<{}, {}, AnyAction>;
 
-  const { notebook } = useSelector(getNotebookState)
+  const { notebook } = useSelector(getNotebookState);
+  const { fetchStatus } = useSelector(getCheckoutState);
+  const loading = fetchStatus === 'pending';
   const initialProjectId = () => notebook ? notebook.projectId : getDefaultProjectId();
   const initialNotebookId = notebook ? notebook.id : undefined;
 
@@ -65,15 +70,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       return;
     }
 
-    setLoading(true);
-
-    const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId })
+    await thunkDispatch(fetchCheckpointContent(checkpointId, platformNotebook));
 
     setDefaultProjectId(projectId);
-
-    await platformNotebook.openNotebookInNewWindow(content);
-
-    setLoading(false);
     onClose();
   }
 
@@ -105,14 +104,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       { loading && <span children="Loading" /> }
       { disabled && <span children="Disabled" /> }
 
-      <Button 
+      <Button
         children="Cancel"
         variant="secondary"
         disabled={loading}
         onClick={onClose}
       />
 
-      <Button 
+      <Button
         children="Checkout"
         disabled={disabled || loading}
         onClick={handleSubmit}
