@@ -9,7 +9,11 @@ import Jupyter from 'base/js/namespace';
 import { openNotebookInNewWindow } from './window';
 
 class Notebook implements PlatformNotebook {
-  async getContent() {
+  
+  async saveWorkingCopyAndGetContent() {
+    Jupyter.notebook.save_checkpoint();
+
+    // The function below returns the (unsaved) working copy.
     return Jupyter.notebook.toJSON();
   }
 

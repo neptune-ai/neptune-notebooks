@@ -25,7 +25,10 @@ class Notebook implements PlatformNotebook {
     this.app = app;
   };
 
-  async getContent() {
+  async saveWorkingCopyAndGetContent() {
+    await this.context.save();
+
+    // The function below returns the (saved) copy from disc.
     const file = await this.app.serviceManager.contents.get(this.context.path, { content: true });
 
     return file.content;
