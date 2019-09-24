@@ -9,15 +9,14 @@ export interface SelectInputProps {
 }
 
 export interface SelectMetaProps {
-  valid?: boolean
-  loading?: boolean
+  status: 'pending' | 'success' | 'error'
 }
 
 export default function useSelectInputValue(
   initialValue: undefined | string | (() => string | undefined),
   fetchFn: () => Promise<Array<SelectOption>>,
   deps: ReadonlyArray<any>,
-): [string | undefined, SelectInputProps, SelectMetaProps]  {
+): [string | undefined, SelectInputProps, SelectMetaProps, (value: string) => void]  {
 
   const [ value, setValue ] = React.useState(initialValue)
   const [ options, setOptions ] = React.useState<Array<SelectOption>>([]);
@@ -59,12 +58,10 @@ export default function useSelectInputValue(
     options,
     onChange,
   };
-
   const metaProps: SelectMetaProps = {
-    valid,
-    loading,
+    status: loading ? 'pending' : valid ? 'success' : 'error',
   };
 
-  return [ value, inputProps, metaProps ];
+  return [ value, inputProps, metaProps, setValue ];
 }
 

@@ -1,9 +1,10 @@
-import React, {ChangeEvent} from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from "redux-thunk";
 
 import { bemBlock} from "common/utils/bem";
+import useSelectInputValue from "common/hooks/useSelectInputValue";
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 
 import {
@@ -11,6 +12,7 @@ import {
 } from 'types/platform';
 
 import { PROJECT_LOCAL_STORAGE_KEY } from 'common/utils/localStorage';
+import { fetchProjects} from "common/utils/projects";
 
 import {
   uploadNotebook,
@@ -19,13 +21,14 @@ import {
 
 import * as Layout from 'common/components/layout';
 import Modal from 'common/components/modal/Modal';
-import ProjectInput from 'common/components/input/ProjectInput';
 import Input from 'common/components/input/Input';
 import Button from 'common/components/button/Button';
 import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
 import ValidationIcon from "common/components/validation-icon/ValidationIcon";
 import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
 import Warning from "common/components/warning/Warning";
+import SelectInput from "common/components/input/SelectInput";
+
 
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import {
@@ -78,13 +81,18 @@ const UploadModal: React.FC<UploadModalProps> = ({
   // By default always try to create new checkpoint
   const [ mode, setMode ] = React.useState<UploadMode>(canUploadCheckpoint ? 'checkpoint' : 'notebook');
 
-  const [ projectId, setProjectId ] = React.useState(() => {
-    return !!notebook
-      ? notebook.projectId
-      : window.localStorage.getItem(PROJECT_LOCAL_STORAGE_KEY) || ''
-  });
+  const defaultProjectId = !!notebook
+    ? notebook.projectId
+    : window.localStorage.getItem(PROJECT_LOCAL_STORAGE_KEY) || '';
+
   const [ name, setName ] = React.useState('');
   const [ description, setDescription ] = React.useState('');
+
+  const [ projectId, projectInputProps, projectMetaProps, setProjectId ] = useSelectInputValue(
+    defaultProjectId,
+    () => fetchProjects(),
+    []
+  );
 
   function changeMode(newMode: UploadMode) {
     if (newMode === 'checkpoint') {
@@ -95,6 +103,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }
 
   async function handleSubmit() {
+    if (!projectId) {
+      return;
+    }
     const content = await platformNotebook.getContent();
 
     const checkpointMeta = {
@@ -190,17 +201,14 @@ const UploadModal: React.FC<UploadModalProps> = ({
           </Layout.Column>
         )}
 
-
         <Layout.Column spacedChildren="xs">
           <span>Project</span>
-          <ProjectInput
+          <SelectInput
             className={block('input')}
-            value={projectId}
-            disabled={mode === 'checkpoint'}
-            onChange={setProjectId}
+            {...projectInputProps }
+            {...projectMetaProps }
           />
         </Layout.Column>
-
 
         <Layout.Column spacedChildren="xs">
           <span>Notebook name</span>
