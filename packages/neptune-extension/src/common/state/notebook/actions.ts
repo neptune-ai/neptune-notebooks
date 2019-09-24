@@ -2,6 +2,7 @@ import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 import { AnyAction } from 'redux';
 import {CheckpointDTO, NotebookDTO, NotebookWithNoContentDTO} from 'generated/leaderboard-client/src/models';
 import { leaderboardClient } from "common/api/leaderboard-client";
+import { PlatformNotebook } from 'types/platform';
 
 export const fetchNotebook = (notebookId: string): ThunkAction<Promise<NotebookDTO | void>, {}, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
@@ -39,19 +40,20 @@ interface CheckpointMetadata {
   description: string
 }
 
-export const uploadNotebook = (projectId: string, checkpointMeta: CheckpointMetadata, content: any)
+export const uploadNotebook = (projectId: string, checkpointMeta: CheckpointMetadata, content: any, platformNotebook: PlatformNotebook)
   : ThunkAction<Promise<NotebookWithNoContentDTO | void>, {}, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     dispatch(uploadNotebookRequest());
 
     try {
       const notebook = await leaderboardClient.api.createNotebook({projectIdentifier: projectId});
-
-      await uploadCheckpoint(notebook.id, checkpointMeta, content);
+      await requestCheckpoint(notebook.id, checkpointMeta, content);
+      await platformNotebook.saveNotebookId(notebook.id);
+      await dispatch(fetchNotebook(notebook.id));
 
       dispatch(uploadNotebookSuccess(notebook));
 
-      return notebook
+      return notebook;
     } catch (err) {
       dispatch(uploadNotebookFailed());
 
@@ -79,16 +81,8 @@ export const uploadCheckpoint = (notebookId: string, checkpointMeta: CheckpointM
     dispatch(uploadCheckpointRequest());
 
     try {
-      const checkpoint = await leaderboardClient.api.createEmptyCheckpoint({
-        notebookId,
-        checkpoint: checkpointMeta,
-      });
-
-      await leaderboardClient.api.uploadCheckpointContent({
-        id: checkpoint.id,
-        content,
-      });
-
+      const checkpoint = await requestCheckpoint(notebookId, checkpointMeta, content);
+      await dispatch(fetchNotebook(notebookId));
       dispatch(uploadCheckpointSuccess(checkpoint));
 
       return checkpoint;
@@ -123,3 +117,17 @@ export type NotebookActions = ReturnType<
   | typeof uploadCheckpointSuccess
   | typeof uploadCheckpointFailed
 >
+
+async function requestCheckpoint(notebookId: string, checkpointMeta: CheckpointMetadata, content: any) {
+  const checkpoint = await leaderboardClient.api.createEmptyCheckpoint({
+    notebookId,
+    checkpoint: checkpointMeta,
+  });
+
+  await leaderboardClient.api.uploadCheckpointContent({
+    id: checkpoint.id,
+    content,
+  });
+
+  return checkpoint;
+}

@@ -70,7 +70,6 @@ export function notebookReducer(state: NotebookState = initialState, action: Not
     case "NOTEBOOK_FETCH_FAILED" : {
       return {
         ...state,
-        notebook: undefined,
         fetchStatus: 'failure',
       }
     }

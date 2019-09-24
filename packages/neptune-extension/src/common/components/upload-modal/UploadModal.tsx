@@ -7,7 +7,6 @@ import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 
 import {
   PlatformNotebook,
-  PlatformNotebookMetadata,
 } from 'types/platform';
 
 import { PROJECT_LOCAL_STORAGE_KEY } from 'common/utils/localStorage';
@@ -16,7 +15,6 @@ import Modal from 'common/components/modal/Modal';
 import ProjectInput from 'common/components/input/ProjectInput';
 
 import {
-  fetchNotebook,
   uploadNotebook,
   uploadCheckpoint,
 } from 'common/state/notebook/actions';
@@ -94,17 +92,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
     };
 
     if (mode === 'notebook' || metadata.notebookId === undefined) {
-      const notebookMeta = await thunkDispatch(uploadNotebook(projectId, checkpointMeta, content));
-      if (notebookMeta) {
-        await platformNotebook.saveNotebookId(notebookMeta.id);
-        await thunkDispatch(fetchNotebook(notebookMeta.id))
-      }
-    }
-    else {
+     await thunkDispatch(uploadNotebook(projectId, checkpointMeta, content, platformNotebook));
+    } else {
       await thunkDispatch(uploadCheckpoint(metadata.notebookId, checkpointMeta, content));
-      if (pathChanged) {
-        await thunkDispatch(fetchNotebook(metadata.notebookId));
-      }
     }
     onClose();
   }
