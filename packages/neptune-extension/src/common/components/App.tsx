@@ -14,6 +14,7 @@ import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 import { createActivationHandler } from 'common/hooks/activation';
 import { loadInitialNotebook } from 'common/hooks/notebook';
 import { getNotebookState } from 'common/state/notebook/selectors'
+import { createUpgradeHandler } from 'common/hooks/upgrade';
 
 import UploadModal from 'common/components/upload-modal/UploadModal';
 import CheckoutModal from 'common/components/checkout-modal/CheckoutModal';
@@ -36,6 +37,8 @@ const App: React.FC<AppProps> = ({
   loadInitialNotebook(platformNotebook);
 
   createActivationHandler(platformNotebook);
+  
+  createUpgradeHandler();
 
   const {
     isApiTokenValid,
