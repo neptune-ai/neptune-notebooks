@@ -74,8 +74,6 @@ class Toast extends React.PureComponent<IToastProps> {
       return null;
     }
 
-    // ''
-
     return (
       <Layout.Row
         spacedChildren="sm"
