@@ -75,6 +75,7 @@ module.exports = function ({ mode, platform, project }) {
         'NEPTUNE_BUILD_DATE': JSON.stringify(new Date()),
         'PLATFORM': JSON.stringify(platform),
         'APP_ENV': JSON.stringify(mode),
+        'NBEXTENSION_VERSION': JSON.stringify(process.env.npm_package_version),
       }),
     ],
     // TODO: probably should be depenand of build mode
