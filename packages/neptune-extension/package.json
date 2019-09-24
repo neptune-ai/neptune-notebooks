@@ -1,10 +1,23 @@
 {
-  "name": "neptune-extension",
-  "description": "Jupyter neptune extension",
+  "name": "neptune-notebooks",
+  "description": "Neptune Labs extension for Jupyter",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "notebooks"
+  ],
   "version": "0.1.0",
-  "private": true,
   "license": "Apache-2.0",
   "author": "Neptune Labs",
+  "homepage": "https://neptune.ml",
+  "bugs": {
+    "url": "https://github.com/neptune-ml/neptune-notebooks/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neptune-ml/neptune-notebooks.git"
+  },
   "main": "dist/labextension/neptune-notebook.js",
   "postcss": {
     "plugins": {
