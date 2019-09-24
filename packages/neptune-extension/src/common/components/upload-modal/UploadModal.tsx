@@ -95,7 +95,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }
 
   async function handleSubmit() {
-    const content = await platformNotebook.getContent();
+    const content = await platformNotebook.saveWorkingCopyAndGetContent();
 
     const checkpointMeta = {
       path: metadata.path,
