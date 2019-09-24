@@ -1,17 +1,24 @@
 import React from 'react';
 import { useSelector } from 'react-redux'
+import SyntaxHighlighter from 'react-syntax-highlighter';
+
+import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 
 import {
   PlatformNotebook,
 } from 'types/platform';
 
+import * as Layout from 'common/components/layout';
 import Button from 'common/components/button/Button';
 import Modal from 'common/components/modal/Modal';
 
 import { getConfigurationState } from 'common//state/configuration/selectors';
 import { getNotebookState } from 'common/state/notebook/selectors'
 
-import { executeActivationCode } from 'common/utils/env';
+import {
+  getActivationCode,
+  executeActivationCode,
+} from 'common/utils/env';
 
 interface ActivationModalProps {
   platformNotebook: PlatformNotebook
@@ -29,8 +36,12 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
   } = useSelector(getConfigurationState);
 
   const {
-    notebook,
+    notebook: notebookProp,
   } = useSelector(getNotebookState);
+
+  const notebook = notebookProp as NotebookDTO;
+
+  const code = getActivationCode(apiToken as string, notebook.projectId, notebook.id, notebook.path);
 
   async function handleSubmit() {
     executeActivationCode(platformNotebook, apiToken as string, notebook);
@@ -43,20 +54,35 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
       isOpen
       onClose={onClose}
     >
-      <span>
-        Activate neptune-client configuration
-      </span>
+      <Layout.Column spacedChildren="lg">
+        <span>
+          Activate neptune-client configuration
+        </span>
+        <span>
+          Activate configuration to create Neptune experiments and see them all linked to this notebook. Click "Activate" to run the code below, then just "import neptune" and work as usual.
+        </span>
 
-      <Button 
-        children="Cancel"
-        variant="secondary"
-        onClick={onClose}
-      />
+        <SyntaxHighlighter language="python">
+          { code }
+        </SyntaxHighlighter>
 
-      <Button 
-        children="Activate"
-        onClick={handleSubmit}
-      />
+        <Layout.Row
+          span="auto"
+          justifyContent="end"
+          spacedChildren
+        >
+          <Button 
+            children="Cancel"
+            variant="secondary"
+            onClick={onClose}
+          />
+
+          <Button 
+            children="Activate"
+            onClick={handleSubmit}
+          />
+        </Layout.Row>
+      </Layout.Column>
     </Modal>
   );
 }
