@@ -36,8 +36,13 @@ export default function useSelectInputValue(
       const valid = newOptions.some(([ key ]) => key === value);
 
       // select first value after reload if default does not match or exist.
-      if (newOptions.length && !valid) {
-        setValue(newOptions[0][0])
+      if (!valid) {
+        if (newOptions.length) {
+          setValue(newOptions[0][0])
+        } else {
+          setValue(undefined)
+        }
+
       }
     });
 
