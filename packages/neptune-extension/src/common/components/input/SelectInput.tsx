@@ -1,34 +1,33 @@
 import React from 'react';
+import Select from './Select';
+import ValidationWrapper from "../validation-wrapper/ValidationWrapper";
+import ValidationIcon from "../validation-icon/ValidationIcon";
 
-import {
-  SelectInputProps,
-  SelectMetaProps,
-  SelectOption,
-} from 'common/hooks/useSelectInputValue';
-import { backendClient } from 'common/api/backend-client';
-
-interface SelectInputProps2 {
-  label?: string
-  disabled?: boolean
+interface SelectInputProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  valid?: boolean,
+  loading?: boolean,
+  options: string[][]
 }
 
-const SelectInput: React.FC<SelectInputProps & SelectMetaProps & SelectInputProps2> = ({
+const SelectInput: React.FC<SelectInputProps> = ({
   value,
-  label,
   disabled,
   valid,
   loading,
   options,
   onChange,
+  ...rest
 }) => {
+  const endStatus = valid ? 'success' : 'error';
+  const status = loading ? 'pending' : endStatus;
 
   return (
-    <React.Fragment>
-      {label}
-      <select
+    <ValidationWrapper>
+      <Select
         value={value}
-        disabled={disabled || loading}
+        disabled={disabled || status === 'pending'}
         onChange={onChange}
+        {...rest}
       >
         { options.map(([ key, value ]) => (
           <option
@@ -37,11 +36,9 @@ const SelectInput: React.FC<SelectInputProps & SelectMetaProps & SelectInputProp
             children={value}
           />
         ))}
-      </select>
-      { loading && (
-        <span className="fa fa-spin fa-spinner" />
-      )}
-    </React.Fragment>
+      </Select>
+      <ValidationIcon status={status} />
+    </ValidationWrapper>
   );
 };
 

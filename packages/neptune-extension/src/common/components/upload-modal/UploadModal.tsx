@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from "redux-thunk";
@@ -95,6 +95,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }
 
   async function handleSubmit() {
+    if (!projectId) {
+      return;
+    }
     const content = await platformNotebook.saveWorkingCopyAndGetContent();
 
     const checkpointMeta = {

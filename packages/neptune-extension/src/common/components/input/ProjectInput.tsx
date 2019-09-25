@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 
 import { backendClient } from 'common/api/backend-client';
 import { ProjectWithRoleDTO } from 'generated/backend-client/src/models';
@@ -6,6 +6,7 @@ import { bemBlock} from "common/utils/bem";
 
 import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
 import ValidationIcon from "common/components/validation-icon/ValidationIcon";
+import Select from 'common/components/input/Select';
 
 interface ProjectInputProps {
   className?: string,
@@ -33,11 +34,9 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
 
         setProjectList(entries);
 
-        /* TODO: implement setting initial state
         if (!value && entries.length > 0) {
           onChangeProp(entries[0].id);
         }
-        */
 
         setLoading(false);
       });
@@ -47,7 +46,7 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
 
   return (
     <ValidationWrapper>
-      <select
+      <Select
         className={block({extra: className})}
         value={value}
         disabled={disabled}
@@ -56,15 +55,14 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
         { projectList.map((project) => (
           <option
             key={project.id}
-            value={project.id}
-            children={`${project.organizationName}/${project.name}`}
+          value={project.id}
+          children={`${project.organizationName}/${project.name}`}
           />
         ))}
-      </select>
-      <ValidationIcon status={loading ? 'pending' : undefined} />
-    </ValidationWrapper>
-  );
+        </Select>
+        <ValidationIcon status={loading ? 'pending' : undefined} />
+  </ValidationWrapper>
+);
 };
 
 export default ProjectInput;
-
