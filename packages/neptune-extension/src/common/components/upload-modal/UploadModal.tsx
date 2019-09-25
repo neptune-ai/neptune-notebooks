@@ -19,7 +19,6 @@ import {
 
 import * as Layout from 'common/components/layout';
 import Modal from 'common/components/modal/Modal';
-import ProjectInput from 'common/components/input/ProjectInput';
 import Input from 'common/components/input/Input';
 import Button from 'common/components/button/Button';
 import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
@@ -33,6 +32,9 @@ import {
   getNotebookState,
   getNotebookLoadingState,
 } from 'common/state/notebook/selectors'
+import useSelectInputValue from "common/hooks/useSelectInputValue";
+import {fetchProjectOptions} from "common/utils/checkout";
+import SelectInput from "common/components/input/SelectInput";
 
 import './UploadModal.less';
 
@@ -79,11 +81,16 @@ const UploadModal: React.FC<UploadModalProps> = ({
   // By default always try to create new checkpoint
   const [ mode, setMode ] = React.useState<UploadMode>(canUploadCheckpoint ? 'checkpoint' : 'notebook');
 
-  const [ projectId, setProjectId ] = React.useState(() => {
-    return !!notebook
-      ? notebook.projectId
-      : window.localStorage.getItem(PROJECT_LOCAL_STORAGE_KEY) || ''
-  });
+  const initialProjectId = !!notebook
+    ? notebook.projectId
+    : window.localStorage.getItem(PROJECT_LOCAL_STORAGE_KEY) || '';
+
+  const [ projectId, projectInputProps, projectMetaProps, setProjectId ] = useSelectInputValue(
+    initialProjectId,
+    () => fetchProjectOptions('readable'),
+    []
+  );
+
   const [ name, setName ] = React.useState('');
   const [ description, setDescription ] = React.useState('');
 
@@ -115,7 +122,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
     onClose();
   }
 
-  const disabled = !projectId;
+
+  const disabled = !projectId || projectMetaProps.valid === false;
 
   return (
     <Modal
@@ -194,17 +202,15 @@ const UploadModal: React.FC<UploadModalProps> = ({
           </Layout.Column>
         )}
 
-
-        <Layout.Column spacedChildren="xs">
+        <Layout.Column spacedChildren="sm">
           <span>Project</span>
-          <ProjectInput
+          <SelectInput
             className={block('input')}
-            value={projectId}
+            {...projectInputProps}
+            {...projectMetaProps}
             disabled={mode === 'checkpoint'}
-            onChange={setProjectId}
           />
         </Layout.Column>
-
 
         <Layout.Column spacedChildren="xs">
           <span>Notebook name</span>
