@@ -59,6 +59,7 @@ export default function useSelectInputValue(
     options,
     onChange,
   };
+
   const metaProps: SelectMetaProps = {
     valid,
     loading,

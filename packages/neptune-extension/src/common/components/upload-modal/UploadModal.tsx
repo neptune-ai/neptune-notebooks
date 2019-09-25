@@ -27,7 +27,6 @@ import ValidationIcon from "common/components/validation-icon/ValidationIcon";
 import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
 import Warning from "common/components/warning/Warning";
 
-
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import {
   getNotebookState,
@@ -84,7 +83,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
       ? notebook.projectId
       : window.localStorage.getItem(PROJECT_LOCAL_STORAGE_KEY) || ''
   });
-
   const [ name, setName ] = React.useState('');
   const [ description, setDescription ] = React.useState('');
 
@@ -195,6 +193,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
           </Layout.Column>
         )}
 
+
         <Layout.Column spacedChildren="xs">
           <span>Project</span>
           <ProjectInput
@@ -205,6 +204,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
           />
         </Layout.Column>
 
+        
         <Layout.Column spacedChildren="xs">
           <span>Notebook name</span>
           <ValidationWrapper>
