@@ -11,13 +11,8 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   title,
   icon,
   compact,
-  visible = true,
   onClick,
 }) => {
-  if (!visible) {
-    return null;
-  }
-
   const cssClass = block({
     modifiers: { 'icon': icon === 'neptune' },
     extra: "btn btn-default"

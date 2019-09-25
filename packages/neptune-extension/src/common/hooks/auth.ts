@@ -24,13 +24,17 @@ export function validateGlobalApiToken() {
       authClient
         .validateToken(apiToken)
         .then(({ accessToken, apiTokenParsed }) => {
-          dispatch(setApiTokenValid(true));
-          dispatch(setTokenUsername(accessToken.username));
-
           // everything set up properly, lets set all API clients to use proper base bath
           authClient.setBasePath(apiTokenParsed.api_address);
           backendClient.setBasePath(apiTokenParsed.api_address);
           leaderboardClient.setBasePath(apiTokenParsed.api_address);
+
+          /*
+           * Hint: The code below will trigger immediate re-render and should
+           * only be invoked after clients are set.
+           */
+          dispatch(setApiTokenValid(true));
+          dispatch(setTokenUsername(accessToken.username));
         })
         .catch(() => invalidateToken());
     }

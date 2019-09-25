@@ -41,19 +41,35 @@ const App: React.FC<AppProps> = ({
 
   createUpgradeHandler();
 
-  const {
-    isApiTokenValid,
-  } = useSelector(getConfigurationState);
-
   const metadata = React.useMemo(() => platformNotebook.getMetadata(), []);
 
   const [ modalOpen, setModalOpen ] = React.useState<ModalName>();
 
   const {
+    apiToken,
+    isApiTokenValid,
+  } = useSelector(getConfigurationState);
+
+  const {
     fetchStatus,
     notebook
   } = useSelector(getNotebookState);
+
   const notebookInitialized = !metadata.notebookId || !!notebook || fetchStatus === 'failure';
+
+  /*
+   * This should be probably considered in detail and we should have one 
+   * initialization flow and one flag guarding that flow.
+   *
+   * 1. no api token - initialization finished, configure button only.
+   * 2. api token invalid - same as 1. but requires async check.
+   * 3. api token valid & notebook loaded
+   */
+  const applicationInitialized = apiToken === undefined || isApiTokenValid === false || (isApiTokenValid === true && notebookInitialized);
+
+  if (!applicationInitialized) {
+    return null;
+  }
 
   return (
     <React.Fragment>
@@ -66,26 +82,29 @@ const App: React.FC<AppProps> = ({
             compact={isApiTokenValid}
             onClick={() => setModalOpen('configure')}
           />
-          <ToolbarButton
-            label="Upload"
-            title="Upload to Neptune"
-            icon="fa-cloud-upload"
-            visible={isApiTokenValid && notebookInitialized}
-            onClick={() => setModalOpen('upload')}
-          />
-          <ToolbarButton
-            label="Checkout"
-            title="Checkout notebook from Neptune"
-            icon="fa-sign-out"
-            visible={isApiTokenValid && notebookInitialized}
-            onClick={() => setModalOpen('checkout')}
-          />
-          <ToolbarButton
-            label="Activate"
-            title="Activate neptune-client configuration"
-            visible={isApiTokenValid && !!notebook}
-            onClick={() => setModalOpen('activation')}
-          />
+          { isApiTokenValid && (
+            <ToolbarButton
+              label="Upload"
+              title="Upload to Neptune"
+              icon="fa-cloud-upload"
+              onClick={() => setModalOpen('upload')}
+            />
+          )}
+          { isApiTokenValid && (
+            <ToolbarButton
+              label="Checkout"
+              title="Checkout notebook from Neptune"
+              icon="fa-sign-out"
+              onClick={() => setModalOpen('checkout')}
+            />
+          )}
+          { (isApiTokenValid && !!notebook) && (
+            <ToolbarButton
+              label="Activate"
+              title="Activate neptune-client configuration"
+              onClick={() => setModalOpen('activation')}
+            />
+          )}
         </ToolbarWrapper>
 
         { modalOpen === 'configure' && (
