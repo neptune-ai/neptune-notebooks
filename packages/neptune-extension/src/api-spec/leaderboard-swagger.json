@@ -462,7 +462,7 @@
       "post" : {
         "summary" : "Create notebook",
         "operationId" : "createNotebook",
-        "consumes" : [ "application/octet-stream" ],
+        "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "projectIdentifier",
@@ -686,7 +686,7 @@
       "get" : {
         "summary" : "Get notebook checkpoint content",
         "operationId" : "getCheckpointContent",
-        "produces" : [ "application/json" ],
+        "produces" : [ "application/octet-stream" ],
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -699,7 +699,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/CheckpointContentFix"
+              "$ref" : "#/definitions/DummyResponse"
             }
           },
           "401" : {
@@ -1517,10 +1517,6 @@
       },
       "title" : "ChannelWithValueDTO"
     },
-    "CheckpointContentFix": {
-      "type": "object",
-      "title": "CheckpointContentFix"
-    },
     "CheckpointDTO" : {
       "type" : "object",
       "required" : [ "creationTime", "description", "id", "name", "notebookId", "owner", "path", "removable", "size" ],
@@ -1657,6 +1653,10 @@
         }
       },
       "title" : "DateTimeValueFilterDTO"
+    },
+    "DummyResponse" : {
+      "type" : "object",
+      "title" : "DummyResponse"
     },
     "ExperimentStateFilterDTO" : {
       "type" : "object",
