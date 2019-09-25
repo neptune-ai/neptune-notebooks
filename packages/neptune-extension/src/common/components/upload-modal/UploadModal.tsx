@@ -26,6 +26,7 @@ import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithL
 import ValidationIcon from "common/components/validation-icon/ValidationIcon";
 import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
 import Warning from "common/components/warning/Warning";
+import ModalHeader from "common/components/modal/ModalHeader";
 
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import {
@@ -122,13 +123,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
       onClose={onClose}
     >
       <Layout.Column className={block()} spacedChildren>
-        <h1 className={block('header')}>
+        <ModalHeader>
           {
             canUploadCheckpoint
               ? 'Upload checkpoint to Neptune'
               : 'Link new notebook to Neptune'
           }
-        </h1>
+        </ModalHeader>
 
         { noAccess && (
           <Warning>
@@ -204,7 +205,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
           />
         </Layout.Column>
 
-        
+
         <Layout.Column spacedChildren="xs">
           <span>Notebook name</span>
           <ValidationWrapper>

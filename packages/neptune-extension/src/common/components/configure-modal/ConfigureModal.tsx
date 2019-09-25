@@ -12,6 +12,7 @@ import Modal from 'common/components/modal/Modal';
 import Input from 'common/components/input/Input';
 import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
 import ValidationIcon from "common/components/validation-icon/ValidationIcon";
+import ModalHeader from "common/components/modal/ModalHeader";
 import { bemBlock } from "common/utils/bem";
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import { setApiToken } from 'common/state/configuration/actions';
@@ -56,7 +57,7 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
       onClose={onClose}
     >
       <Layout.Column className={block()} spacedChildren>
-        <h1 className={block('header')}>Configure your connection to Neptune</h1>
+        <ModalHeader>Configure your connection to Neptune</ModalHeader>
         <Layout.Column>
           <label>
             <Layout.Column spacedChildren="xs">

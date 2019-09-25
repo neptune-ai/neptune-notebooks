@@ -16,6 +16,7 @@ import { bemBlock } from "common/utils/bem";
 import Button from 'common/components/button/Button';
 import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
 import Modal from 'common/components/modal/Modal';
+import ModalHeader from "common/components/modal/ModalHeader";
 
 import useSelectInputValue from 'common/hooks/useSelectInputValue';
 import SelectInput from 'common/components/input/SelectInput';
@@ -92,6 +93,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       onClose={onClose}
     >
       <Layout.Column className={block()} spacedChildren>
+        <ModalHeader>Select a checkpoint you want to work with</ModalHeader>
         <Layout.Column spacedChildren="sm">
           <span>Project</span>
           <SelectInput
