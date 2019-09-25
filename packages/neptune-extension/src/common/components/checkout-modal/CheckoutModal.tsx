@@ -84,7 +84,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     onClose();
   }
 
-  const disabled = projectMetaProps.status === 'error' || notebookMetaProps.status === 'error' || checkpointMetaProps.status === 'error';
+  const disabled = !projectMetaProps.valid || !notebookMetaProps.valid || !checkpointMetaProps.valid;
 
   return (
     <Modal

@@ -4,18 +4,22 @@ import ValidationWrapper from "../validation-wrapper/ValidationWrapper";
 import ValidationIcon from "../validation-icon/ValidationIcon";
 
 interface SelectInputProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  status?: 'pending' | 'error' | 'success'
+  valid?: boolean,
+  loading?: boolean,
   options: string[][]
 }
 
 const SelectInput: React.FC<SelectInputProps> = ({
   value,
   disabled,
-  status,
+  valid,
+  loading,
   options,
   onChange,
   ...rest
 }) => {
+  const endStatus = valid ? 'success' : 'error';
+  const status = loading ? 'pending' : endStatus;
 
   return (
     <ValidationWrapper>
