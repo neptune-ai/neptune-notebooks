@@ -29,7 +29,7 @@ class LeaderboardApi extends DefaultApi {
       'Content-Type': 'application/octet-stream',
     };
 
-    this.request({
+    await this.request({
       path: `/api/leaderboard/v1/notebooks/checkpoints/{id}/content`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
       method: 'POST',
       headers: headerParameters,
