@@ -8,7 +8,7 @@ import {
 } from 'types/platform';
 
 async function handleCreateCheckpoint(platformNotebook: PlatformNotebook, checkpointId: string) {
-  const content = await platformNotebook.getContent();
+  const content = await platformNotebook.saveWorkingCopyAndGetContent();
 
   await leaderboardClient.api.uploadCheckpointContent({
     id: checkpointId,

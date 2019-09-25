@@ -21,13 +21,16 @@ export default function configure () {
 
   let composeFunc = compose;
 
-  if (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
-    composeFunc = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
-  } else {
-    middlewares.push(
-      createLogger(),
-    );
+  if (APP_ENV === 'development') {
+    if (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
+      composeFunc = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+    } else {
+      middlewares.push(
+        createLogger(),
+      );
+    }
   }
+
   const composedEnhancers = composeFunc(applyMiddleware(...middlewares));
 
   return createStore(rootReducer, undefined, composedEnhancers);

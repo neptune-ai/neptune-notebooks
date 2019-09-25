@@ -73,6 +73,8 @@ module.exports = function ({ mode, platform, project }) {
        */
       new webpack.DefinePlugin({
         'NEPTUNE_BUILD_DATE': JSON.stringify(new Date()),
+        'PLATFORM': JSON.stringify(platform),
+        'APP_ENV': JSON.stringify(mode),
       }),
     ],
     // TODO: probably should be depenand of build mode
