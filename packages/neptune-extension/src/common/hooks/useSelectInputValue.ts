@@ -17,7 +17,7 @@ export default function useSelectInputValue(
   initialValue: undefined | string | (() => string | undefined),
   fetchFn: () => Promise<Array<SelectOption>>,
   deps: ReadonlyArray<any>,
-): [string | undefined, SelectInputProps, SelectMetaProps]  {
+): [string | undefined, SelectInputProps, SelectMetaProps, (text?: string) => string | void]  {
 
   const [ value, setValue ] = React.useState(initialValue)
   const [ options, setOptions ] = React.useState<Array<SelectOption>>([]);
@@ -65,6 +65,6 @@ export default function useSelectInputValue(
     loading,
   };
 
-  return [ value, inputProps, metaProps ];
+  return [ value, inputProps, metaProps, setValue ];
 }
 
