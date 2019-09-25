@@ -12,14 +12,8 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   icon,
   label,
   title,
-  visible = true,
   onClick,
 }) => {
-
-  if (!visible) {
-    return null;
-  }
-
   return (
     <ToolbarButtonComponent
       className={block({
