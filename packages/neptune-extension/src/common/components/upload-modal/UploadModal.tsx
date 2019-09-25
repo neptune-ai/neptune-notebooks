@@ -144,7 +144,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
         { pathChanged && (
           <Warning>
             The path of this notebook changed.
-            A copy of this notebook will be created with current checkpoint as the first one.
+            By uploading a new checkpoint you will change the name of that notebook.
           </Warning>
         )}
 
