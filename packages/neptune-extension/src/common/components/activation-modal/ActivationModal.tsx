@@ -19,6 +19,7 @@ import {
   getActivationCode,
   executeActivationCode,
 } from 'common/utils/env';
+import ModalHeader from "../modal/ModalHeader";
 
 interface ActivationModalProps {
   platformNotebook: PlatformNotebook
@@ -55,9 +56,7 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
       onClose={onClose}
     >
       <Layout.Column spacedChildren="lg">
-        <span>
-          Activate neptune-client configuration
-        </span>
+        <ModalHeader>Activate neptune-client configuration</ModalHeader>
         <span>
           Activate configuration to create Neptune experiments and see them all linked to this notebook. Click "Activate" to run the code below, then just "import neptune" and work as usual.
         </span>
@@ -71,13 +70,13 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
           justifyContent="end"
           spacedChildren
         >
-          <Button 
+          <Button
             children="Cancel"
             variant="secondary"
             onClick={onClose}
           />
 
-          <Button 
+          <Button
             children="Activate"
             onClick={handleSubmit}
           />
