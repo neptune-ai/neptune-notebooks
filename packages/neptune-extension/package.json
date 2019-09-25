@@ -6,9 +6,6 @@
   "license": "Apache-2.0",
   "author": "Neptune Labs",
   "main": "dist/labextension/neptune-notebook.js",
-  "browserslist": [
-    "last 2 versions"
-  ],
   "postcss": {
     "plugins": {
       "autoprefixer": {}
