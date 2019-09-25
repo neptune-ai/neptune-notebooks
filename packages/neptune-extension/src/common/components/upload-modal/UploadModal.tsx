@@ -99,7 +99,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
     if (!projectId) {
       return;
     }
-    const content = await platformNotebook.getContent();
+    const content = await platformNotebook.saveWorkingCopyAndGetContent();
 
     const checkpointMeta = {
       path: metadata.path,

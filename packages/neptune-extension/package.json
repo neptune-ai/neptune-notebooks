@@ -6,6 +6,11 @@
   "license": "Apache-2.0",
   "author": "Neptune Labs",
   "main": "dist/labextension/neptune-notebook.js",
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
   "scripts": {
     "generate-api-clients": "npm run generate-backend-api-client && npm run generate-leaderboard-api-client",
     "generate-backend-api-client": "npx openapi-generator generate -i ./src/api-spec/backend-swagger.json -g typescript-fetch -o ./src/generated/backend-client --skip-validate-spec",

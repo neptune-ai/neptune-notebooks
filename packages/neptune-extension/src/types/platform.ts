@@ -5,7 +5,11 @@ export interface PlatformNotebookMetadata {
 }
 
 export interface PlatformNotebook {
-  getContent: () => Promise<any>
+  /*
+   * Regardless of the internals this function writes any unsaved changes to
+   * disc and returns the copy.
+   */
+  saveWorkingCopyAndGetContent: () => Promise<any>
   getMetadata: () => PlatformNotebookMetadata
   saveNotebookId: (notebookId: string) => Promise<void>
   executeKernelCode: (code: string) => void
