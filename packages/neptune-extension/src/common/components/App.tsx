@@ -71,7 +71,7 @@ const App: React.FC<AppProps> = ({
         <ToolbarButton
           label="Checkout"
           title="Checkout notebook from Neptune"
-          icon="fa-sign-out-alt"
+          icon="fa-sign-out"
           visible={isApiTokenValid && notebookInitialized}
           onClick={() => setModalOpen('checkout')}
         />
