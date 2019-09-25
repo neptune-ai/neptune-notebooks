@@ -46,11 +46,10 @@ const App: React.FC<AppProps> = ({
   const [ modalOpen, setModalOpen ] = React.useState<ModalName>();
 
   const {
-    notebook,
+    fetchStatus,
+    notebook
   } = useSelector(getNotebookState);
-
-  const { fetchStatus } = useSelector(getNotebookState);
-  const notebookInitialized = (metadata.notebookId && ['success', 'failure'].includes(fetchStatus) || !metadata.notebookId);
+  const notebookInitialized = !metadata.notebookId || !!notebook || fetchStatus === 'failure';
 
   return (
     <div id="neptune-app">
