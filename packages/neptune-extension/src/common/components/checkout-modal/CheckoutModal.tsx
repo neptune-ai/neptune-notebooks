@@ -75,7 +75,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     setLoading(true);
 
-    const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId })
+    const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId });
+
+    console.debug('content', content);
+
 
     setDefaultProjectId(projectId);
 
