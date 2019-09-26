@@ -1,11 +1,13 @@
-export function addNotification(id: string, type: string, data: any) {
+export type Notification = {
+  id: string
+  type: string
+  data?: any
+}
+
+export function addNotification(payload: Notification) {
   return {
     type: 'NOTIFICATION_ADD',
-    payload: {
-      id,
-      type,
-      data,
-    },
+    payload,
   } as const;
 }
 

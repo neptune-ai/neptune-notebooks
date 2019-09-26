@@ -1,10 +1,7 @@
-import { NotificationsActions } from "./actions";
-
-type Notification = {
-  id: string
-  type: string
-  data?: any
-}
+import {
+  NotificationsActions,
+  Notification,
+} from "./actions";
 
 interface NotificationsState {
   entries: Notification[]
