@@ -1,0 +1,15 @@
+@import '~src/common/components/mixins.less';
+
+
+.notifications-portal {
+  position: fixed;
+  bottom: @layoutUnit-sm;
+  right: @layoutUnit-md;
+  z-index: 3000;
+  flex-direction: column-reverse;
+  max-width: 375px;
+
+  & > * {
+    margin-bottom: @layoutUnit-sm;
+  }
+}
