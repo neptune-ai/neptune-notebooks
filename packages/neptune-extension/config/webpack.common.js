@@ -78,9 +78,5 @@ module.exports = function ({ mode, platform, project }) {
         'NBEXTENSION_VERSION': JSON.stringify(process.env.npm_package_version),
       }),
     ],
-    // TODO: probably should be depenand of build mode
-    optimization: {
-      minimize: false,
-    },
   };
 };
