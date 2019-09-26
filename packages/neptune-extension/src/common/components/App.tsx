@@ -115,10 +115,7 @@ const App: React.FC<AppProps> = ({
           />
         )}
       </div>
-      <NotificationsPortal>
-        <div>Ala Makota</div>
-        <div>Kot Maalę</div>
-      </NotificationsPortal>
+      <NotificationsPortal />
     </React.Fragment>
   );
 };
