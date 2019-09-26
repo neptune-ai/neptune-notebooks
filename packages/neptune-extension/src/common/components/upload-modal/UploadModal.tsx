@@ -20,6 +20,7 @@ import {
 import * as Layout from 'common/components/layout';
 import Modal from 'common/components/modal/Modal';
 import Input from 'common/components/input/Input';
+import Textarea from 'common/components/input/Textarea';
 import Button from 'common/components/button/Button';
 import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
 import ValidationIcon from "common/components/validation-icon/ValidationIcon";
@@ -240,7 +241,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
         <Layout.Column spacedChildren="xs">
           <span>Checkpoint description (optional)</span>
           <ValidationWrapper>
-            <Input
+            <Textarea
               className={block('input')}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
