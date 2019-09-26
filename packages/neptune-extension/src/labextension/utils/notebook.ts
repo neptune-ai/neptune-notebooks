@@ -81,8 +81,6 @@ class Notebook implements PlatformNotebook {
     const file = await this.app.serviceManager.contents
       .get(this.context.path, { content: true });
 
-    // context.save(); // TODO: save here ?
-
     const data: Partial<Contents.IModel> = {
       content: file.content,
       type: 'notebook',

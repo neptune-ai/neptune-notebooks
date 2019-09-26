@@ -46,7 +46,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 }) => {
   const [ loading, setLoading ] = React.useState(false);
 
-  const { notebook } = useSelector(getNotebookState)
+  const { notebook } = useSelector(getNotebookState);
   const initialProjectId = () => notebook ? notebook.projectId : getDefaultProjectId();
   const initialNotebookId = notebook ? notebook.id : undefined;
 
@@ -75,7 +75,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     setLoading(true);
 
-    const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId })
+    const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId });
 
     setDefaultProjectId(projectId);
 
@@ -143,7 +143,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       </Layout.Column>
     </Modal>
   );
-}
+};
 
 export default CheckoutModal;
 
