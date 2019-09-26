@@ -77,9 +77,5 @@ module.exports = function ({ mode, platform, project }) {
         'APP_ENV': JSON.stringify(mode),
       }),
     ],
-    // TODO: probably should be depenand of build mode
-    optimization: {
-      minimize: false,
-    },
   };
 };

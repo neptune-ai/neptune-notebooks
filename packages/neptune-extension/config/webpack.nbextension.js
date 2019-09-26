@@ -18,7 +18,8 @@
  * to write the AMD module template oneself, because webpack throws on the
  * encounter with "define" keyword.
  */
-module.exports = function ({ project }) {
+
+module.exports = function ({ mode, project }) {
   return {
     entry: project.src.resolve('nbextension/index.tsx'),
     output: {
@@ -50,6 +51,8 @@ module.exports = function ({ project }) {
       'services/config': 'services/config',
     },
     // TODO: probably should be depenand of build mode
-    devtool: 'cheap-eval-module-source-map',
+    devtool: mode === 'development'
+      ? 'cheap-eval-module-source-map'
+      : 'none',
   };
 };

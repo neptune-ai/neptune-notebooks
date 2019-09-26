@@ -33,6 +33,7 @@
     "install-nb": "jupyter nbextension install dist/nbextension/neptune-notebook.js --user && jupyter nbextension enable neptune-notebook --user",
     "lint": "eslint *.js .*.js ./config ./src",
     "pretest": "npm run lint",
+    "stats": "webpack --env dev --platform nb --json > stats.json",
     "test": ""
   },
   "dependencies": {
