@@ -28,16 +28,33 @@
         "operationId" : "getLeaderboard",
         "produces" : [ "application/json" ],
         "parameters" : [ {
+          "name" : "checkpointId",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "checkpointName",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
           "name" : "endDate",
           "in" : "query",
-          "description" : "endDate",
           "required" : false,
           "type" : "string",
           "format" : "date-time"
         }, {
           "name" : "entryType",
           "in" : "query",
-          "description" : "entryType",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -49,29 +66,24 @@
         }, {
           "name" : "filterId",
           "in" : "query",
-          "description" : "filterId",
           "required" : false,
           "type" : "string",
           "format" : "uuid"
         }, {
           "name" : "flattingMode",
           "in" : "query",
-          "description" : "flattingMode",
           "required" : false,
           "type" : "string",
-          "default" : "all",
           "enum" : [ "all", "standaloneOnly", "inGroupOnly" ]
         }, {
           "name" : "groupId",
           "in" : "query",
-          "description" : "groupId",
           "required" : false,
           "type" : "string",
           "format" : "uuid"
         }, {
           "name" : "groupShortId",
           "in" : "query",
-          "description" : "groupShortId",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -81,43 +93,54 @@
         }, {
           "name" : "id",
           "in" : "query",
-          "description" : "id",
           "required" : false,
           "type" : "string",
           "format" : "uuid"
         }, {
           "name" : "limit",
           "in" : "query",
-          "description" : "limit",
           "required" : false,
           "type" : "integer",
-          "default" : 100,
           "format" : "int32"
         }, {
           "name" : "minRunningTimeSeconds",
           "in" : "query",
-          "description" : "minRunningTimeSeconds",
           "required" : false,
           "type" : "integer",
           "format" : "int64"
         }, {
+          "name" : "notebookId",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "notebookName",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
           "name" : "offset",
           "in" : "query",
-          "description" : "offset",
           "required" : false,
           "type" : "integer",
-          "default" : 0,
           "format" : "int32"
         }, {
           "name" : "organizationIdentifier",
           "in" : "query",
-          "description" : "organizationIdentifier",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "owner",
           "in" : "query",
-          "description" : "owner",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -127,19 +150,16 @@
         }, {
           "name" : "projectIdentifier",
           "in" : "query",
-          "description" : "projectIdentifier",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "searchTerm",
           "in" : "query",
-          "description" : "searchTerm",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "selectedChannels",
           "in" : "query",
-          "description" : "selectedChannels",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -149,7 +169,6 @@
         }, {
           "name" : "shortId",
           "in" : "query",
-          "description" : "shortId",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -159,7 +178,6 @@
         }, {
           "name" : "sortBy",
           "in" : "query",
-          "description" : "sortBy",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -169,7 +187,6 @@
         }, {
           "name" : "sortDirection",
           "in" : "query",
-          "description" : "sortDirection",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -181,7 +198,6 @@
         }, {
           "name" : "sortFieldType",
           "in" : "query",
-          "description" : "sortFieldType",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -193,14 +209,12 @@
         }, {
           "name" : "startDate",
           "in" : "query",
-          "description" : "startDate",
           "required" : false,
           "type" : "string",
           "format" : "date-time"
         }, {
           "name" : "state",
           "in" : "query",
-          "description" : "state",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -212,7 +226,6 @@
         }, {
           "name" : "tags",
           "in" : "query",
-          "description" : "tags",
           "required" : false,
           "type" : "array",
           "items" : {
@@ -222,17 +235,14 @@
         }, {
           "name" : "tagsMode",
           "in" : "query",
-          "description" : "tagsMode",
           "required" : false,
           "type" : "string",
           "enum" : [ "and", "or" ]
         }, {
           "name" : "trashed",
           "in" : "query",
-          "description" : "trashed",
           "required" : false,
           "type" : "string",
-          "default" : "false",
           "enum" : [ "false", "true", "all" ]
         } ],
         "responses" : {
@@ -697,10 +707,7 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/CheckpointContentFix"
-            }
+            "description" : "OK"
           },
           "401" : {
             "description" : "Unauthorized"
@@ -1517,10 +1524,6 @@
       },
       "title" : "ChannelWithValueDTO"
     },
-    "CheckpointContentFix": {
-      "type": "object",
-      "title": "CheckpointContentFix"
-    },
     "CheckpointDTO" : {
       "type" : "object",
       "required" : [ "creationTime", "description", "id", "name", "notebookId", "owner", "path", "removable", "size" ],
@@ -1802,6 +1805,20 @@
             "$ref" : "#/definitions/ChannelWithValueDTO"
           }
         },
+        "checkpointCreated" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "checkpointDeleted" : {
+          "type" : "boolean"
+        },
+        "checkpointId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "checkpointName" : {
+          "type" : "string"
+        },
         "commitId" : {
           "type" : "string"
         },
@@ -1830,6 +1847,9 @@
         },
         "name" : {
           "type" : "string"
+        },
+        "notebookDeleted" : {
+          "type" : "boolean"
         },
         "notebookId" : {
           "type" : "string",
