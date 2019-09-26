@@ -1,6 +1,7 @@
 import {
   Configuration,
   DefaultApi,
+  GetCheckpointContentRequest,
   UploadCheckpointContentRequest,
 } from 'generated/leaderboard-client/src';
 import * as runtime from "generated/leaderboard-client/src/runtime";
@@ -11,6 +12,7 @@ import { updateTokenMiddleware } from "./update-token-middleware";
 interface UploadCheckpointContentRequestExtended extends UploadCheckpointContentRequest {
   content: any
 }
+
 
 class LeaderboardApi extends DefaultApi {
   /**
@@ -36,6 +38,25 @@ class LeaderboardApi extends DefaultApi {
       query: queryParameters,
       body: requestParameters.content
     });
+  }
+
+  async getCheckpointContent(requestParameters: GetCheckpointContentRequest):Promise<any> {
+    if (requestParameters.id === null || requestParameters.id === undefined) {
+      throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getCheckpointContent.');
+    }
+
+    const queryParameters: runtime.HTTPQuery = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request({
+      path: `/api/leaderboard/v1/notebooks/checkpoints/{id}/content`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+      method: 'GET',
+      headers: headerParameters,
+      query: queryParameters,
+    });
+
+    return await new runtime.JSONApiResponse(response).value();
   }
 }
 

@@ -16,15 +16,10 @@ export async function openNotebookInNewWindow(content: any) {
     common_config: commonConfig,
   });
 
-  const w = window.open(undefined, Jupyter._target);
-  if (w === null) {
-    throw "New window cannot be open.";
-  }
-
-  const newNotebook = await contentManager.new_untitled('/', { type: 'notebook' })
+  const newNotebook = await contentManager.new_untitled('/', { type: 'notebook' });
 
   const url = Jupyter.utils.url_path_join(
-    commonOptions.base_url, 
+    commonOptions.base_url,
     'notebooks',
     Jupyter.utils.encode_uri_components(newNotebook.path),
   );
@@ -36,8 +31,7 @@ export async function openNotebookInNewWindow(content: any) {
     type: 'notebook',
   };
 
-  await contentManager.save(newNotebook.path, notebook)
+  await contentManager.save(newNotebook.path, notebook);
 
-  w.location.href = url;
+  window.open(url, Jupyter._target);
 }
-
