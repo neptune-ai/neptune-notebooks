@@ -1,5 +1,8 @@
 import React from 'react';
-import {useSelector} from 'react-redux'
+import {
+  useDispatch,
+  useSelector
+} from 'react-redux'
 
 import ToolbarWrapper from 'platform/components/ToolbarWrapper';
 import ToolbarButton from 'platform/components/ToolbarButton';
@@ -19,7 +22,7 @@ import { createUpgradeHandler } from 'common/hooks/upgrade';
 import UploadModal from 'common/components/upload-modal/UploadModal';
 import CheckoutModal from 'common/components/checkout-modal/CheckoutModal';
 import ActivationModal from 'common/components/activation-modal/ActivationModal';
-import NotificationsPortal from 'common/components/notifications/notifications-portal/NotificationsPortal';
+import NotificationsContainer from 'common/components/notifications/NotificationsContainer';
 
 type ModalName = 'configure' | 'upload' | 'checkout' | 'activation' | undefined
 
@@ -134,7 +137,7 @@ const App: React.FC<AppProps> = ({
           />
         )}
       </div>
-      <NotificationsPortal />
+      <NotificationsContainer />
     </React.Fragment>
   );
 };
