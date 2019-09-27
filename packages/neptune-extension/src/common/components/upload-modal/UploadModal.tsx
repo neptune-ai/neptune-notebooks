@@ -85,7 +85,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
     ? notebook.projectId
     : window.localStorage.getItem(PROJECT_LOCAL_STORAGE_KEY) || '';
 
-  const [ projectId, projectInputProps, projectMetaProps, setProjectId ] = useSelectInputValue(
+  const [ projectId, projectIdentifier, projectInputProps, projectMetaProps, setProjectId ] = useSelectInputValue(
     initialProjectId,
     () => fetchProjectOptions('writable'),
     []
@@ -103,7 +103,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }
 
   async function handleSubmit() {
-    if (!projectId) {
+    if (!projectId || !projectIdentifier) {
       return;
     }
     const content = await platformNotebook.saveWorkingCopyAndGetContent();
@@ -115,9 +115,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
     };
 
     if (mode === 'notebook' || metadata.notebookId === undefined) {
-      await dispatch(uploadNotebook(projectId, checkpointMeta, content, platformNotebook));
+      await dispatch(uploadNotebook(projectIdentifier, checkpointMeta, content, platformNotebook));
     } else {
-      await dispatch(uploadCheckpoint(projectId, metadata.notebookId, checkpointMeta, content));
+      await dispatch(uploadCheckpoint(projectIdentifier, metadata.notebookId, checkpointMeta, content));
     }
     onClose();
   }

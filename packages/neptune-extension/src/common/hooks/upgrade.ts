@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import { checkVersion } from 'common/api/version';
 
 import { getConfigurationState } from 'common/state/configuration/selectors';
-import {addNotification} from 'common/state/notifications/action';
+import {addNotification} from 'common/state/notifications/actions';
 
 declare var NBEXTENSION_VERSION: string
 

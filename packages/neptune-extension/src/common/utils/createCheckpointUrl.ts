@@ -15,7 +15,13 @@ export function createCheckpointPath({
   notebookName,
   checkpointId,
 }: CheckpointPathArgs) {
-  return `/${projectIdentifier}/n/${notebookName}-${notebookId}/${checkpointId}`;
+  const basePath = `/${projectIdentifier}/n/${notebookName}-${notebookId}`;
+
+  if (checkpointId) {
+    return `${basePath}/${checkpointId}`;
+  }
+
+  return basePath;
 }
 
 export function createCheckpointUrl(options: UrlArgs):string | undefined {

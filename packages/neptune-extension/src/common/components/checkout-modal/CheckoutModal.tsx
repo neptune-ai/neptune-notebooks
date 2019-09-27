@@ -50,19 +50,19 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const initialProjectId = () => notebook ? notebook.projectId : getDefaultProjectId();
   const initialNotebookId = notebook ? notebook.id : undefined;
 
-  const [ projectId, projectInputProps, projectMetaProps ] = useSelectInputValue(
+  const [ projectId, projectLabel, projectInputProps, projectMetaProps ] = useSelectInputValue(
     initialProjectId,
     () => fetchProjectOptions('readable'),
     []
   );
 
-  const [ notebookId, notebookInputProps, notebookMetaProps ] = useSelectInputValue(
+  const [ notebookId, notebookLabel, notebookInputProps, notebookMetaProps ] = useSelectInputValue(
     initialNotebookId,
     () => fetchNotebookOptions(projectId),
     [projectId]
   );
 
-  const [ checkpointId, checkpointInputProps, checkpointMetaProps ] = useSelectInputValue(
+  const [ checkpointId, checkpointLabel, checkpointInputProps, checkpointMetaProps ] = useSelectInputValue(
     undefined,
     () => fetchCheckpointOptions(notebookId),
     [notebookId]
