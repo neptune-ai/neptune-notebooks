@@ -12,7 +12,7 @@ interface UrlArgs extends CheckpointPathArgs {
 export function createCheckpointPath({
   projectIdentifier,
   notebookId,
-  notebookName,
+  notebookName = '',
   checkpointId,
 }: CheckpointPathArgs) {
   const basePath = `/${projectIdentifier}/n/${notebookName}-${notebookId}`;
