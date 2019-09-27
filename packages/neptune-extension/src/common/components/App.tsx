@@ -19,6 +19,7 @@ import { createUpgradeHandler } from 'common/hooks/upgrade';
 import UploadModal from 'common/components/upload-modal/UploadModal';
 import CheckoutModal from 'common/components/checkout-modal/CheckoutModal';
 import ActivationModal from 'common/components/activation-modal/ActivationModal';
+import NotificationsPortal from 'common/components/notifications/notifications-portal/NotificationsPortal';
 
 type ModalName = 'configure' | 'upload' | 'checkout' | 'activation' | undefined
 
@@ -37,7 +38,7 @@ const App: React.FC<AppProps> = ({
   loadInitialNotebook(platformNotebook);
 
   createActivationHandler(platformNotebook);
-  
+
   createUpgradeHandler();
 
   const {
@@ -55,64 +56,67 @@ const App: React.FC<AppProps> = ({
   const notebookInitialized = !metadata.notebookId || !!notebook || fetchStatus === 'failure';
 
   return (
-    <div id="neptune-app">
-      <ToolbarWrapper>
-        <ToolbarButton
-          label="Configure"
-          title="Connect to Neptune"
-          icon="neptune"
-          compact={isApiTokenValid}
-          onClick={() => setModalOpen('configure')}
-        />
-        <ToolbarButton
-          label="Upload"
-          title="Upload to Neptune"
-          icon="fa-cloud-upload"
-          visible={isApiTokenValid && notebookInitialized}
-          onClick={() => setModalOpen('upload')}
-        />
-        <ToolbarButton
-          label="Checkout"
-          title="Checkout notebook from Neptune"
-          icon="fa-sign-out"
-          visible={isApiTokenValid && notebookInitialized}
-          onClick={() => setModalOpen('checkout')}
-        />
-        <ToolbarButton
-          label="Activate"
-          title="Activate neptune-client configuration"
-          visible={isApiTokenValid && !!notebook}
-          onClick={() => setModalOpen('activation')}
-        />
-      </ToolbarWrapper>
+    <React.Fragment>
+      <div id="neptune-app">
+        <ToolbarWrapper>
+          <ToolbarButton
+            label="Configure"
+            title="Connect to Neptune"
+            icon="neptune"
+            compact={isApiTokenValid}
+            onClick={() => setModalOpen('configure')}
+          />
+          <ToolbarButton
+            label="Upload"
+            title="Upload to Neptune"
+            icon="fa-cloud-upload"
+            visible={isApiTokenValid && notebookInitialized}
+            onClick={() => setModalOpen('upload')}
+          />
+          <ToolbarButton
+            label="Checkout"
+            title="Checkout notebook from Neptune"
+            icon="fa-sign-out"
+            visible={isApiTokenValid && notebookInitialized}
+            onClick={() => setModalOpen('checkout')}
+          />
+          <ToolbarButton
+            label="Activate"
+            title="Activate neptune-client configuration"
+            visible={isApiTokenValid && !!notebook}
+            onClick={() => setModalOpen('activation')}
+          />
+        </ToolbarWrapper>
 
-      { modalOpen === 'configure' && (
-        <ConfigureModal
-          onClose={() => setModalOpen(undefined)}
-        />
-      )}
+        { modalOpen === 'configure' && (
+          <ConfigureModal
+            onClose={() => setModalOpen(undefined)}
+          />
+        )}
 
-      { modalOpen === 'upload' && (
-        <UploadModal
-          platformNotebook={platformNotebook}
-          onClose={() => setModalOpen(undefined)}
-        />
-      )}
+        { modalOpen === 'upload' && (
+          <UploadModal
+            platformNotebook={platformNotebook}
+            onClose={() => setModalOpen(undefined)}
+          />
+        )}
 
-      { modalOpen === 'checkout' && (
-        <CheckoutModal
-          platformNotebook={platformNotebook}
-          onClose={() => setModalOpen(undefined)}
-        />
-      )}
+        { modalOpen === 'checkout' && (
+          <CheckoutModal
+            platformNotebook={platformNotebook}
+            onClose={() => setModalOpen(undefined)}
+          />
+        )}
 
-      { modalOpen === 'activation' && (
-        <ActivationModal
-          platformNotebook={platformNotebook}
-          onClose={() => setModalOpen(undefined)}
-        />
-      )}
-    </div>
+        { modalOpen === 'activation' && (
+          <ActivationModal
+            platformNotebook={platformNotebook}
+            onClose={() => setModalOpen(undefined)}
+          />
+        )}
+      </div>
+      <NotificationsPortal />
+    </React.Fragment>
   );
 };
 
