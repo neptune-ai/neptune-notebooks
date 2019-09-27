@@ -6,6 +6,7 @@ import {setApiTokenValid, setTokenUsername} from 'common/state/configuration/act
 import {authClient} from 'common/api/auth';
 import {backendClient} from 'common/api/backend-client';
 import {leaderboardClient} from 'common/api/leaderboard-client';
+import {addNotification} from 'common/state/notifications/actions';
 
 export function validateGlobalApiToken() {
   const {
@@ -35,6 +36,10 @@ export function validateGlobalApiToken() {
            */
           dispatch(setApiTokenValid(true));
           dispatch(setTokenUsername(accessToken.username));
+          dispatch(addNotification({
+            type: 'success',
+            data: 'Successfully connected to Neptune!',
+          }));
         })
         .catch(() => invalidateToken());
     }
