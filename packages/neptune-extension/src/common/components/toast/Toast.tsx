@@ -11,18 +11,10 @@ import './Toast.less';
 
 type ToastType = 'info' | 'warning' | 'error' | 'success';
 
-interface IAction {
-  label: string
-  onClick: EventHandler
-  title?: string
-}
-
 interface IToastProps {
-  actions: IAction[]
   className?: string
-  inProgress?: boolean
   onClose?: EventHandler
-  type?: ToastType
+  type: ToastType
 }
 
 const block = bemBlock('toast');
@@ -32,18 +24,14 @@ const ICON = {
   warning: 'fa-exclamation-triangle',
   error: 'fa-exclamation-circle',
   success: 'fa-check-circle',
-  spinner: 'fa-spinner fa-spin',
 };
 
 
 class Toast extends React.PureComponent<IToastProps> {
 
   renderIcon() {
-    const {
-      inProgress,
-      type = 'info'
-    } = this.props;
-    const iconGlyph = inProgress ? ICON.spinner : ICON[type];
+    const { type } = this.props;
+    const iconGlyph = ICON[type];
 
     return (
       <i className={block({
@@ -65,40 +53,21 @@ class Toast extends React.PureComponent<IToastProps> {
   }
 
   renderActions() {
-    const {
-      actions = [],
-      onClose
-    } = this.props;
+    const { onClose } = this.props;
 
-    if (actions.length === 0 && !onClose) {
+    if (!onClose) {
       return null;
     }
 
     return (
-      <Layout.Row
-        spacedChildren="sm"
-        alignItems="center"
-        span="auto"
-      >
-        { actions.map(({ label, title, onClick }, key) => (
-            <Layout.Element
-              key={key}
-              className={block('action')}
-              title={title}
-              onClick={onClick}
-            >
-              {label}
-            </Layout.Element>
-          ))
-        }
-        {onClose && (
-          <i
-            className="fa fa-times"
-            title="Hide"
-            onClick={onClose}
-          />
-        )}
-      </Layout.Row>
+      <i
+        className={block({
+          element: 'action',
+          extra: 'fa fa-times',
+        })}
+        title="Hide"
+        onClick={onClose}
+      />
     );
   }
 
@@ -119,7 +88,7 @@ class Toast extends React.PureComponent<IToastProps> {
         span="auto"
         withPadding="md"
         spacedChildren="md"
-        alignItems="center"
+        alignItems="start"
       >
         {this.renderIcon()}
         {this.renderContent()}
@@ -128,3 +97,6 @@ class Toast extends React.PureComponent<IToastProps> {
     )
   }
 }
+
+
+export default Toast;
