@@ -7,7 +7,8 @@ import { getNotifications } from 'common/state/notifications/selectors';
 import { removeNotification } from 'common/state/notifications/actions';
 import Toast from 'common/components/toast/Toast';
 import NotificationsPortal from 'common/components/notifications/notifications-portal/NotificationsPortal';
-import {CheckpointSuccessfulNotification} from "./renderers/CheckpointSuccessfulNotification";
+import {CheckpointSuccessfulNotification} from './renderers/CheckpointSuccessfulNotification';
+import {UpgradeAvailableNotification} from './renderers/UpgradeAvailableNotification';
 
 // Module
 const NotificationsContainer: React.FC = () => {
@@ -21,7 +22,11 @@ const NotificationsContainer: React.FC = () => {
         notifications.map((notification, key) => {
           if (notification.type === 'checkpoint-successful') {
             return <CheckpointSuccessfulNotification key={key} {...notification} onClose={() => (deleteNotification(notification.id))} />
-          } else {
+          } else if (notification.type === 'upgrade-available') {
+            return <UpgradeAvailableNotification key={key} />
+          }
+
+          else {
             return (
               <Toast
                 key={key}
