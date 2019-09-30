@@ -27,6 +27,23 @@ interface ActivationModalProps {
   onClose: () => void
 }
 
+function useActivationCode() {
+  const {apiToken} = useSelector(getConfigurationState);
+  const {notebook} = useSelector(getNotebookState);
+
+  const [code, setCode] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    if (apiToken) {
+      getActivationCode(apiToken, notebook)
+        .then((code) => setCode(code))
+    }
+
+  }, [apiToken, notebook]);
+
+  return code;
+}
+
 const ActivationModal: React.FC<ActivationModalProps> = ({
   platformNotebook,
   onClose,
@@ -43,7 +60,7 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
 
   const notebook = notebookProp as NotebookDTO;
 
-  const code = getActivationCode(apiToken as string, notebook.projectId, notebook.id, notebook.path);
+  const code = useActivationCode();
 
   async function handleSubmit() {
     executeActivationCode(platformNotebook, apiToken as string, notebook);
@@ -67,7 +84,7 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
         </span>
 
         <SyntaxHighlighter language="python">
-          { code }
+          { code || 'loading...' }
         </SyntaxHighlighter>
 
         <Layout.Row
@@ -89,7 +106,7 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
       </Layout.Column>
     </Modal>
   );
-}
+};
 
 export default ActivationModal;
 
