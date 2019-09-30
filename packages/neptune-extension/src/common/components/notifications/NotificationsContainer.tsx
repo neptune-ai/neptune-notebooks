@@ -7,7 +7,7 @@ import { getNotifications } from 'common/state/notifications/selectors';
 import { removeNotification } from 'common/state/notifications/actions';
 import Toast from 'common/components/toast/Toast';
 import NotificationsPortal from 'common/components/notifications/notifications-portal/NotificationsPortal';
-import {CheckpointSuccessfulNotification} from "./renderers/link/CheckpointSuccesfulNotification";
+import {CheckpointSuccessfulNotification} from "./renderers/CheckpointSuccessfulNotification";
 
 // Module
 const NotificationsContainer: React.FC = () => {

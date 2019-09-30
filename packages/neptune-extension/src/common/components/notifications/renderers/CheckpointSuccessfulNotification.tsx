@@ -5,7 +5,7 @@ import {useSelector} from "react-redux";
 // App
 import {CheckpointSuccessful} from 'common/state/notifications/actions';
 import Toast from 'common/components/toast/Toast';
-import {NotificationLink} from "./NotificationLink";
+import {NotificationLink} from "./link/NotificationLink";
 import {createCheckpointUrl} from 'common/utils/createCheckpointUrl';
 import {getConfigurationState} from 'common/state/configuration/selectors';
 
