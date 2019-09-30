@@ -17,7 +17,7 @@ export default function useSelectInputValue(
   initialValue: undefined | string | (() => string | undefined),
   fetchFn: () => Promise<Array<SelectOption>>,
   deps: ReadonlyArray<any>,
-): [string | undefined, SelectInputProps, SelectMetaProps, (text?: string) => string | void]  {
+): [string | undefined, string | undefined, SelectInputProps, SelectMetaProps, (text?: string) => string | void]  {
 
   const [ value, setValue ] = React.useState(initialValue)
   const [ options, setOptions ] = React.useState<Array<SelectOption>>([]);
@@ -52,8 +52,11 @@ export default function useSelectInputValue(
   }, deps);
 
   // During options reload old value is automatically invalidated.
-  const valid = React.useMemo(() => options.some(([ key ]) => key === value),
+  const validOption = React.useMemo(() => options.find(([ key ]) => key === value),
     [value, options]);
+
+  const valid = validOption != null;
+  const label = validOption && validOption[1];
 
   function onChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     setValue(event.target.value);
@@ -70,6 +73,6 @@ export default function useSelectInputValue(
     loading,
   };
 
-  return [ value, inputProps, metaProps, setValue ];
+  return [ value, label, inputProps, metaProps, setValue ];
 }
 

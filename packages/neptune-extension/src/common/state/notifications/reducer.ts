@@ -1,10 +1,10 @@
 import {
   NotificationsActions,
-  Notification,
+  NotificationPayload,
 } from "./actions";
 
 interface NotificationsState {
-  entries: Notification[]
+  entries: NotificationPayload[]
 }
 
 const initialState: NotificationsState = {
@@ -24,14 +24,14 @@ export function notificationsReducer(
     case 'NOTIFICATION_ADD': {
       return {
         ...state,
-        entries: [...state.entries, payload as Notification],
+        entries: [...state.entries, payload as NotificationPayload],
       }
     }
 
     case 'NOTIFICATION_REMOVE': {
       return {
         ...state,
-        entries: state.entries.filter((entry: Notification) => entry.id !== payload.id),
+        entries: state.entries.filter((entry) => entry.id !== payload.id),
       }
     }
 

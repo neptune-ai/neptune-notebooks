@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
@@ -20,6 +20,7 @@ import {
   executeActivationCode,
 } from 'common/utils/env';
 import ModalHeader from "../modal/ModalHeader";
+import {addNotification} from "common/state/notifications/actions";
 
 interface ActivationModalProps {
   platformNotebook: PlatformNotebook
@@ -30,10 +31,10 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
   platformNotebook,
   onClose,
 }) => {
+  const dispatch = useDispatch();
 
   const {
     apiToken,
-    isApiTokenValid,
   } = useSelector(getConfigurationState);
 
   const {
@@ -46,6 +47,10 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
 
   async function handleSubmit() {
     executeActivationCode(platformNotebook, apiToken as string, notebook);
+    dispatch(addNotification({
+      type: "success",
+      data: "neptune-client configuration activated successfully",
+    }));
 
     onClose();
   }

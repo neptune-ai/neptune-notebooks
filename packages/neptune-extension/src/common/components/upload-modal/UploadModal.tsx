@@ -55,7 +55,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
   const metadata = React.useMemo(() => platformNotebook.getMetadata(), []);
 
   const dispatch = useDispatch();
-  const thunkDispatch = dispatch as ThunkDispatch<{}, {}, AnyAction>;
   const { notebook } = useSelector(getNotebookState)
   const loading = useSelector(getNotebookLoadingState)
   const { inferredUsername } = useSelector(getConfigurationState)
@@ -77,7 +76,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
    * Notebook exists and we have access to upload new checkpoint.
    * Note: even if the path changed, we still can upload.
    */
-  const canUploadCheckpoint = notebook && !ownerChanged
+  const canUploadCheckpoint = notebook && !ownerChanged;
 
   // By default always try to create new checkpoint
   const [ mode, setMode ] = React.useState<UploadMode>(canUploadCheckpoint ? 'checkpoint' : 'notebook');
@@ -86,9 +85,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
     ? notebook.projectId
     : window.localStorage.getItem(PROJECT_LOCAL_STORAGE_KEY) || '';
 
-  const [ projectId, projectInputProps, projectMetaProps, setProjectId ] = useSelectInputValue(
+  const [ projectId, projectIdentifier, projectInputProps, projectMetaProps, setProjectId ] = useSelectInputValue(
     initialProjectId,
-    () => fetchProjectOptions('readable'),
+    () => fetchProjectOptions('writable'),
     []
   );
 
@@ -104,7 +103,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }
 
   async function handleSubmit() {
-    if (!projectId) {
+    if (!projectId || !projectIdentifier) {
       return;
     }
     const content = await platformNotebook.saveWorkingCopyAndGetContent();
@@ -116,9 +115,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
     };
 
     if (mode === 'notebook' || metadata.notebookId === undefined) {
-     await thunkDispatch(uploadNotebook(projectId, checkpointMeta, content, platformNotebook));
+      await dispatch(uploadNotebook(projectIdentifier, checkpointMeta, content, platformNotebook));
     } else {
-      await thunkDispatch(uploadCheckpoint(metadata.notebookId, checkpointMeta, content));
+      await dispatch(uploadCheckpoint(projectIdentifier, metadata.notebookId, checkpointMeta, content));
     }
     onClose();
   }

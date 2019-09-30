@@ -1,17 +1,19 @@
 import React from 'react';
-import { useSelector } from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 
 import { checkVersion } from 'common/api/version';
 
-import { getConfigurationState } from 'common//state/configuration/selectors';
+import { getConfigurationState } from 'common/state/configuration/selectors';
+import {addNotification} from 'common/state/notifications/actions';
 
 declare var NBEXTENSION_VERSION: string
 
 export function createUpgradeHandler() {
-
   if (PLATFORM !== 'nbextension') {
     return;
   }
+
+  const dispatch = useDispatch();
 
   const {
     apiTokenParsed,
@@ -28,8 +30,10 @@ export function createUpgradeHandler() {
 
       checkVersion().then(latestVersion => {
         if (NBEXTENSION_VERSION !== latestVersion) {
-          // TODO: implement upgrade
           console.log(`Latest version is ${latestVersion}, but found ${NBEXTENSION_VERSION}`);
+          dispatch(addNotification({
+            type: 'upgrade-available',
+          }));
         }
       })
     }
