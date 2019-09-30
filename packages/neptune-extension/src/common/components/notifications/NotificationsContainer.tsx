@@ -23,7 +23,7 @@ const NotificationsContainer: React.FC = () => {
           if (notification.type === 'checkpoint-successful') {
             return <CheckpointSuccessfulNotification key={key} {...notification} onClose={() => (deleteNotification(notification.id))} />
           } else if (notification.type === 'upgrade-available') {
-            return <UpgradeAvailableNotification key={key} />
+            return <UpgradeAvailableNotification key={key} onClose={() => (deleteNotification(notification.id))} />
           }
 
           else {
