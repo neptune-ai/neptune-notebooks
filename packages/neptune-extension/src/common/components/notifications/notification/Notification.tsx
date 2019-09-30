@@ -1,6 +1,6 @@
 // Libs
 import React from 'react';
-import { connect } from 'react-redux';
+import {useDispatch} from 'react-redux';
 
 // App
 import {
@@ -13,76 +13,52 @@ import { UpgradeAvailableNotification } from 'common/components/notifications/re
 
 
 // Module
-type NotificationProps = NotificationPayload & {
-  removeNotification: (id: string) => void
-};
+const SUCCEED_TIMEOUT_TIME = 10 * 1000;
+const Notification: React.FC<NotificationPayload> = (props) => {
+  const dispatch = useDispatch();
+  const remove = React.useCallback(
+    () => dispatch(removeNotification(props.id)),
+    [props.id]
+  );
 
-class Notification extends React.PureComponent<NotificationProps> {
-  SUCCEED_TIMEOUT_TIME = 10 * 1000;
+  React.useEffect(() => {
+    const timeoutId = window.setTimeout(remove, SUCCEED_TIMEOUT_TIME);
 
-  timer: number | undefined = undefined;
+    return () => {
+      window.clearTimeout(timeoutId);
+    }
+  }, []);
 
-  componentDidMount() {
-    this.setTimer();
-  }
+  switch (props.type) {
+    case 'checkpoint-successful': {
+      return (
+        <CheckpointSuccessfulNotification
+          type={props.type}
+          data={props.data}
+          onClose={remove}
+        />
+      );
+    }
 
-  componentWillUnmount() {
-    this.clearTimer();
-  }
+    case 'upgrade-available': {
+      return (
+        <UpgradeAvailableNotification
+          onClose={remove}
+        />
+      );
+    }
 
-  clearTimer = () => {
-    window.clearTimeout(this.timer);
-  }
-
-  setTimer = () => {
-    this.timer = window.setTimeout(this.remove, this.SUCCEED_TIMEOUT_TIME);
-  }
-
-  remove = () => {
-    const {
-      id,
-      removeNotification,
-    } = this.props;
-
-    removeNotification(id);
-  }
-
-  render() {
-    switch (this.props.type) {
-      case 'checkpoint-successful': {
-        return (
-          <CheckpointSuccessfulNotification
-            type={this.props.type}
-            data={this.props.data}
-            onClose={this.remove}
-          />
-        );
-      }
-
-      case 'upgrade-available': {
-        return (
-          <UpgradeAvailableNotification
-            onClose={this.remove}
-          />
-        );
-      }
-
-      default: {
-        return (
-          <Toast
-            type={this.props.type}
-            onClose={this.remove}
-          >
-            {this.props.data}
-          </Toast>
-        );
-      }
+    default: {
+      return (
+        <Toast
+          type={props.type}
+          onClose={remove}
+        >
+          {props.data}
+        </Toast>
+      );
     }
   }
-}
-
-const mapDispatchToProps = {
-  removeNotification,
 };
 
-export default connect(null, mapDispatchToProps)(Notification);
+export default Notification;
