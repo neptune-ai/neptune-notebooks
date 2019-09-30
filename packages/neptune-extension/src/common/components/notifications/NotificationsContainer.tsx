@@ -7,6 +7,7 @@ import { getNotifications } from 'common/state/notifications/selectors';
 import { removeNotification } from 'common/state/notifications/actions';
 import Toast from 'common/components/toast/Toast';
 import NotificationsPortal from 'common/components/notifications/notifications-portal/NotificationsPortal';
+import {CheckpointSuccessfulNotification} from "./renderers/link/CheckpointSuccesfulNotification";
 
 // Module
 const NotificationsContainer: React.FC = () => {
@@ -17,15 +18,21 @@ const NotificationsContainer: React.FC = () => {
   return (
     <NotificationsPortal>
       {
-        notifications.map((notification, key) => (
-          <Toast
-            key={key}
-            onClose={() => (deleteNotification(notification.id))}
-            type="success"
-          >
-            {JSON.stringify(notification, null, 2)}
-          </Toast>
-        ))
+        notifications.map((notification, key) => {
+          if (notification.type === 'checkpoint-successful') {
+            return <CheckpointSuccessfulNotification key={key} {...notification} onClose={() => (deleteNotification(notification.id))} />
+          } else {
+            return (
+              <Toast
+                key={key}
+                onClose={() => (deleteNotification(notification.id))}
+                type="success"
+              >
+                {JSON.stringify(notification, null, 2)}
+              </Toast>
+            )
+          }
+        })
       }
     </NotificationsPortal>
   )
