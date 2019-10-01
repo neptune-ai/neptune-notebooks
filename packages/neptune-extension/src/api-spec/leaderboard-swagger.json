@@ -2012,7 +2012,7 @@
     },
     "NotebookDTO" : {
       "type" : "object",
-      "required" : [ "creationTime", "description", "id", "lastCheckpointId", "lastCheckpointTime", "name", "owner", "path", "projectId", "removable", "size", "totalStorageSize" ],
+      "required" : [ "creationTime", "description", "id", "lastCheckpointId", "lastCheckpointTime", "name", "organizationId", "organizationName", "owner", "path", "projectId", "projectName", "removable", "size", "totalStorageSize" ],
       "properties" : {
         "creationTime" : {
           "type" : "string",
@@ -2036,6 +2036,13 @@
         "name" : {
           "type" : "string"
         },
+        "organizationId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "organizationName" : {
+          "type" : "string"
+        },
         "owner" : {
           "type" : "string"
         },
@@ -2045,6 +2052,9 @@
         "projectId" : {
           "type" : "string",
           "format" : "uuid"
+        },
+        "projectName" : {
+          "type" : "string"
         },
         "removable" : {
           "type" : "boolean"
