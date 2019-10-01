@@ -134,7 +134,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
             onClick={onClose}
           />
           <ButtonWithLoading
-            children="Checkout"
+            children="Download"
             loading={loading}
             disabled={disabled || loading}
             onClick={handleSubmit}
