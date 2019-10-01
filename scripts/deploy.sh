@@ -7,7 +7,7 @@ then
     twine upload dist/*.tar.gz
 
     # npm package
-    cd packages/labextension
+    cd packages/neptune-extension
     echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
     npm publish
 fi
