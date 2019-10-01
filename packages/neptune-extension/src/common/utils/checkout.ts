@@ -1,6 +1,7 @@
 import {backendClient} from 'common/api/backend-client';
 import {leaderboardClient} from 'common/api/leaderboard-client';
 
+import moment from 'moment';
 import {createProjectIdentifier} from './project';
 import {naturalStringComparator} from './naturalStringComparator';
 import {ListNotebooksSortByEnum, ListNotebooksSortDirectionEnum} from 'generated/leaderboard-client/src/apis';
@@ -43,7 +44,7 @@ export async function fetchCheckpointOptions(notebookId?: string) {
 
   const { entries } = await leaderboardClient.api.listCheckpoints({ notebookId });
   return entries.map(entry =>
-    [ entry.id, (new Date(entry.creationTime)).toLocaleDateString() ]
+    [ entry.id, `${entry.name ? entry.name : '(unnamed)'} - ${moment(entry.creationTime).format('YYYY/MM/DD HH:mm:ss')}` ]
   );
 }
 
