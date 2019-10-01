@@ -19,6 +19,12 @@ const initialState: ConfigurationState = {
 export function configurationReducer(state: ConfigurationState = initialState, action:ConfigurationActions): ConfigurationState {
   switch (action.type) {
     case "API_TOKEN_SET": {
+
+      // do not parse api token if it is the same, just return current state
+      if (action.payload.token === state.apiToken) {
+        return state;
+      }
+
       return {
         ...state,
         apiToken: action.payload.token,
