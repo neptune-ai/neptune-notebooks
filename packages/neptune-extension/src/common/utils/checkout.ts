@@ -1,7 +1,9 @@
-import { backendClient } from 'common/api/backend-client';
-import { leaderboardClient } from 'common/api/leaderboard-client';
+import {backendClient} from 'common/api/backend-client';
+import {leaderboardClient} from 'common/api/leaderboard-client';
 
-import {createProjectIdentifier} from "./project";
+import {createProjectIdentifier} from './project';
+import {naturalStringComparator} from './naturalStringComparator';
+import {ListNotebooksSortByEnum, ListNotebooksSortDirectionEnum} from 'generated/leaderboard-client/src/apis';
 
 type ProjectOptionsFetchMode = 'readable' | 'writable'
 
@@ -10,9 +12,12 @@ export async function fetchProjectOptions(mode: ProjectOptionsFetchMode) {
     ? await backendClient.api.listProjects({})
     : await backendClient.api.listProjectsForMemberOrHigher({});
 
-  return entries.map(entry =>
-    [ entry.id, createProjectIdentifier(entry.organizationName, entry.name) ]
-  );
+
+  return entries
+    .map(entry =>
+      [ entry.id, createProjectIdentifier(entry.organizationName, entry.name) ]
+    )
+    .sort((a, b) => naturalStringComparator(a[1], b[1]));
 }
 
 export async function fetchNotebookOptions(projectIdentifier?: string) {
@@ -20,9 +25,14 @@ export async function fetchNotebookOptions(projectIdentifier?: string) {
     return [];
   }
 
-  const { entries } = await leaderboardClient.api.listNotebooks({ projectIdentifier });
+  const { entries } = await leaderboardClient.api.listNotebooks({
+    projectIdentifier,
+    sortBy: ListNotebooksSortByEnum.UpdateTime,
+    sortDirection: ListNotebooksSortDirectionEnum.Descending,
+  });
+
   return entries.map(entry =>
-    [ entry.id, entry.name as string ]
+    [ entry.id, entry.name ]
   );
 }
 
