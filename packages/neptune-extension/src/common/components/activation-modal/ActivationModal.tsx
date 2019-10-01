@@ -43,7 +43,7 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
 
   const notebook = notebookProp as NotebookDTO;
 
-  const code = getActivationCode(apiToken as string, notebook.projectId, notebook.id, notebook.path);
+  const code = getActivationCode(apiToken as string, notebook);
 
   async function handleSubmit() {
     executeActivationCode(platformNotebook, apiToken as string, notebook);

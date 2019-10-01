@@ -1,16 +1,17 @@
-
 import { backendClient } from 'common/api/backend-client';
 import { leaderboardClient } from 'common/api/leaderboard-client';
+
+import {createProjectIdentifier} from "./project";
 
 type ProjectOptionsFetchMode = 'readable' | 'writable'
 
 export async function fetchProjectOptions(mode: ProjectOptionsFetchMode) {
-  const { entries } = mode === 'readable' 
+  const { entries } = mode === 'readable'
     ? await backendClient.api.listProjects({})
     : await backendClient.api.listProjectsForMemberOrHigher({});
 
   return entries.map(entry =>
-    [ entry.id, `${entry.organizationName}/${entry.name}` ]
+    [ entry.id, createProjectIdentifier(entry.organizationName, entry.name) ]
   );
 }
 
