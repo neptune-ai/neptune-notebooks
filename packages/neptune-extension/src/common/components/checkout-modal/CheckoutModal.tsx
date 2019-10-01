@@ -24,6 +24,8 @@ import * as Layout from 'common/components/layout';
 
 import { getNotebookState } from 'common/state/notebook/selectors'
 
+import { findNonExistantPath } from 'common/utils/path';
+
 import {
   fetchProjectOptions,
   fetchNotebookOptions,
@@ -69,17 +71,19 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   );
 
   async function handleSubmit() {
-    if (checkpointId === undefined || projectId === undefined) {
+    if (checkpointId === undefined || notebookId === undefined || projectId === undefined) {
       return;
     }
 
     setLoading(true);
 
+    const notebook = await leaderboardClient.api.getNotebook({ id: notebookId });
     const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId });
 
     setDefaultProjectId(projectId);
 
-    await platformNotebook.openNotebookInNewWindow(content);
+    const newPath = await findNonExistantPath(notebook.path, platformNotebook);
+    await platformNotebook.saveNotebookAndOpenInNewWindow(newPath, content);
 
     setLoading(false);
     onClose();

@@ -74,25 +74,29 @@ class Notebook implements PlatformNotebook {
     });
   }
 
-  async openNotebookInNewWindow(content: any) {
-    const model = await this.app.commands
-      .execute('docmanager:new-untitled', { path: '', type: 'notebook' });
-
-    const file = await this.app.serviceManager.contents
-      .get(this.context.path, { content: true });
-
-    const data: Partial<Contents.IModel> = {
-      content: file.content,
+  async saveNotebookAndOpenInNewWindow(path: string, content: any) {
+    const options: Partial<Contents.IModel> = {
+      content,
       type: 'notebook',
     };
 
     await this.app.serviceManager.contents
-      .save(model.path, data);
+      .save(path, options);
 
     return await this.app.commands.execute('docmanager:open', {
-      path: model.path,
+      path,
       factory: 'Notebook',
     });
+  }
+
+  async assertNotebook(path: string) {
+    const options: Contents.IFetchOptions = {
+      type: 'notebook',
+      content: false,
+    }
+
+    await this.app.serviceManager.contents
+      .get(path, options);
   }
 }
 

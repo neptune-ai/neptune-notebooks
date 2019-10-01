@@ -56,6 +56,7 @@
   "dependencies": {
     "core-js": "^3.2.1",
     "lodash": "^4.0.0",
+    "path-browserify": "^1.0.0",
     "react": "~16.8.0",
     "react-dom": "~16.8.0",
     "react-modal": "^3.0.0",

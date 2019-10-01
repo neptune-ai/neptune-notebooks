@@ -142,14 +142,15 @@ interface NbContentsOptions {
   common_config: NbConfig
 }
 
-interface NbContensManager {
+interface NbContentsManager {
   save: (path: string, notebook: NbNotebookDescriptor) => void
+  get: (path: string, notebook: NbNotebookDescriptor) => void
 }
 
 interface NbNotebookDescriptor {
   content: any
-  path: string
-  name: string
+  path?: string
+  name?: string
   type: 'notebook'
 }
 
