@@ -19,8 +19,10 @@ export function createUpgradeHandler() {
     apiTokenParsed,
   } = useSelector(getConfigurationState);
 
+  const [alreadyShown, setAlreadyShown] = React.useState(false);
+
   React.useEffect(() => {
-    if (apiTokenParsed) {
+    if (apiTokenParsed && !alreadyShown) {
       const url = apiTokenParsed.api_address;
 
       if (url && !url.endsWith('neptune.ml')) {
@@ -31,9 +33,12 @@ export function createUpgradeHandler() {
       checkVersion().then(latestVersion => {
         if (NBEXTENSION_VERSION !== latestVersion) {
           console.log(`Latest version is ${latestVersion}, but found ${NBEXTENSION_VERSION}`);
+
           dispatch(addNotification({
             type: 'upgrade-available',
           }));
+
+          setAlreadyShown(true);
         }
       })
     }
