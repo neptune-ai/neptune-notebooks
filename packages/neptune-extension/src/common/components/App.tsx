@@ -61,7 +61,7 @@ const App: React.FC<AppProps> = ({
   const notebookInitialized = !metadata.notebookId || !!notebook || fetchStatus === 'failure';
 
   /*
-   * This should be probably considered in detail and we should have one 
+   * This should be probably considered in detail and we should have one
    * initialization flow and one flag guarding that flow.
    *
    * 1. no api token - initialization finished, configure button only.
@@ -95,8 +95,8 @@ const App: React.FC<AppProps> = ({
           )}
           { isApiTokenValid && (
             <ToolbarButton
-              label="Checkout"
-              title="Checkout notebook from Neptune"
+              label="Download"
+              title="Download notebook from Neptune"
               icon="fa-sign-out"
               onClick={() => setModalOpen('checkout')}
             />
