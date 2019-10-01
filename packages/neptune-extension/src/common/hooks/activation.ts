@@ -36,10 +36,6 @@ export function createActivationHandler(platformNotebook: PlatformNotebook) {
     notebookDeps = [notebook.id, notebook.path, notebook.organizationName, notebook.projectName]
   }
 
-  // eslint-disable-next-line no-console
-  console.debug('notebookDeps', notebookDeps);
-
-
   React.useEffect(() => {
     if (apiToken && isApiTokenValid) {
       executeActivationCode(platformNotebook, apiToken, notebook);
