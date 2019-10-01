@@ -18,7 +18,7 @@ type NotificationProps = NotificationPayload & {
 };
 
 class Notification extends React.PureComponent<NotificationProps> {
-  SUCCEED_TIMEOUT_TIME = 5000;
+  SUCCEED_TIMEOUT_TIME = 10 * 1000;
 
   timer: number | undefined = undefined;
 
