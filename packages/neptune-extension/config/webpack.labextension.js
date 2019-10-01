@@ -11,7 +11,7 @@ module.exports = function ({ project }) {
     entry: project.src.resolve('labextension/index.tsx'),
     output: {
       path: project.dist.resolve('labextension'),
-      filename: 'neptune-notebook.js',
+      filename: 'index.js',
       libraryTarget: 'commonjs2',
       libraryExport: 'default',
     },
