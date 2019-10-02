@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   PlatformNotebook,
@@ -23,6 +23,7 @@ import SelectInput from 'common/components/input/SelectInput';
 import * as Layout from 'common/components/layout';
 
 import { getNotebookState } from 'common/state/notebook/selectors'
+import { addNotification } from 'common/state/notifications/actions';
 
 import { findNonExistantPath } from 'common/utils/path';
 
@@ -70,12 +71,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     [notebookId]
   );
 
-  async function handleSubmit() {
+  const dispatch = useDispatch();
+
+  async function checkoutNotebook() {
     if (checkpointId === undefined || notebookId === undefined || projectId === undefined) {
       return;
     }
-
-    setLoading(true);
 
     const notebook = await leaderboardClient.api.getNotebook({ id: notebookId });
     const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId });
@@ -84,9 +85,23 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     const newPath = await findNonExistantPath(notebook.path, platformNotebook);
     await platformNotebook.saveNotebookAndOpenInNewWindow(newPath, content);
+  }
 
-    setLoading(false);
-    onClose();
+  async function handleSubmit() {
+    setLoading(true);
+
+    try {
+      await checkoutNotebook();
+      onClose();
+    }
+    catch (e) {
+      dispatch(addNotification({
+        type: 'error',
+        data: 'Error during notebook download.',
+      }));
+
+      setLoading(false);
+    }
   }
 
   const disabled = !projectMetaProps.valid || !notebookMetaProps.valid || !checkpointMetaProps.valid;

@@ -114,12 +114,16 @@ const UploadModal: React.FC<UploadModalProps> = ({
       description,
     };
 
+    let returnValue;
+
     if (mode === 'notebook' || metadata.notebookId === undefined) {
-      await dispatch(uploadNotebook(projectIdentifier, checkpointMeta, content, platformNotebook));
+      returnValue = await dispatch(uploadNotebook(projectIdentifier, checkpointMeta, content, platformNotebook));
     } else {
-      await dispatch(uploadCheckpoint(projectIdentifier, metadata.notebookId, checkpointMeta, content));
+      returnValue = await dispatch(uploadCheckpoint(projectIdentifier, metadata.notebookId, checkpointMeta, content));
     }
-    onClose();
+    if (returnValue) {
+      onClose();
+    }
   }
 
 
