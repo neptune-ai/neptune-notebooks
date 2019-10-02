@@ -111,6 +111,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <span>Notebook</span>
           <SelectInput
             className={block('input')}
+            placeholder="No notebooks to select"
             {...notebookInputProps}
             {...notebookMetaProps}
           />
@@ -120,6 +121,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <span>Checkpoint</span>
           <SelectInput
             className={block('input')}
+            placeholder="No checkpoints to select"
             {...checkpointInputProps}
             {...checkpointMetaProps}
           />
