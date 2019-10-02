@@ -69,10 +69,13 @@ export const uploadNotebook = (
 
       return notebook;
     } catch (err) {
+      const message = (err && err.status === 422)
+        ? 'Storage limit has been reached. Notebook can\'t be created.'
+        : 'Error while uploading notebook.';
       dispatch(uploadNotebookFailed());
       dispatch(addNotification({
         type: 'error',
-        data: 'Error while uploading notebook.'
+        data: message,
       }));
       return;
     }
@@ -113,10 +116,13 @@ export const uploadCheckpoint = (projectIdentifier: string, notebookId: string, 
       return checkpoint;
 
     } catch (err) {
+      const message = (err && err.status === 422)
+        ? 'Storage limit has been reached. Checkpoint can\'t be uploaded.'
+        : 'Error while uploading notebook.';
       dispatch(uploadCheckpointFailed());
       dispatch(addNotification({
         type: 'error',
-        data: 'Error while uploading checkpoint.'
+        data: message,
       }));
       return;
     }
