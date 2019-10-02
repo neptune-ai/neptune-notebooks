@@ -5,7 +5,7 @@ import { bemBlock } from 'common/utils/bem';
 // Module
 import './Textarea.less';
 
-interface TextareaProps {
+interface TextareaProps extends React.InputHTMLAttributes<HTMLTextAreaElement>{
   value: string
   className?: string
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
@@ -17,6 +17,7 @@ const Textarea: React.FC<TextareaProps> = ({
   value,
   className,
   onChange,
+  ...rest
 }) => {
   const cssClass = block({
     extra: className,
@@ -27,6 +28,7 @@ const Textarea: React.FC<TextareaProps> = ({
       value={value}
       className={cssClass}
       onChange={onChange}
+      {...rest}
     />
   );
 };

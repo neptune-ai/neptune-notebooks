@@ -231,6 +231,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             <Input
               className={block('input')}
               value={name}
+              maxLength={512}
               onChange={(event) => setName(event.target.value)}
             />
             <ValidationIcon />
@@ -243,6 +244,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             <Textarea
               className={block('input')}
               value={description}
+              maxLength={1024}
               onChange={(event) => setDescription(event.target.value)}
             />
             <ValidationIcon />
