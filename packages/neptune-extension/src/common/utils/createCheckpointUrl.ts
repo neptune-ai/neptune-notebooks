@@ -15,7 +15,9 @@ export function createCheckpointPath({
   notebookName = '',
   checkpointId,
 }: CheckpointPathArgs) {
-  const basePath = `/${projectIdentifier}/n/${notebookName}-${notebookId}`;
+  const basePath = notebookName
+    ? `/${projectIdentifier}/n/${notebookName}-${notebookId}`
+    : `/${projectIdentifier}/n/${notebookId}`;
 
   if (checkpointId) {
     return `${basePath}/${checkpointId}`;
