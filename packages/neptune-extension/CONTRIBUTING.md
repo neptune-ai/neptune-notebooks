@@ -29,4 +29,4 @@ by themselves during install.
 
 In order to properly build the extension you need to generate API clients from
 swagger files definitions.  Use `npm run generate-api-clients` script. This
-script is also run after you install dependencies (as `postinstall` hook)
+script is also run before `start-nb`, `start-lab` and as `prebuild` scripts.
