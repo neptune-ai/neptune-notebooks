@@ -19,10 +19,7 @@ const NotificationsContainer: React.FC = () => {
         {
           notifications.map((notification) => (
             <FadeTransition key={notification.id}>
-              <Notification
-                key={notification.id}
-                {...notification}
-              />
+              <Notification {...notification} />
             </FadeTransition>
           ))
         }
