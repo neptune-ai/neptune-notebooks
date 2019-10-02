@@ -209,6 +209,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             {...projectInputProps}
             {...projectMetaProps}
             disabled={mode === 'checkpoint'}
+            placeholder="No projects to select"
           />
         </Layout.Column>
 

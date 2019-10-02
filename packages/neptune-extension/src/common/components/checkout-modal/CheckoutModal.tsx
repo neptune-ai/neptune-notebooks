@@ -102,6 +102,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <span>Project</span>
           <SelectInput
             className={block('input')}
+            placeholder="No projects to select"
             {...projectInputProps}
             {...projectMetaProps}
           />
