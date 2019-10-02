@@ -14,7 +14,8 @@ export interface PlatformNotebook {
   saveNotebookId: (notebookId: string) => Promise<void>
   executeKernelCode: (code: string) => void
   registerNeptuneMessageListener: (callback: (msg: NeptuneClientMsg) => void) => void
-  openNotebookInNewWindow: (content: any) => void
+  saveNotebookAndOpenInNewWindow: (path: string, content: any) => void
+  assertNotebook: (path: string) => Promise<void>
 }
 
 export interface NeptuneClientMsg {

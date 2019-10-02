@@ -5,10 +5,30 @@ import {
 } from 'types/platform';
 
 import Jupyter from 'base/js/namespace';
+import JupyterConfig from 'services/config';
+import JupyterContents from 'contents';
 
-import { openNotebookInNewWindow } from './window';
 
 class Notebook implements PlatformNotebook {
+
+  baseUrl: string;
+  contentManager: NbContentsManager;
+
+  constructor() {
+    this.baseUrl = Jupyter.utils.get_body_data("baseUrl");
+
+    const commonOptions = {
+      base_url: this.baseUrl,
+      notebook_path: Jupyter.utils.get_body_data("notebookPath"),
+    };
+
+    const commonConfig = new JupyterConfig.ConfigSection('common', commonOptions);
+
+    this.contentManager = new JupyterContents.Contents({
+      base_url: commonOptions.base_url,
+      common_config: commonConfig,
+    });
+  };
   
   async saveWorkingCopyAndGetContent() {
     Jupyter.notebook.save_checkpoint();
@@ -53,8 +73,35 @@ class Notebook implements PlatformNotebook {
     );
   }
 
-  openNotebookInNewWindow(content: any) {
-    openNotebookInNewWindow(content);
+  async saveNotebookAndOpenInNewWindow(path: string, content: any) {
+
+    const url = Jupyter.utils.url_path_join(
+      this.baseUrl,
+      'notebooks',
+      Jupyter.utils.encode_uri_components(path),
+    );
+
+    const options: NbNotebookDescriptor = {
+      content,
+      path,
+      type: 'notebook',
+    };
+
+    await this.contentManager.save(path, options);
+
+    const w = window.open(url, Jupyter._target);
+    if (w === null) {
+      throw "New window cannot be open.";
+    }
+  }
+
+  async assertNotebook(path: string) {
+    const options: NbNotebookDescriptor = {
+      type: 'notebook',
+      content: false,
+    }
+
+    await this.contentManager.get(path, options);
   }
 }
 

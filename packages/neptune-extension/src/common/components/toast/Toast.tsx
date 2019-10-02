@@ -45,6 +45,7 @@ class Toast extends React.PureComponent<IToastProps> {
   renderContent() {
     return (
       <Layout.Element
+        className={block('content')}
         span="greedy"
         childSpacing="sm"
       >{this.props.children}</Layout.Element>
