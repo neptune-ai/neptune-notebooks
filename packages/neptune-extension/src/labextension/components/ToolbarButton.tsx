@@ -15,9 +15,6 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
   onClick,
 }) => {
   const extra = icon !== 'neptune' ? `fa ${icon}` : undefined;
-
-
-
   return (
     <ToolbarButtonComponent
       className={block({
