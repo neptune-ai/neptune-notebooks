@@ -137,6 +137,8 @@ def print_link_to_notebook(project, notebook_name, notebook_id):
 
 def show_unknown_notebook_error(project_name, path):
     project_option = " --project {}".format(project_name) if project_name else ""
+    # Disabling all, since what we actually want to disable doesn't work on python 2
+    # pylint: disable=all
     click.echo("ERROR: Cannot update notebook {} since it is not known to Neptune. "
                "Use following command to create new notebook in Neptune.\n\n"
                "    neptune notebook sync{} {}\n"
@@ -146,6 +148,8 @@ def show_unknown_notebook_error(project_name, path):
 
 def show_path_changed_error(project_name, old_path, new_absolute_path, path):
     project_option = " --project {}".format(project_name) if project_name else ""
+    # Disabling all, since what we actually want to disable doesn't work on python 2
+    # pylint: disable=all
     click.echo("ERROR: Notebook path changed since last checkpoint from\n\n"
                "    {}\n\nto\n\n    {}\n\n"
                "Use following command if you want to create new notebook\n\n"
