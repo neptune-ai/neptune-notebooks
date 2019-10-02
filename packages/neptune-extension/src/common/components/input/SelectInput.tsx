@@ -7,6 +7,7 @@ interface SelectInputProps extends React.SelectHTMLAttributes<HTMLSelectElement>
   valid?: boolean,
   loading?: boolean,
   options: string[][]
+  placeholder?: string
 }
 
 const SelectInput: React.FC<SelectInputProps> = ({
@@ -16,20 +17,26 @@ const SelectInput: React.FC<SelectInputProps> = ({
   loading,
   options,
   onChange,
+  placeholder,
   ...rest
 }) => {
   const endStatus = valid ? 'success' : 'error';
   const status = loading ? 'pending' : endStatus;
+  const isDisabled = disabled || status === 'pending' || options.length === 0;
+  const showPlaceholder = placeholder && !loading && options.length === 0;
 
   return (
     <ValidationWrapper>
       <Select
         value={value}
-        disabled={disabled || status === 'pending'}
+        disabled={isDisabled}
         onChange={onChange}
+        defaultValue=""
         {...rest}
       >
-        { options.map(([ key, value ]) => (
+        {showPlaceholder ? (
+          <option value="" hidden>{ placeholder }</option>
+        ) : options.map(([ key, value ]) => (
           <option
             key={key}
             value={key}
