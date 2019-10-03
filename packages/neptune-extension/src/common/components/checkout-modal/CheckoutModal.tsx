@@ -55,7 +55,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const [ projectId, projectLabel, projectInputProps, projectMetaProps ] = useSelectInputValue(
     initialProjectId,
-    () => fetchProjectOptions('readable'),
+    () => fetchProjectOptions('writable'),
     []
   );
 
