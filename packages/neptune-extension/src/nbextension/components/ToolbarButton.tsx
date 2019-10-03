@@ -29,7 +29,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
       )}
       { !compact && (
         <span
-          className="toolbar-btn-label"
+          className={icon ? 'toolbar-btn-label' : ''}
           children={label}
         />
       )}
