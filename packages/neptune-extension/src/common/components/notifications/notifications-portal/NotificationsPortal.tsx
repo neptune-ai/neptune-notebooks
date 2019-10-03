@@ -1,5 +1,6 @@
 // Libs
 import React from 'react';
+import ReactDOM from "react-dom";
 
 // App
 import { bemBlock } from 'common/utils/bem';
@@ -19,14 +20,15 @@ const NotificationsPortal: React.FC<NotificationsPortalProps> = ({
   className,
   children,
 }) => {
-
-  return (
+  const content = (
     <Layout.Column
       alignItems="end"
       className={block({ extra: className })}
       children={children}
     />
   );
+
+  return ReactDOM.createPortal(content, document.body);
 }
 
 export default NotificationsPortal;
