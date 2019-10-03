@@ -12,7 +12,6 @@ export async function fetchProjectOptions(mode: ProjectOptionsFetchMode) {
   const { entries } = mode === 'readable'
     ? await backendClient.api.listProjects({
         userRelation: 'any',
-        orgRelation: ['publicInTeam', 'privateInTeam', 'publicInIndividual', 'privateInIndividual'],
         limit: 500,
       })
     : await backendClient.api.listProjectsForMemberOrHigher({ limit: 500 });
