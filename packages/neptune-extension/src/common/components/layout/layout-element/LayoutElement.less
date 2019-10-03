@@ -1,0 +1,184 @@
+@import '~src/common/components/mixins.less';
+
+.n-layout-element {
+  position: relative;
+
+  &--span {
+    &-greedy {
+      flex: 1;
+    }
+    &-auto {
+      flex: 0 0 auto;
+    }
+    &-grow {
+      flex-shrink: 0;
+      flex-grow: 1;
+      flex-basis: auto;
+    }
+    &-shrink {
+      flex-shrink: 1;
+      flex-grow: 0;
+      flex-basis: auto;
+    }
+    .generate-columns();
+  }
+
+  &--alignSelf {
+    &-auto {
+      align-self: auto;
+    }
+    &-flex-start {
+      align-self: flex-start;
+    }
+    &-flex-end {
+      align-self: flex-end;
+    }
+    &-center {
+      align-self: center;
+    }
+    &-baseline {
+      align-self: baseline;
+    }
+    &-stretch {
+      align-self: stretch;
+    }
+  }
+
+  &--scroll {
+    .layout-element-scroll(overflow);
+  }
+  &--vertical-scroll {
+    .layout-element-scroll(overflow-y);
+  }
+  &--horizontal-scroll {
+    .layout-element-scroll(overflow-x);
+  }
+
+  &--withPadding {
+    &-xs {
+      padding: @layoutUnit-xs;
+    }
+
+    &-sm {
+      padding: @layoutUnit-sm;
+    }
+
+    &,
+    &-md {
+      padding: @layoutUnit-md;
+    }
+
+    &-lg {
+      padding: @layoutUnit-lg;
+    }
+
+    &-xl {
+      padding: @layoutUnit-xl;
+    }
+  }
+
+  &--withHorizontalPadding {
+    &-xs {
+      padding-left: @layoutUnit-xs;
+      padding-right: @layoutUnit-xs;
+    }
+
+    &-sm {
+      padding-left: @layoutUnit-sm;
+      padding-right: @layoutUnit-sm;
+    }
+
+    &-md {
+      padding-left: @layoutUnit-md;
+      padding-right: @layoutUnit-md;
+    }
+
+    &-lg {
+      padding-left: @layoutUnit-lg;
+      padding-right: @layoutUnit-lg;
+    }
+
+    &-xl {
+      padding-left: @layoutUnit-xl;
+      padding-right: @layoutUnit-xl;
+    }
+  }
+
+  &--withVerticalPadding {
+    &-xs {
+      padding-top: @layoutUnit-xs;
+      padding-bottom: @layoutUnit-xs;
+    }
+
+    &-sm {
+      padding-top: @layoutUnit-sm;
+      padding-bottom: @layoutUnit-sm;
+    }
+
+    &-md {
+      padding-top: @layoutUnit-md;
+      padding-bottom: @layoutUnit-md;
+    }
+
+    &-lg {
+      padding-top: @layoutUnit-lg;
+      padding-bottom: @layoutUnit-lg;
+    }
+
+    &-xl {
+      padding-top: @layoutUnit-xl;
+      padding-bottom: @layoutUnit-xl;
+    }
+  }
+
+  &--withGutter {
+    &-xs {
+      padding-left: @layoutUnit-xs;
+      padding-right: @layoutUnit-xs;
+    }
+
+    &-sm {
+      padding-left: @layoutUnit-sm;
+      padding-right: @layoutUnit-sm;
+    }
+
+    &,
+    &-md {
+      padding-left: @layoutUnit-md;
+      padding-right: @layoutUnit-md;
+    }
+
+    &-lg {
+      padding-left: @layoutUnit-lg;
+      padding-right: @layoutUnit-lg;
+    }
+
+    &-xl {
+      padding-left: @layoutUnit-xl;
+      padding-right: @layoutUnit-xl;
+    }
+  }
+
+  &--withCustomScrollbar {
+    .with-custom-scrollbar();
+  }
+}
+
+.make-col(@span, @columns) {
+  @col-width: percentage(@span / @columns);
+  flex: 0 0 @col-width;
+  max-width: @col-width;
+}
+
+.generate-columns(@columns: 12, @span: 1) when (@span =< @columns) {
+  &-@{span} {
+    .make-col(@span, @columns);
+  }
+  .generate-columns(@columns, (@span + 1));
+}
+
+.layout-element-scroll(@property) {
+    @{property}: scroll;
+  &-hidden { @{property}: hidden; }
+  &-auto { @{property}: auto; }
+}

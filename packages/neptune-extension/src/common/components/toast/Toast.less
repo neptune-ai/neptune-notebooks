@@ -1,0 +1,33 @@
+@import '~src/common/components/mixins.less';
+
+.toast {
+  @notification-info-color-primary: @blue-royal;
+  @notification-info-color-secondary: #e6eff7;
+  @notification-warning-color-primary: #ffbf00;
+  @notification-warning-color-secondary: #fff8e5;
+  @notification-error-color-primary: @red-crimson;
+  @notification-error-color-secondary: #fbeded;
+  @notification-success-color-primary: #2eb67d;
+  @notification-success-color-secondary: #eaf7f2;
+
+  color: @white;
+  font-size: @fs-xs;
+
+  &--type-info { background-color: @notification-info-color-primary }
+  &--type-error { background-color: @notification-error-color-primary }
+  &--type-warning { background-color: @notification-warning-color-primary }
+  &--type-success { background-color: @notification-success-color-primary }
+
+  &__action {
+    cursor: pointer;
+    margin-top: @layoutUnit-xs;
+  }
+
+  &__icon {
+    margin-top: @layoutUnit-xs;
+  }
+
+  &__content {
+    line-height: 22px;
+  }
+}

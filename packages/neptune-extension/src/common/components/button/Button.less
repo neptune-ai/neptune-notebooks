@@ -1,0 +1,93 @@
+@import '~src/common/components/mixins.less';
+
+.n-button {
+  display: inline-block;
+  margin: 0;
+  padding: 0 @layoutUnit-md;
+  background-image: none;
+  border: none;
+  border-radius: 4px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  font-weight: @fw-sbold;
+  font-size: @fs-s;
+  .transition(background);
+
+  &:active {
+    outline: 0;
+  }
+
+  &.disabled {
+    cursor: default;
+  }
+  &--size-medium {
+    @Button-height: 22px;
+    height: @Button-height;
+    line-height: @Button-height;
+  }
+
+  &--size-large {
+    @Button-height: 30px;
+    height: @Button-height;
+    line-height: @Button-height;
+  }
+
+  &--variant-primary {
+    .button-variant(
+      @white, @link-color;
+      @white, @blue-full;
+      fade(@white, 60%), @link-color;
+      @grey-dd, @grey-99;
+    );
+  }
+
+  &--variant-secondary {
+    .button-variant(
+      @link-color, @grey-f2;
+      @link-color, @grey-dd;
+      fade(@link-color, 60%), @grey-f2;
+      @disabled-color, @grey-dd;
+    );
+  }
+}
+
+
+.button-variant(@normal-colors; @hover-colors; @pressed-colors; @disabled-colors) {
+  .set-colors(@colors) {
+    color: extract(@colors, 1);
+    background-color: extract(@colors, 2);
+  }
+
+  & {
+    .set-colors(@normal-colors);
+  }
+
+  &:hover {
+    .set-colors(@hover-colors);
+  }
+
+  &:active {
+    .set-colors(@pressed-colors);
+  }
+
+  &.pressed {
+    .set-colors(@pressed-colors);
+
+    &:hover {
+      background-color: extract(@hover-colors, 2);
+    }
+  }
+
+  &.disabled {
+    &,
+    &:hover,
+    &:active,
+    &.pressed {
+      .set-colors(@disabled-colors);
+    }
+  }
+}
+

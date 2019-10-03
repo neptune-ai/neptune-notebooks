@@ -1,0 +1,117 @@
+{
+  "name": "neptune-notebooks",
+  "description": "Neptune Labs extension for Jupyter",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension",
+    "notebooks"
+  ],
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "author": "Neptune Labs",
+  "homepage": "https://neptune.ml",
+  "bugs": {
+    "url": "https://github.com/neptune-ml/neptune-notebooks/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neptune-ml/neptune-notebooks.git"
+  },
+  "main": "dist/labextension/index.js",
+  "files": [
+    "dist/labextension/*"
+  ],
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "scripts": {
+    "generate-api-clients": "npm run generate-backend-api-client && npm run generate-leaderboard-api-client",
+    "generate-backend-api-client": "npx openapi-generator generate -i ./src/api-spec/backend-swagger.json -g typescript-fetch -o ./src/generated/backend-client --skip-validate-spec",
+    "generate-leaderboard-api-client": "npx openapi-generator generate -i ./src/api-spec/leaderboard-swagger.json -g typescript-fetch -o ./src/generated/leaderboard-client --skip-validate-spec",
+    "check-types": "npm run check-types-lab && npm run check-types-nb",
+    "check-types-lab": "tsc -p tsconfig.lab.json",
+    "check-types-lab-watch": "npm run check-types-lab -- --watch",
+    "check-types-nb": "tsc -p tsconfig.nb.json",
+    "check-types-nb-watch": "npm run check-types-nb -- --watch",
+    "prebuild": "npm run generate-api-clients && npm run test",
+    "dist": "rimraf dist && npm run build && cd dist/labextension && npm pack ../..",
+    "build": "npm run build-lab && npm run build-nb",
+    "prebuild-lab": "npm run check-types-lab",
+    "build-lab": "webpack --env dist --platform lab",
+    "prebuild-nb": "npm run check-types-nb",
+    "build-nb": "webpack --env dist --platform nb",
+    "start-lab": "npm run generate-api-clients && webpack --env dev --platform lab --watch",
+    "start-nb": "npm run generate-api-clients && webpack --env dev --platform nb --watch",
+    "install-lab": "jupyter labextension link .",
+    "install-nb": "jupyter nbextension install dist/nbextension/neptune-notebook.js --user && jupyter nbextension enable neptune-notebook --user",
+    "lint": "eslint *.js .*.js ./config ./src",
+    "pretest": "npm run lint",
+    "stats": "webpack --env dev --platform nb --json > stats.json",
+    "test": ""
+  },
+  "dependencies": {
+    "core-js": "^3.2.1",
+    "lodash": "^4.0.0",
+    "moment": "^2.0.0",
+    "path-browserify": "^1.0.0",
+    "react": "~16.8.0",
+    "react-dom": "~16.8.0",
+    "react-modal": "^3.0.0",
+    "react-redux": "~7.1.1",
+    "react-syntax-highlighter": "^11.0.0",
+    "react-transition-group": "^4.3.0",
+    "redux": "~4.0.4",
+    "redux-logger": "~3.0.6",
+    "redux-thunk": "~2.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.3.3",
+    "@jupyterlab/application": "^1.0.0",
+    "@jupyterlab/apputils": "^1.0.0",
+    "@jupyterlab/docregistry": "^1.0.0",
+    "@jupyterlab/notebook": "^1.0.0",
+    "@jupyterlab/running": "^1.0.0",
+    "@jupyterlab/vdom": "^1.0.0-alpha.4",
+    "@openapitools/openapi-generator-cli": "0.0.17-4.1.1",
+    "@phosphor/disposable": "^1.1.2",
+    "@types/jquery": "^3.3.31",
+    "@types/lodash": "^4.14.138",
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-modal": "^3.0.0",
+    "@types/react-redux": "~7.1.2",
+    "@types/react-syntax-highlighter": "^11.0.0",
+    "@types/react-transition-group": "^4.2.2",
+    "@types/redux-logger": "~3.0.7",
+    "autoprefixer": "~9.6.1",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.0",
+    "css-loader": "~3.2.0",
+    "eslint": "^6.3.0",
+    "eslint-loader": "^3.0.0",
+    "eslint-plugin-react": "^7.14.3",
+    "file-loader": "^4.0.0",
+    "less": "~3.10.3",
+    "less-loader": "~5.0.0",
+    "postcss-loader": "~3.0.0",
+    "rimraf": "^2.0.0",
+    "style-loader": "~1.0.0",
+    "typescript": "~3.5.3",
+    "url-loader": "~2.1.0",
+    "webpack": "^4.0.0",
+    "webpack-cli": "^3.0.0",
+    "webpack-merge": "^4.2.2"
+  },
+  "jupyterlab": {
+    "extension": true
+  }
+}

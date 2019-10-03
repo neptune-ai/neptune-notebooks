@@ -1,0 +1,100 @@
+@import '~src/common/components/variables.less';
+
+.neptune-input() {
+  // reset
+  outline: none;
+
+  background-color: @white;
+  border: 1px solid @grey-cc;
+  color: @text-color;
+  line-height: 22px;
+  font-size: @fs-xs;
+  font-weight: @fw-regular;
+  border-radius: @layoutUnit-xs;
+
+  padding: 0 @layoutUnit-xs;
+  height: 30px;
+
+  &--disabled {
+    border-color: @grey-disabled;
+    background-color: @grey-disabled;
+  }
+
+  &--error {
+    border: 1px solid @input-error-border;
+    background-color: @input-error-bg;
+
+    &:hover {
+      background-color: @white;
+    }
+  }
+}
+
+.transition(@property, @time: .2s, @function: ease) {
+  transition: @property @time @function;
+}
+
+.with-alignItems() {
+  &--alignItems {
+    &-start {
+      align-items: flex-start;
+    }
+    &-end {
+      align-items: flex-end;
+    }
+    &-center {
+      align-items: center;
+    }
+    &-baseline {
+      align-items: baseline;
+    }
+    &-stretch {
+      align-items: stretch;
+    }
+  }
+}
+
+.with-justify-content() {
+  &--justify-content {
+    &-start {
+      justify-content: flex-start;
+    }
+    &-end {
+      justify-content: flex-end;
+    }
+    &-center {
+      justify-content: center;
+    }
+    &-space-between {
+      justify-content: space-between;
+    }
+    &-space-around {
+      justify-content: space-around;
+    }
+    &-space-evenly {
+      justify-content: space-evenly;
+    }
+  }
+}
+
+.with-custom-scrollbar() {
+  scrollbar-color: @blue-ocean @blue-sky;
+  // scrollbar-width: thin; - currently not working properly on FF
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: @blue-sky;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: @blue-ocean;
+  }
+}
+
+.text-ellipsis() {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

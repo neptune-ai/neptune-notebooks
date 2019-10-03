@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "paths": {
+      "platform/*": [
+        "nbextension/*"
+      ]
+    }
+  },
+  "exclude": [
+    "src/labextension"
+  ]
+}

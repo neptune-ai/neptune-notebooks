@@ -1,0 +1,109 @@
+import { get } from 'lodash';
+import {
+  PlatformNotebook,
+  NeptuneClientMsg,
+} from 'types/platform';
+
+import Jupyter from 'base/js/namespace';
+import JupyterConfig from 'services/config';
+import JupyterContents from 'contents';
+
+
+class Notebook implements PlatformNotebook {
+
+  baseUrl: string;
+  contentManager: NbContentsManager;
+
+  constructor() {
+    this.baseUrl = Jupyter.utils.get_body_data("baseUrl");
+
+    const commonOptions = {
+      base_url: this.baseUrl,
+      notebook_path: Jupyter.utils.get_body_data("notebookPath"),
+    };
+
+    const commonConfig = new JupyterConfig.ConfigSection('common', commonOptions);
+
+    this.contentManager = new JupyterContents.Contents({
+      base_url: commonOptions.base_url,
+      common_config: commonConfig,
+    });
+  };
+  
+  async saveWorkingCopyAndGetContent() {
+    Jupyter.notebook.save_checkpoint();
+
+    // The function below returns the (unsaved) working copy.
+    return Jupyter.notebook.toJSON();
+  }
+
+  getMetadata() {
+    const notebook = Jupyter.notebook;
+    const {
+      notebook_path,
+    } = notebook;
+
+    const notebookId = get(notebook, 'metadata.neptune.notebookId');
+
+    return {
+      path: notebook_path,
+      notebookId,
+    };
+  }
+
+  async saveNotebookId(notebookId: string) {
+    Jupyter.notebook.metadata.neptune = {
+      notebookId,
+    };
+    Jupyter.notebook.save_checkpoint();
+  }
+
+  executeKernelCode(code: string) {
+    Jupyter.notebook.kernel.execute(code);
+  }
+
+  async registerNeptuneMessageListener(callback: (msg: NeptuneClientMsg) => void) {
+    Jupyter.notebook.kernel.comm_manager.register_target(
+      'neptune_comm',
+      (comm: NbComm) => {
+        comm.on_msg((msg: NbCommMsgMsg) => {
+          callback(msg.content.data as NeptuneClientMsg);
+        });
+      }
+    );
+  }
+
+  async saveNotebookAndOpenInNewWindow(path: string, content: any) {
+
+    const url = Jupyter.utils.url_path_join(
+      this.baseUrl,
+      'notebooks',
+      Jupyter.utils.encode_uri_components(path),
+    );
+
+    const options: NbNotebookDescriptor = {
+      content,
+      path,
+      type: 'notebook',
+    };
+
+    await this.contentManager.save(path, options);
+
+    const w = window.open(url, Jupyter._target);
+    if (w === null) {
+      throw "New window cannot be open.";
+    }
+  }
+
+  async assertNotebook(path: string) {
+    const options: NbNotebookDescriptor = {
+      type: 'notebook',
+      content: false,
+    }
+
+    await this.contentManager.get(path, options);
+  }
+}
+
+export default Notebook;
+

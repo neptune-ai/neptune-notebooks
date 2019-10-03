@@ -1,0 +1,2404 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Public REST API",
+    "version" : "1.0.0",
+    "title" : "Neptune Leaderboard REST API",
+    "termsOfService" : "Terms of service",
+    "contact" : {
+      "name" : "Neptune",
+      "url" : "https://neptune.ml",
+      "email" : "contact@neptune.ml"
+    },
+    "license" : { }
+  },
+  "host" : "localhost:8070",
+  "basePath" : "/",
+  "tags" : [ {
+    "name" : "leaderboard",
+    "description" : "Provides leaderboard api"
+  }, {
+    "name" : "notebooks",
+    "description" : "Provides notebooks api"
+  } ],
+  "paths" : {
+    "/api/leaderboard/v1/leaderboard" : {
+      "get" : {
+        "summary" : "Get leaderboard",
+        "operationId" : "getLeaderboard",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "checkpointId",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "checkpointName",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "endDate",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "format" : "date-time"
+        }, {
+          "name" : "entryType",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "experiment", "notebook" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "experiment", "notebook" ]
+        }, {
+          "name" : "filterId",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "flattingMode",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "all", "standaloneOnly", "inGroupOnly" ]
+        }, {
+          "name" : "groupId",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "groupShortId",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "id",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "minRunningTimeSeconds",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "notebookId",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "notebookName",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "organizationIdentifier",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "owner",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "searchTerm",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "selectedChannels",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "shortId",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "sortBy",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "sortDirection",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "ascending", "descending" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "ascending", "descending" ]
+        }, {
+          "name" : "sortFieldType",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "native", "parameter", "numericChannel", "textChannel", "property" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "native", "parameter", "numericChannel", "textChannel", "property" ]
+        }, {
+          "name" : "startDate",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "format" : "date-time"
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "running", "succeeded", "aborted", "failed" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "running", "succeeded", "aborted", "failed" ]
+        }, {
+          "name" : "tags",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "tagsMode",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "and", "or" ]
+        }, {
+          "name" : "trashed",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "false", "true", "all" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/LeaderboardDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/namedFilters/{namedFilterId}" : {
+      "get" : {
+        "summary" : "Get named filter by id",
+        "operationId" : "getNamedFilter",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "namedFilterId",
+          "in" : "path",
+          "description" : "namedFilterId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/NamedFilterDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "delete" : {
+        "summary" : "Delete named filter by id",
+        "operationId" : "deleteNamedFilter",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "namedFilterId",
+          "in" : "path",
+          "description" : "namedFilterId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      },
+      "patch" : {
+        "summary" : "Update named filter by id",
+        "operationId" : "updateNamedFilter",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "namedFilterId",
+          "in" : "path",
+          "description" : "namedFilterId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "namedFilterUpdate",
+          "description" : "namedFilterUpdate",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NamedFilterUpdateDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/NamedFilterDTO"
+            }
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/notebooks" : {
+      "get" : {
+        "summary" : "Get notebooks",
+        "operationId" : "listNotebooks",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "format" : "int32"
+        }, {
+          "name" : "maxCreationTime",
+          "in" : "query",
+          "description" : "maxCreationTime",
+          "required" : false,
+          "type" : "string",
+          "format" : "date-time"
+        }, {
+          "name" : "minCreationTime",
+          "in" : "query",
+          "description" : "minCreationTime",
+          "required" : false,
+          "type" : "string",
+          "format" : "date-time"
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "description" : "offset",
+          "required" : false,
+          "type" : "integer",
+          "default" : 0,
+          "format" : "int32"
+        }, {
+          "name" : "owner",
+          "in" : "query",
+          "description" : "owner",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sortBy",
+          "in" : "query",
+          "description" : "sortBy",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "name", "owner", "updateTime" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "name", "owner", "updateTime" ]
+        }, {
+          "name" : "sortDirection",
+          "in" : "query",
+          "description" : "sortDirection",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "ascending", "descending" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "ascending", "descending" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/NotebookListDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "post" : {
+        "summary" : "Create notebook",
+        "operationId" : "createNotebook",
+        "consumes" : [ "application/octet-stream" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/NotebookWithNoContentDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/notebooks/checkpoints" : {
+      "get" : {
+        "summary" : "Get notebook checkpoints",
+        "operationId" : "listCheckpoints",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit",
+          "required" : false,
+          "type" : "integer",
+          "default" : 100,
+          "format" : "int32"
+        }, {
+          "name" : "maxCreationTime",
+          "in" : "query",
+          "description" : "maxCreationTime",
+          "required" : false,
+          "type" : "string",
+          "format" : "date-time"
+        }, {
+          "name" : "minCreationTime",
+          "in" : "query",
+          "description" : "minCreationTime",
+          "required" : false,
+          "type" : "string",
+          "format" : "date-time"
+        }, {
+          "name" : "notebookId",
+          "in" : "query",
+          "description" : "notebookId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "description" : "offset",
+          "required" : false,
+          "type" : "integer",
+          "default" : 0,
+          "format" : "int32"
+        }, {
+          "name" : "owner",
+          "in" : "query",
+          "description" : "owner",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "searchTerm",
+          "in" : "query",
+          "description" : "searchTerm",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/CheckpointListDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/notebooks/checkpoints/{id}" : {
+      "get" : {
+        "summary" : "Get notebook checkpoint",
+        "operationId" : "getCheckpoint",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/CheckpointDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "delete" : {
+        "summary" : "Delete checkpoint",
+        "operationId" : "deleteCheckpoint",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      },
+      "patch" : {
+        "summary" : "Update checkpoint",
+        "operationId" : "updateCheckpoint",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "checkpointUpdate",
+          "description" : "checkpointUpdate",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CheckpointUpdateDTO"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/CheckpointDTO"
+            }
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/notebooks/checkpoints/{id}/content" : {
+      "get" : {
+        "summary" : "Get notebook checkpoint content",
+        "operationId" : "getCheckpointContent",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "post" : {
+        "summary" : "Upload checkpoint content",
+        "operationId" : "uploadCheckpointContent",
+        "consumes" : [ "application/octet-stream" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/notebooks/compare" : {
+      "get" : {
+        "summary" : "Compare notebook checkpoint content, response is in nbdime rest api format",
+        "operationId" : "compareCheckpointsContent",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "sourceCheckpointId",
+          "in" : "query",
+          "description" : "sourceCheckpointId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "targetCheckpointId",
+          "in" : "query",
+          "description" : "targetCheckpointId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/notebooks/{id}" : {
+      "get" : {
+        "summary" : "Get notebook",
+        "operationId" : "getNotebook",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/NotebookDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "patch" : {
+        "summary" : "Update notebook",
+        "operationId" : "updateNotebook",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "notebookUpdate",
+          "description" : "notebookUpdate",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NotebookUpdateDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/NotebookDTO"
+            }
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/notebooks/{id}/content" : {
+      "delete" : {
+        "summary" : "Delete notebook",
+        "operationId" : "deleteNotebook",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/notebooks/{notebookId}/checkpoints" : {
+      "post" : {
+        "summary" : "Create checkpoint",
+        "operationId" : "createCheckpoint",
+        "consumes" : [ "application/octet-stream" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "description",
+          "in" : "query",
+          "description" : "description",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "jupyterPath",
+          "in" : "query",
+          "description" : "jupyterPath",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "description" : "name",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "notebookId",
+          "in" : "path",
+          "description" : "notebookId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/NotebookDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : true
+      }
+    },
+    "/api/leaderboard/v1/notebooks/{notebookId}/checkpoints2" : {
+      "post" : {
+        "summary" : "Create checkpoint",
+        "operationId" : "createEmptyCheckpoint",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "checkpoint",
+          "description" : "checkpoint",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NewCheckpointDTO"
+          }
+        }, {
+          "name" : "notebookId",
+          "in" : "path",
+          "description" : "notebookId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/CheckpointDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/organizations/{organizationName}/projects/{projectName}/namedFilters" : {
+      "get" : {
+        "summary" : "List named filters for project",
+        "operationId" : "listNamedFilters",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "organizationName",
+          "in" : "path",
+          "description" : "organizationName",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "projectName",
+          "in" : "path",
+          "description" : "projectName",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/NamedFilterDTO"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "post" : {
+        "summary" : "Create a named filter",
+        "operationId" : "createNamedFilter",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "namedFilterParams",
+          "description" : "namedFilterParams",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NamedFilterParamsDTO"
+          }
+        }, {
+          "name" : "organizationName",
+          "in" : "path",
+          "description" : "organizationName",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "projectName",
+          "in" : "path",
+          "description" : "projectName",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/NamedFilterDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/organizations/{organizationName}/projects/{projectName}/namedFilters/count" : {
+      "post" : {
+        "summary" : "Count matching leaderboard items",
+        "operationId" : "countMatchingLeaderboardEntries",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "flattingMode",
+          "in" : "query",
+          "description" : "flattingMode",
+          "required" : false,
+          "type" : "string",
+          "default" : "all",
+          "enum" : [ "all", "standaloneOnly", "inGroupOnly" ]
+        }, {
+          "in" : "body",
+          "name" : "namedFilterParams",
+          "description" : "namedFilterParams",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NamedFilterParamsDTO"
+          }
+        }, {
+          "name" : "organizationName",
+          "in" : "path",
+          "description" : "organizationName",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "projectName",
+          "in" : "path",
+          "description" : "projectName",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "trashed",
+          "in" : "query",
+          "description" : "trashed",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/LeaderboardEntryCountDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/projectCharts/{projectIdentifier}" : {
+      "get" : {
+        "summary" : "listCharts",
+        "operationId" : "listProjectCharts",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "path",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ProjectChartListDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "post" : {
+        "summary" : "Create chart",
+        "operationId" : "createProjectChart",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "chart",
+          "description" : "chart",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NewProjectChartDTO"
+          }
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "path",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ProjectChartDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/projectCharts/{projectIdentifier}/{chartId}" : {
+      "get" : {
+        "summary" : "Get chart",
+        "operationId" : "getProjectChart",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "chartId",
+          "in" : "path",
+          "description" : "chartId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "path",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ProjectChartDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "put" : {
+        "summary" : "Update chart",
+        "operationId" : "updateProjectChart",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "chartId",
+          "in" : "path",
+          "description" : "chartId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "path",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "update",
+          "description" : "update",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ProjectChartUpdateDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ProjectChartDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "delete" : {
+        "summary" : "Delete chart",
+        "operationId" : "deleteProjectChart",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "chartId",
+          "in" : "path",
+          "description" : "chartId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "path",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/projects/{projectId}/settings" : {
+      "get" : {
+        "summary" : "Set project leaderboard settings",
+        "operationId" : "getProjectLeaderboardSettings",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectId",
+          "in" : "path",
+          "description" : "projectId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ProjectLeaderboardSettingsDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "post" : {
+        "summary" : "Set project leaderboard settings",
+        "operationId" : "setProjectLeaderboardSettings",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectId",
+          "in" : "path",
+          "description" : "projectId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "settings",
+          "description" : "settings",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ProjectLeaderboardSettingsDTO"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/tracking" : {
+      "get" : {
+        "summary" : "List tracking data",
+        "operationId" : "listTrackingData",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/TrackingDataDTO"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/{organizationId}/running" : {
+      "get" : {
+        "summary" : "Get running entries in organization with costs",
+        "operationId" : "runningLeaderboard",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "organizationId",
+          "in" : "path",
+          "description" : "organizationId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/LeaderboardDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    }
+  },
+  "definitions" : {
+    "BooleanFilterDTO" : {
+      "type" : "object",
+      "required" : [ "value", "verb" ],
+      "properties" : {
+        "value" : {
+          "type" : "boolean"
+        },
+        "verb" : {
+          "type" : "string",
+          "enum" : [ "is" ]
+        }
+      },
+      "title" : "BooleanFilterDTO"
+    },
+    "ChannelWithValueDTO" : {
+      "type" : "object",
+      "required" : [ "channelId", "channelName", "channelType", "x", "y" ],
+      "properties" : {
+        "channelId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "channelName" : {
+          "type" : "string"
+        },
+        "channelType" : {
+          "type" : "string",
+          "enum" : [ "numeric", "text", "image" ]
+        },
+        "x" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "y" : {
+          "type" : "string"
+        }
+      },
+      "title" : "ChannelWithValueDTO"
+    },
+    "CheckpointDTO" : {
+      "type" : "object",
+      "required" : [ "creationTime", "description", "id", "name", "notebookId", "owner", "path", "removable", "size" ],
+      "properties" : {
+        "creationTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "notebookId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "owner" : {
+          "type" : "string"
+        },
+        "path" : {
+          "type" : "string"
+        },
+        "removable" : {
+          "type" : "boolean"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "title" : "CheckpointDTO"
+    },
+    "CheckpointListDTO" : {
+      "type" : "object",
+      "required" : [ "entries", "matchingItemCount", "totalItemCount" ],
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "description" : "The entries matching the given criteria.",
+          "items" : {
+            "$ref" : "#/definitions/CheckpointDTO"
+          }
+        },
+        "matchingItemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The total number of entries matching the given criteria."
+        },
+        "totalItemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The total number of entries."
+        }
+      },
+      "title" : "CheckpointListDTO"
+    },
+    "CheckpointUpdateDTO" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      },
+      "title" : "CheckpointUpdateDTO"
+    },
+    "DateTimeDurationFilterDTO" : {
+      "type" : "object",
+      "required" : [ "value", "verb" ],
+      "properties" : {
+        "value" : {
+          "$ref" : "#/definitions/TimeDurationDTO"
+        },
+        "verb" : {
+          "type" : "string",
+          "enum" : [ "isOverTheLast" ]
+        }
+      },
+      "title" : "DateTimeDurationFilterDTO"
+    },
+    "DateTimeFilterDTO" : {
+      "type" : "object",
+      "properties" : {
+        "durationFilter" : {
+          "$ref" : "#/definitions/DateTimeDurationFilterDTO"
+        },
+        "intervalFilter" : {
+          "$ref" : "#/definitions/DateTimeIntervalFilterDTO"
+        },
+        "valueFilter" : {
+          "$ref" : "#/definitions/DateTimeValueFilterDTO"
+        }
+      },
+      "title" : "DateTimeFilterDTO"
+    },
+    "DateTimeIntervalFilterDTO" : {
+      "type" : "object",
+      "required" : [ "from", "to", "verb" ],
+      "properties" : {
+        "from" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "to" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "verb" : {
+          "type" : "string",
+          "enum" : [ "isBetween", "isNotBetween" ]
+        }
+      },
+      "title" : "DateTimeIntervalFilterDTO"
+    },
+    "DateTimeValueFilterDTO" : {
+      "type" : "object",
+      "required" : [ "value", "verb" ],
+      "properties" : {
+        "value" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "verb" : {
+          "type" : "string",
+          "enum" : [ "is", "isNot", "isAfter", "isBefore" ]
+        }
+      },
+      "title" : "DateTimeValueFilterDTO"
+    },
+    "ExperimentStateFilterDTO" : {
+      "type" : "object",
+      "required" : [ "value", "verb" ],
+      "properties" : {
+        "value" : {
+          "type" : "string",
+          "enum" : [ "running", "succeeded", "aborted", "failed" ]
+        },
+        "verb" : {
+          "type" : "string",
+          "enum" : [ "is", "isNot" ]
+        }
+      },
+      "title" : "ExperimentStateFilterDTO"
+    },
+    "ExperimentStatesDTO" : {
+      "type" : "object",
+      "required" : [ "aborted", "failed", "notResponding", "running", "succeeded" ],
+      "properties" : {
+        "aborted" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "failed" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "notResponding" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "running" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "succeeded" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      },
+      "title" : "ExperimentStatesDTO"
+    },
+    "FilteringConditionDTO" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "$ref" : "#/definitions/StringFilterDTO"
+        },
+        "ownerName" : {
+          "$ref" : "#/definitions/StringFilterDTO"
+        },
+        "responding" : {
+          "$ref" : "#/definitions/BooleanFilterDTO"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ExperimentStateFilterDTO"
+        },
+        "tags" : {
+          "$ref" : "#/definitions/TagsFilterDTO"
+        },
+        "timeOfCreation" : {
+          "$ref" : "#/definitions/DateTimeFilterDTO"
+        }
+      },
+      "title" : "FilteringConditionDTO"
+    },
+    "FilteringConditionsDTO" : {
+      "type" : "object",
+      "required" : [ "filtersInDisjunctiveForm" ],
+      "properties" : {
+        "filtersInDisjunctiveForm" : {
+          "type" : "array",
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/FilteringConditionDTO"
+            }
+          }
+        }
+      },
+      "title" : "FilteringConditionsDTO"
+    },
+    "KeyValuePropertyDTO" : {
+      "type" : "object",
+      "required" : [ "key", "value" ],
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      },
+      "title" : "KeyValuePropertyDTO"
+    },
+    "LeaderboardDTO" : {
+      "type" : "object",
+      "required" : [ "entries", "matchingItemCount", "totalItemCount" ],
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "description" : "The entries matching the given criteria.",
+          "items" : {
+            "$ref" : "#/definitions/LeaderboardEntryDTO"
+          }
+        },
+        "matchingItemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The total number of entries matching the given criteria."
+        },
+        "totalItemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The total number of entries."
+        }
+      },
+      "title" : "LeaderboardDTO"
+    },
+    "LeaderboardEntryCountDTO" : {
+      "type" : "object",
+      "required" : [ "matchingItemCount", "totalItemCount" ],
+      "properties" : {
+        "matchingItemCount" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalItemCount" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "title" : "LeaderboardEntryCountDTO"
+    },
+    "LeaderboardEntryDTO" : {
+      "type" : "object",
+      "required" : [ "channelsLastValues", "deleted", "description", "entryType", "experimentStates", "id", "isBestExperiment", "name", "organizationId", "organizationName", "owner", "parameters", "projectDeleted", "projectId", "projectName", "properties", "responding", "runningTime", "shortId", "size", "state", "tags", "timeOfCreation", "trashed" ],
+      "properties" : {
+        "channelsLastValues" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ChannelWithValueDTO"
+          }
+        },
+        "checkpointCreated" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "checkpointDeleted" : {
+          "type" : "boolean"
+        },
+        "checkpointId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "checkpointName" : {
+          "type" : "string"
+        },
+        "commitId" : {
+          "type" : "string"
+        },
+        "deleted" : {
+          "type" : "boolean"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "entryType" : {
+          "type" : "string",
+          "enum" : [ "experiment", "notebook" ]
+        },
+        "experimentStates" : {
+          "$ref" : "#/definitions/ExperimentStatesDTO"
+        },
+        "hostname" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "isBestExperiment" : {
+          "type" : "boolean"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "notebookDeleted" : {
+          "type" : "boolean"
+        },
+        "notebookId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "notebookName" : {
+          "type" : "string"
+        },
+        "organizationId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "organizationName" : {
+          "type" : "string"
+        },
+        "owner" : {
+          "type" : "string"
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ParameterDTO"
+          }
+        },
+        "projectDeleted" : {
+          "type" : "boolean"
+        },
+        "projectId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "projectName" : {
+          "type" : "string"
+        },
+        "properties" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValuePropertyDTO"
+          }
+        },
+        "responding" : {
+          "type" : "boolean"
+        },
+        "runningTime" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "shortId" : {
+          "type" : "string"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The size of all storage files in bytes."
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "running", "succeeded", "aborted", "failed" ]
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "timeOfCompletion" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Present only when the experiment is completed."
+        },
+        "timeOfCreation" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "trashed" : {
+          "type" : "boolean"
+        }
+      },
+      "title" : "LeaderboardEntryDTO"
+    },
+    "NamedFilterDTO" : {
+      "type" : "object",
+      "required" : [ "filters", "id", "name" ],
+      "properties" : {
+        "filters" : {
+          "$ref" : "#/definitions/FilteringConditionsDTO"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      },
+      "title" : "NamedFilterDTO"
+    },
+    "NamedFilterParamsDTO" : {
+      "type" : "object",
+      "required" : [ "filters", "name" ],
+      "properties" : {
+        "filters" : {
+          "$ref" : "#/definitions/FilteringConditionsDTO"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      },
+      "title" : "NamedFilterParamsDTO"
+    },
+    "NamedFilterUpdateDTO" : {
+      "type" : "object",
+      "properties" : {
+        "filters" : {
+          "$ref" : "#/definitions/FilteringConditionsDTO"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      },
+      "title" : "NamedFilterUpdateDTO"
+    },
+    "NewCheckpointDTO" : {
+      "type" : "object",
+      "required" : [ "path" ],
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "path" : {
+          "type" : "string"
+        }
+      },
+      "title" : "NewCheckpointDTO"
+    },
+    "NewProjectChartDTO" : {
+      "type" : "object",
+      "required" : [ "filters", "metrics", "name" ],
+      "properties" : {
+        "filters" : {
+          "description" : "Chart filters",
+          "$ref" : "#/definitions/ProjectChartFiltersDTO"
+        },
+        "metrics" : {
+          "type" : "array",
+          "description" : "Chart metrics",
+          "items" : {
+            "$ref" : "#/definitions/ProjectChartMetricDTO"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Chart name"
+        }
+      },
+      "title" : "NewProjectChartDTO"
+    },
+    "NotebookDTO" : {
+      "type" : "object",
+      "required" : [ "creationTime", "description", "id", "lastCheckpointId", "lastCheckpointTime", "name", "organizationId", "organizationName", "owner", "path", "projectId", "projectName", "removable", "size", "totalStorageSize" ],
+      "properties" : {
+        "creationTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "lastCheckpointId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "lastCheckpointTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "organizationId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "organizationName" : {
+          "type" : "string"
+        },
+        "owner" : {
+          "type" : "string"
+        },
+        "path" : {
+          "type" : "string"
+        },
+        "projectId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "projectName" : {
+          "type" : "string"
+        },
+        "removable" : {
+          "type" : "boolean"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalStorageSize" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "title" : "NotebookDTO"
+    },
+    "NotebookListDTO" : {
+      "type" : "object",
+      "required" : [ "entries", "matchingItemCount", "totalItemCount" ],
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "description" : "The entries matching the given criteria.",
+          "items" : {
+            "$ref" : "#/definitions/NotebookDTO"
+          }
+        },
+        "matchingItemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The total number of entries matching the given criteria."
+        },
+        "totalItemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The total number of entries."
+        }
+      },
+      "title" : "NotebookListDTO"
+    },
+    "NotebookUpdateDTO" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        }
+      },
+      "title" : "NotebookUpdateDTO"
+    },
+    "NotebookWithNoContentDTO" : {
+      "type" : "object",
+      "required" : [ "creationTime", "description", "id", "owner", "projectId" ],
+      "properties" : {
+        "creationTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "owner" : {
+          "type" : "string"
+        },
+        "projectId" : {
+          "type" : "string",
+          "format" : "uuid"
+        }
+      },
+      "title" : "NotebookWithNoContentDTO"
+    },
+    "NotebooksDataDTO" : {
+      "type" : "object",
+      "properties" : {
+        "count" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      },
+      "title" : "NotebooksDataDTO"
+    },
+    "ParameterDTO" : {
+      "type" : "object",
+      "required" : [ "id", "name", "parameterType", "value" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "parameterType" : {
+          "type" : "string",
+          "enum" : [ "double", "string" ]
+        },
+        "value" : {
+          "type" : "string"
+        }
+      },
+      "title" : "ParameterDTO"
+    },
+    "ProjectChartDTO" : {
+      "type" : "object",
+      "required" : [ "filters", "id", "metrics", "name" ],
+      "properties" : {
+        "filters" : {
+          "description" : "Chart filters",
+          "$ref" : "#/definitions/ProjectChartFiltersDTO"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "Chart id"
+        },
+        "metrics" : {
+          "type" : "array",
+          "description" : "Chart metrics",
+          "items" : {
+            "$ref" : "#/definitions/ProjectChartMetricDTO"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Chart name"
+        }
+      },
+      "title" : "ProjectChartDTO"
+    },
+    "ProjectChartFiltersDTO" : {
+      "type" : "object",
+      "required" : [ "owners", "states", "tags" ],
+      "properties" : {
+        "from" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Filter experiments since"
+        },
+        "owners" : {
+          "type" : "array",
+          "description" : "Filtering owners",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "states" : {
+          "type" : "array",
+          "description" : "Filtering states",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "running", "succeeded", "aborted", "failed" ]
+          }
+        },
+        "tags" : {
+          "type" : "array",
+          "description" : "Filtering tags",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "timePeriod" : {
+          "description" : "Filter experiment in time period",
+          "$ref" : "#/definitions/TimeDurationDTO"
+        },
+        "to" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Filter experiments up to"
+        }
+      },
+      "title" : "ProjectChartFiltersDTO"
+    },
+    "ProjectChartListDTO" : {
+      "type" : "object",
+      "required" : [ "entries", "matchingItemCount", "totalItemCount" ],
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "description" : "The entries matching the given criteria.",
+          "items" : {
+            "$ref" : "#/definitions/ProjectChartDTO"
+          }
+        },
+        "matchingItemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The total number of entries matching the given criteria."
+        },
+        "totalItemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The total number of entries."
+        }
+      },
+      "title" : "ProjectChartListDTO"
+    },
+    "ProjectChartMetricDTO" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "useFunction" : {
+          "type" : "boolean"
+        },
+        "useValue" : {
+          "type" : "boolean"
+        }
+      },
+      "title" : "ProjectChartMetricDTO"
+    },
+    "ProjectChartUpdateDTO" : {
+      "type" : "object",
+      "required" : [ "filters", "metrics", "name" ],
+      "properties" : {
+        "filters" : {
+          "description" : "Chart filters",
+          "$ref" : "#/definitions/ProjectChartFiltersDTO"
+        },
+        "metrics" : {
+          "type" : "array",
+          "description" : "Chart metrics",
+          "items" : {
+            "$ref" : "#/definitions/ProjectChartMetricDTO"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Chart name"
+        }
+      },
+      "title" : "ProjectChartUpdateDTO"
+    },
+    "ProjectLeaderboardSettingColumnDTO" : {
+      "type" : "object",
+      "required" : [ "columnType", "id", "pinned", "width" ],
+      "properties" : {
+        "columnType" : {
+          "type" : "string",
+          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "parameters", "properties" ]
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "pinned" : {
+          "type" : "boolean"
+        },
+        "width" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      },
+      "title" : "ProjectLeaderboardSettingColumnDTO"
+    },
+    "ProjectLeaderboardSettingsDTO" : {
+      "type" : "object",
+      "required" : [ "columns" ],
+      "properties" : {
+        "columns" : {
+          "type" : "array",
+          "description" : "The columns for settings in order",
+          "items" : {
+            "$ref" : "#/definitions/ProjectLeaderboardSettingColumnDTO"
+          }
+        }
+      },
+      "title" : "ProjectLeaderboardSettingsDTO"
+    },
+    "StringFilterDTO" : {
+      "type" : "object",
+      "required" : [ "value", "verb" ],
+      "properties" : {
+        "value" : {
+          "type" : "string"
+        },
+        "verb" : {
+          "type" : "string",
+          "enum" : [ "is", "isNot", "contains", "doesNotContain" ]
+        }
+      },
+      "title" : "StringFilterDTO"
+    },
+    "TagsFilterDTO" : {
+      "type" : "object",
+      "required" : [ "value", "verb" ],
+      "properties" : {
+        "value" : {
+          "type" : "string"
+        },
+        "verb" : {
+          "type" : "string",
+          "enum" : [ "contains", "doesNotContain" ]
+        }
+      },
+      "title" : "TagsFilterDTO"
+    },
+    "TimeDurationDTO" : {
+      "type" : "object",
+      "required" : [ "days", "hours", "minutes", "months", "seconds", "weeks", "years" ],
+      "properties" : {
+        "days" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "hours" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "minutes" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "months" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "seconds" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "weeks" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "years" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      },
+      "title" : "TimeDurationDTO"
+    },
+    "TrackingDataDTO" : {
+      "type" : "object",
+      "properties" : {
+        "identifier" : {
+          "type" : "string"
+        },
+        "notebooks" : {
+          "$ref" : "#/definitions/NotebooksDataDTO"
+        }
+      },
+      "title" : "TrackingDataDTO"
+    }
+  }
+}
