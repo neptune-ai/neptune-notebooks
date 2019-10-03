@@ -16,10 +16,16 @@ interface NotificationsPortalProps {
 
 const block = bemBlock('notifications-portal');
 
+const container = document.createElement('div');
+
 const NotificationsPortal: React.FC<NotificationsPortalProps> = ({
   className,
   children,
 }) => {
+  React.useEffect(() => {
+    document.body.append(container)
+  }, []);
+
   const content = (
     <Layout.Column
       alignItems="end"
@@ -28,7 +34,7 @@ const NotificationsPortal: React.FC<NotificationsPortalProps> = ({
     />
   );
 
-  return ReactDOM.createPortal(content, document.body);
+  return ReactDOM.createPortal(content, container);
 }
 
 export default NotificationsPortal;
