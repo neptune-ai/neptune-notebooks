@@ -44,6 +44,9 @@ export default function useSelectInputValue(
         }
 
       }
+    }).catch(() => {
+      setLoading(false);
+      setValue(undefined);
     });
 
     return () => {
