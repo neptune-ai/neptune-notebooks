@@ -106,7 +106,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
     if (!projectId || !projectIdentifier) {
       return;
     }
-    const content = await platformNotebook.saveWorkingCopyAndGetContent();
 
     const checkpointMeta = {
       path: metadata.path,
@@ -117,9 +116,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
     let returnValue;
 
     if (mode === 'notebook' || metadata.notebookId === undefined) {
-      returnValue = await dispatch(uploadNotebook(projectIdentifier, checkpointMeta, content, platformNotebook));
+      returnValue = await dispatch(uploadNotebook(projectIdentifier, checkpointMeta, platformNotebook));
     } else {
-      returnValue = await dispatch(uploadCheckpoint(projectIdentifier, metadata.notebookId, checkpointMeta, content));
+      returnValue = await dispatch(uploadCheckpoint(projectIdentifier, metadata.notebookId, checkpointMeta, platformNotebook));
     }
     if (returnValue) {
       onClose();

@@ -45,7 +45,6 @@ interface CheckpointMetadata {
 export const uploadNotebook = (
   projectIdentifier: string,
   checkpointMeta: CheckpointMetadata,
-  content: any,
   platformNotebook: PlatformNotebook,
 ): ThunkAction<Promise<NotebookWithNoContentDTO | void>, AppState, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
@@ -53,8 +52,10 @@ export const uploadNotebook = (
 
     try {
       const notebook = await leaderboardClient.api.createNotebook({projectIdentifier});
-      await requestCheckpoint(notebook.id, checkpointMeta, content);
+      /* save notebook id to metadata before collecting content. */
       await platformNotebook.saveNotebookId(notebook.id);
+      const content = await platformNotebook.saveWorkingCopyAndGetContent();
+      await requestCheckpoint(notebook.id, checkpointMeta, content);
       await dispatch(fetchNotebook(notebook.id));
 
       dispatch(uploadNotebookSuccess(notebook));
@@ -94,13 +95,14 @@ function uploadNotebookFailed() {
   return { type: 'NOTEBOOK_UPLOAD_FAILED' } as const;
 }
 
-export const uploadCheckpoint = (projectIdentifier: string, notebookId: string, checkpointMeta: CheckpointMetadata, content: any)
+export const uploadCheckpoint = (projectIdentifier: string, notebookId: string, checkpointMeta: CheckpointMetadata, platformNotebook: PlatformNotebook)
   : ThunkAction<Promise<CheckpointDTO | void>, AppState, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
 
     dispatch(uploadCheckpointRequest());
 
     try {
+      const content = await platformNotebook.saveWorkingCopyAndGetContent();
       const checkpoint = await requestCheckpoint(notebookId, checkpointMeta, content);
       await dispatch(fetchNotebook(notebookId));
       dispatch(uploadCheckpointSuccess(checkpoint));
