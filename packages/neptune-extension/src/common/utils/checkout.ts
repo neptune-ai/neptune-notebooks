@@ -10,8 +10,11 @@ type ProjectOptionsFetchMode = 'readable' | 'writable'
 
 export async function fetchProjectOptions(mode: ProjectOptionsFetchMode) {
   const { entries } = mode === 'readable'
-    ? await backendClient.api.listProjects({})
-    : await backendClient.api.listProjectsForMemberOrHigher({});
+    ? await backendClient.api.listProjects({
+        userRelation: 'any',
+        limit: 500,
+      })
+    : await backendClient.api.listProjectsForMemberOrHigher({ limit: 500 });
 
 
   return entries
