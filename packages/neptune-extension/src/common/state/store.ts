@@ -8,6 +8,8 @@ import thunkMiddleware from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 import rootReducer from './reducers';
 
+import { createInitialConfigurationState } from './configuration/reducer';
+
 declare global {
   interface Window {
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: typeof compose
@@ -31,7 +33,11 @@ export default function configure () {
     }
   }
 
+  const initialState = {
+    configuration: createInitialConfigurationState(),
+  };
+
   const composedEnhancers = composeFunc(applyMiddleware(...middlewares));
 
-  return createStore(rootReducer, undefined, composedEnhancers);
+  return createStore(rootReducer, initialState, composedEnhancers);
 }

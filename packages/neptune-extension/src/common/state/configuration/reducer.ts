@@ -8,15 +8,20 @@ interface ConfigurationState {
   inferredUsername?: string
 }
 
-const initialApiToken = localStorage.getItem(API_TOKEN_LOCAL_STORAGE_KEY) || undefined;
-const initialApiTokenParsed = initialApiToken ? parseApiToken(initialApiToken) : undefined;
+const dummyInitialState: ConfigurationState = {};
 
-const initialState: ConfigurationState = {
-  apiToken: initialApiToken,
-  apiTokenParsed: initialApiTokenParsed,
-};
+export function createInitialConfigurationState(): ConfigurationState {
+  const initialApiToken = localStorage.getItem(API_TOKEN_LOCAL_STORAGE_KEY) || undefined;
+  const initialApiTokenParsed = initialApiToken ? parseApiToken(initialApiToken) : undefined;
 
-export function configurationReducer(state: ConfigurationState = initialState, action:ConfigurationActions): ConfigurationState {
+  return {
+    apiToken: initialApiToken,
+    apiTokenParsed: initialApiTokenParsed,
+  };
+}
+
+/* initial state should be provided in "createStore". */
+export function configurationReducer(state: ConfigurationState = dummyInitialState, action:ConfigurationActions): ConfigurationState {
   switch (action.type) {
     case "API_TOKEN_SET": {
 
