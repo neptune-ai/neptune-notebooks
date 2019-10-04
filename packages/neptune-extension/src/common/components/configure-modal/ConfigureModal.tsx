@@ -11,13 +11,12 @@ import Button from 'common/components/button/Button';
 import Modal from 'common/components/modal/Modal';
 import Input from 'common/components/input/Input';
 import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
-import ValidationIcon from "common/components/validation-icon/ValidationIcon";
+import ValidationIcon, { StatusValue } from "common/components/validation-icon/ValidationIcon";
 import ModalHeader from "common/components/modal/ModalHeader";
 import { bemBlock } from "common/utils/bem";
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import { setApiToken } from 'common/state/configuration/actions';
 import { authClient } from 'common/api/auth';
-import { StatusValue } from 'common/components/validation-icon/ValidationIcon'
 
 // Module
 import './ConfigureModal.less';
