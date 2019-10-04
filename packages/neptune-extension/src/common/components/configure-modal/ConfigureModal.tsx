@@ -11,7 +11,7 @@ import Button from 'common/components/button/Button';
 import Modal from 'common/components/modal/Modal';
 import Input from 'common/components/input/Input';
 import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
-import ValidationIcon from "common/components/validation-icon/ValidationIcon";
+import ValidationIcon, { StatusValue } from "common/components/validation-icon/ValidationIcon";
 import ModalHeader from "common/components/modal/ModalHeader";
 import { bemBlock } from "common/utils/bem";
 import { getConfigurationState } from 'common/state/configuration/selectors';
@@ -51,6 +51,13 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
     onClose();
   };
 
+  let status: StatusValue | undefined;
+  if (isLocalApiTokenValid === true) {
+    status = 'success'
+  } else if (isLocalApiTokenValid === false) {
+    status = 'error'
+  }
+
   return (
     <Modal
       isOpen
@@ -69,7 +76,7 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
                   value={localApiToken}
                   onChange={handleApiTokenChange}
                 />
-                <ValidationIcon status={isLocalApiTokenValid === false ? 'error' : 'success'} />
+                <ValidationIcon status={status} />
               </ValidationWrapper>
             </Layout.Column>
           </label>
