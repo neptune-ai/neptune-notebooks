@@ -51,6 +51,8 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
     onClose();
   };
 
+  const localApiTokenValidationStatus = isLocalApiTokenValid === false ? 'error' : 'success';
+
   return (
     <Modal
       isOpen
@@ -69,7 +71,7 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
                   value={localApiToken}
                   onChange={handleApiTokenChange}
                 />
-                <ValidationIcon status={isLocalApiTokenValid === false ? 'error' : 'success'} />
+                <ValidationIcon status={localApiToken ? localApiTokenValidationStatus : undefined} />
               </ValidationWrapper>
             </Layout.Column>
           </label>
