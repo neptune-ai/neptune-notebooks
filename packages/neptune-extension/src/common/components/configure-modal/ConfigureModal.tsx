@@ -17,6 +17,7 @@ import { bemBlock } from "common/utils/bem";
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import { setApiToken } from 'common/state/configuration/actions';
 import { authClient } from 'common/api/auth';
+import { StatusValue } from 'common/components/validation-icon/ValidationIcon'
 
 // Module
 import './ConfigureModal.less';
@@ -51,7 +52,7 @@ export const ConfigureModal:React.FC<ConfigureModalProps> = ({
     onClose();
   };
 
-  let status = undefined as 'success' | 'error' | undefined;
+  let status: StatusValue | undefined;
   if (isLocalApiTokenValid === true) {
     status = 'success'
   } else if (isLocalApiTokenValid === false) {

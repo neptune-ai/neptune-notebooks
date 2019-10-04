@@ -7,7 +7,7 @@ import { bemBlock } from "common/utils/bem";
 // Module
 import './ValidationIcon.less';
 
-type StatusValue = 'success' | 'error' | 'pending';
+export type StatusValue = 'success' | 'error' | 'pending';
 interface ValidationIconProps {
   status?: StatusValue
 }
