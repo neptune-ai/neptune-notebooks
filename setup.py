@@ -42,10 +42,13 @@ extension_path = pjoin(here, 'packages', 'neptune-extension')
 nbextension_dist_path = pjoin(extension_path, 'dist', 'nbextension')
 labextension_dist_path = pjoin(extension_path, 'dist', 'labextension')
 
+packed_labextension_file = pjoin(labextension_dist_path, 'neptune-notebooks-{}.tgz'.format(version))
+packed_nbextension_file = pjoin(nbextension_dist_path, 'neptune-notebook.js')
+
 # Representative files that should exist after a successful build
 jstargets = [
-    pjoin(nbextension_dist_path, 'neptune-notebook.js'),
-    pjoin(labextension_dist_path, 'neptune-notebooks-{}.tgz'.format(version)),
+    packed_labextension_file,
+    packed_nbextension_file
 ]
 
 cmdclass = create_cmdclass(base_cmdclass=versioneer.get_cmdclass(), wrappers=('jsdeps',))
@@ -56,16 +59,9 @@ cmdclass['jsdeps'] = combine_commands(
     ensure_targets(jstargets)
 )
 
-package_data = {
-    name: [
-        'packages/neptune-extension/dist/nbextension/*.*js*',
-        'packages/neptune-extension/dist/labextension/*.tgz'
-    ]
-}
-
 data_files = expand_data_files([
-    ('share/jupyter/nbextensions/neptune-notebooks', [pjoin(nbextension_dist_path, '*.js*')]),
-    ('share/jupyter/lab/extensions', [pjoin(labextension_dist_path, '*.tgz')]),
+    ('share/jupyter/lab/extensions', [packed_labextension_file]),
+    ('share/jupyter/nbextensions/neptune-notebooks', [packed_nbextension_file]),
 ])
 
 
@@ -78,8 +74,6 @@ def main():
         scripts=glob(pjoin('scripts', '*')),
         cmdclass=cmdclass,
         packages=find_packages(here),
-        package_data=package_data,
-        include_package_data=True,
         data_files=data_files,
         author='Neptune',
         author_email='contact@neptune.ml',
