@@ -59,21 +59,26 @@ cmdclass['jsdeps'] = combine_commands(
     ensure_targets(jstargets)
 )
 
-data_files = expand_data_files([
-    ('share/jupyter/lab/extensions', [packed_labextension_file]),
-    ('share/jupyter/nbextensions/neptune-notebooks', [packed_nbextension_file]),
-])
+def relative_to_here(p):
+    return os.path.relpath(p, here)
+
+data_files = [
+    ('share/jupyter/lab/extensions', [relative_to_here(packed_labextension_file)]),
+    ('share/jupyter/nbextensions/neptune-notebooks', [relative_to_here(packed_nbextension_file)]),
+]
 
 
 def main():
     with open(os.path.join(here, 'requirements.txt')) as f:
         requirements = [r.strip() for r in f]
+
     setup(
         name=name,
         version=version,
         scripts=glob(pjoin('scripts', '*')),
         cmdclass=cmdclass,
-        packages=find_packages(here),
+        packages=find_packages(exclude=['*.tests', '*.tests.*', 'tests.*', 'tests']),
+        include_package_data=True,
         data_files=data_files,
         author='Neptune',
         author_email='contact@neptune.ml',
