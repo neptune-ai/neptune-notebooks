@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019, Neptune Labs Sp. z o.o.
+# Copyright (c) 2020, Neptune Labs Sp. z o.o.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ def main():
         include_package_data=True,
         data_files=data_files,
         author='Neptune',
-        author_email='contact@neptune.ml',
+        author_email='contact@neptune.ai',
         url='http://jupyter.org',
         license='Apache-2.0',
         platforms='any',
