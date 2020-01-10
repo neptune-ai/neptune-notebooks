@@ -25,7 +25,7 @@ export function createUpgradeHandler() {
     if (apiTokenParsed && !alreadyShown) {
       const url = apiTokenParsed.api_address;
 
-      if (url && !url.endsWith('neptune.ml')) {
+      if (url && !url.endsWith('neptune.ml') && !url.endsWith('neptune.ai')) {
         // Disable for on prem installations
         return;
       }
