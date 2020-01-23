@@ -12,11 +12,11 @@
   "author": "Neptune Labs",
   "homepage": "https://neptune.ai",
   "bugs": {
-    "url": "https://github.com/neptune-ml/neptune-notebooks/issues"
+    "url": "https://github.com/neptune-ai/neptune-notebooks/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/neptune-ml/neptune-notebooks.git"
+    "url": "https://github.com/neptune-ai/neptune-notebooks.git"
   },
   "main": "dist/labextension/index.js",
   "files": [
