@@ -19,7 +19,7 @@ env:
   - secure: nBDL1xIm3QPi1KiioYsg9ckqNntxXczDGfmb2EvhgPQMAOYWcegjfGE1XZAjhE8gBIRpQ9tV5D/Ph7I+qgsEnJ0P+70lwVuEyzhx6A+hopIh6K/4e1kLIHtirJ9hAV3unmAD1ufdK0CTP2xuFeCO9IdWH1Lb5f5b8VXW86h+Wgl+b7/fc1DgenToSN7sFUpKjCnrdtaCaqF+wPNhwJ78oHYQqGdIW7v3lAO31o20VJOUXib5rTKuSRjSZ482ZVWKSl/t9j77LM3wKeLl0PwA6b01ZyTlrE6ztPpTzEdwHcfMwPahOfGZaFXJO4wUYwLNkonv9mTih9rm5Y/bv1RA9h4QkSi79Lc28p/m3H6HHTEOmTD6/PY1dR+QSw+pETJn7h6PvtOVzRwoCKe5WEmeBXo2UjctGEDNsFi28wiUQSGvjCKGaPYpBmrbdDypmV66mmapXhtkQhVfQhxgLurBbaaxWON+d2zUWMCR7igu7jM1YjpKq7crYAGE8QEK/58Ep+g/HQMKtvQCjnZb0UP/DhAC3yqQ5z8JX//K2fqz31qzlgfQKNqpN3CSjzvB1mTbNxZPmoV9HV3d1ou43p/3uvjilODBVELY0h2mC8rSkGre0KzOeUK18VBA4v8X99E+mbP//R82go98mz1lkXy+F+tIfA8jnos/05ffchEyGlc=
 install:
 - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
-- bash -c "source ~/.nvm/nvm.sh; nvm install 12"
+- bash -c "source ~/.nvm/nvm.sh; nvm install 12; node --version; nvm use 12; node --version"
 - make prepare
 - pip install tox-travis jupyter jupyterlab twine
 - python setup.py sdist && pip install -v .
