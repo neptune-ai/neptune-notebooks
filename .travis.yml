@@ -6,7 +6,7 @@ python:
 - '3.6'
 - '3.7'
 node_js:
-- '8.12'
+- '8.16'
 
 cache:
   pip: true
