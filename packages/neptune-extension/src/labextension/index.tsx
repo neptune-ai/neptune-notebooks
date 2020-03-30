@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { DisposableDelegate } from '@phosphor/disposable';
-import { Widget } from '@phosphor/widgets';
+import { Widget } from '@lumino/widgets';
 import { JupyterLab } from '@jupyterlab/application';
 import {
   INotebookModel,

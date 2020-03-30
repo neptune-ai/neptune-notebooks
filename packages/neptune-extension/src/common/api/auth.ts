@@ -1,7 +1,7 @@
 import {
   Configuration as BackendApiConfiguration,
   Configuration,
-  DefaultApi as BackendApi
+  DefaultApi as BackendApi, NeptuneOauthToken,
 } from 'generated/backend-client/src';
 
 export interface ApiTokenParsed {
@@ -34,7 +34,7 @@ class AuthClient {
     const apiToken = window.localStorage.getItem(API_TOKEN_LOCAL_STORAGE_KEY);
 
     if (typeof apiToken === 'string') {
-      return await this.backendClient.exchangeApiToken({ xNeptuneApiToken: apiToken })
+      return await exchangeApiTokenWithTimeout(this.backendClient, apiToken);
     }
 
     return Promise.reject('Wrong apiToken');
@@ -52,7 +52,7 @@ class AuthClient {
       basePath: apiTokenParsed.api_address,
     }));
 
-    const accessToken = await localBackendClient.exchangeApiToken({ xNeptuneApiToken:apiToken });
+    const accessToken = await exchangeApiTokenWithTimeout(localBackendClient, apiToken);
 
     return {
       apiTokenParsed,
@@ -80,5 +80,21 @@ export function parseApiToken(apiTokenStr: string): ApiTokenParsed | undefined {
   } catch (e) {}
 
   return token
+}
+
+async function exchangeApiTokenWithTimeout(backend: BackendApi, apiToken: string) {
+  const accessToken = await Promise.race<Promise<NeptuneOauthToken>>([
+    new Promise((resolve, reject) =>
+      setTimeout(() => reject(new Error('Request timeout')), 5000)
+    ),
+    backend.exchangeApiToken({ xNeptuneApiToken: apiToken })
+  ]);
+
+  // handle success response with status 0 and no content
+  if (!accessToken) {
+    return Promise.reject('Wrong apiToken');
+  }
+
+  return accessToken;
 }
 // static helpers {{

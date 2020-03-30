@@ -24,7 +24,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
       })}
       label={compact ? '' : label}
       tooltip={title}
-      iconClassName={block({element: 'icon', extra})}
+      iconClass={block({element: 'icon', extra})}
       onClick={onClick}
     />
   );
