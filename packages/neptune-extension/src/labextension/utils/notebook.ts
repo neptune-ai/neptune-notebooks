@@ -56,9 +56,11 @@ class Notebook implements PlatformNotebook {
     return this.context.save();
   };
 
-  async executeKernelCode(code: string) {
-    await this.context.sessionContext.ready;
-    ((this.context.sessionContext.session as Session.ISessionConnection).kernel as Kernel.IKernelConnection).requestExecute({ code });
+  executeKernelCode(code: string) {
+    (async () => {
+      await this.context.sessionContext.ready;
+      ((this.context.sessionContext.session as Session.ISessionConnection).kernel as Kernel.IKernelConnection).requestExecute({ code });
+    })();
   }
 
   async registerNeptuneMessageListener(callback: (msg: NeptuneClientMsg) => void) {

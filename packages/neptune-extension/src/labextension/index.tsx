@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { DisposableDelegate } from '@phosphor/disposable';
+import { DisposableDelegate } from '@lumino/disposable';
 import { Widget } from '@lumino/widgets';
 import { JupyterLab } from '@jupyterlab/application';
 import {

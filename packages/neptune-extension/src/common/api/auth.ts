@@ -1,7 +1,8 @@
 import {
   Configuration as BackendApiConfiguration,
   Configuration,
-  DefaultApi as BackendApi, NeptuneOauthToken,
+  DefaultApi as BackendApi,
+  NeptuneOauthToken,
 } from 'generated/backend-client/src';
 
 export interface ApiTokenParsed {
@@ -82,19 +83,12 @@ export function parseApiToken(apiTokenStr: string): ApiTokenParsed | undefined {
   return token
 }
 
-async function exchangeApiTokenWithTimeout(backend: BackendApi, apiToken: string) {
-  const accessToken = await Promise.race<Promise<NeptuneOauthToken>>([
+async function exchangeApiTokenWithTimeout(backend: BackendApi, apiToken: string): Promise<NeptuneOauthToken> {
+  return await Promise.race<Promise<NeptuneOauthToken>>([
     new Promise((resolve, reject) =>
       setTimeout(() => reject(new Error('Request timeout')), 5000)
     ),
     backend.exchangeApiToken({ xNeptuneApiToken: apiToken })
   ]);
-
-  // handle success response with status 0 and no content
-  if (!accessToken) {
-    return Promise.reject('Wrong apiToken');
-  }
-
-  return accessToken;
 }
 // static helpers {{
