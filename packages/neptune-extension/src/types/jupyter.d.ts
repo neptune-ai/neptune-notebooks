@@ -11,6 +11,10 @@ declare module 'base/js/namespace' {
   export default Jupyter;
 }
 
+declare module 'services/kernels/comm' {
+  export default {};
+}
+
 interface NbJupyter {
   keyboard_manager: NbKeyboardManager
   toolbar: NbToolbar
