@@ -5,9 +5,9 @@ import {
 } from 'types/platform';
 
 import Jupyter from 'base/js/namespace';
+import CommManager from 'services/kernels/comm';
 import JupyterConfig from 'services/config';
 import JupyterContents from 'contents';
-
 
 class Notebook implements PlatformNotebook {
 
@@ -29,7 +29,7 @@ class Notebook implements PlatformNotebook {
       common_config: commonConfig,
     });
   };
-  
+
   async saveWorkingCopyAndGetContent() {
     Jupyter.notebook.save_checkpoint();
 
@@ -63,6 +63,14 @@ class Notebook implements PlatformNotebook {
   }
 
   async registerNeptuneMessageListener(callback: (msg: NeptuneClientMsg) => void) {
+    /**
+     * Usage of "CommManager" here is a workaround.
+     * We have to "use" it somehow to point out to webpack to include it as runtime dependency in a final bundle.
+     */
+    if (CommManager == null) {
+      return;
+    }
+
     Jupyter.notebook.kernel.comm_manager.register_target(
       'neptune_comm',
       (comm: NbComm) => {

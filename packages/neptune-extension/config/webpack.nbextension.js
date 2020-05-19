@@ -45,10 +45,9 @@ module.exports = function ({ mode, project }) {
     externals: {
       jquery: 'jQuery',
       'base/js/namespace': 'base/js/namespace',
-      'base/js/events': 'base/js/events',
-      'base/js/dialog': 'base/js/dialog',
       'contents': 'contents',
       'services/config': 'services/config',
+      'services/kernels/comm': 'services/kernels/comm',
     },
     // TODO: probably should be depenand of build mode
     devtool: mode === 'development'
