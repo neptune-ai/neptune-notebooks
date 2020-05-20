@@ -7,6 +7,9 @@ import {authClient} from 'common/api/auth';
 import {backendClient} from 'common/api/backend-client';
 import {leaderboardClient} from 'common/api/leaderboard-client';
 import {addNotification} from 'common/state/notifications/actions';
+import { logger } from 'common/utils/logger';
+
+const log = logger.extend('auth');
 
 export function validateGlobalApiToken() {
   const {
@@ -22,9 +25,13 @@ export function validateGlobalApiToken() {
         dispatch(setTokenUsername(undefined));
       }
 
+      log('Validating api token', apiToken);
+
       authClient
         .validateToken(apiToken)
         .then(({ accessToken, apiTokenParsed }) => {
+          log('Api token successfully validated and parsed', apiTokenParsed);
+
           // everything set up properly, lets set all API clients to use proper base bath
           authClient.setBasePath(apiTokenParsed.api_address);
           backendClient.setBasePath(apiTokenParsed.api_address);
@@ -41,7 +48,10 @@ export function validateGlobalApiToken() {
             data: 'Successfully connected to Neptune!',
           }));
         })
-        .catch(() => invalidateToken());
+        .catch(() => {
+          log('WARN', 'Api token invalid');
+          invalidateToken();
+        });
     }
   }, [apiToken]);
 }

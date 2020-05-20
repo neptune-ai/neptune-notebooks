@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "core-js": "^3.2.1",
+    "debug": "~4.1.1",
     "lodash": "^4.0.0",
     "moment": "^2.0.0",
     "path-browserify": "^1.0.0",
@@ -83,6 +84,7 @@
     "@jupyterlab/vdom": "^2.0.0",
     "@openapitools/openapi-generator-cli": "0.0.17-4.1.1",
     "@lumino/disposable": "^1.1.2",
+    "@types/debug": "~4.1.1",
     "@types/jquery": "^3.3.31",
     "@types/lodash": "^4.14.138",
     "@types/react": "^16.9.2",

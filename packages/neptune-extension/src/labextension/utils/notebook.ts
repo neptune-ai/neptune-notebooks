@@ -8,11 +8,13 @@ import {
   PlatformNotebook,
   NeptuneClientMsg,
 } from "types/platform";
+import { logger } from 'common/utils/logger';
 
 interface NeptuneContextMetadata {
   notebookId?: string
 }
 
+const log = logger.extend('platform-notebook');
 class Notebook implements PlatformNotebook {
   context: DocumentRegistry.IContext<INotebookModel>;
   app: JupyterLab;
@@ -23,6 +25,7 @@ class Notebook implements PlatformNotebook {
   ) {
     this.context = context;
     this.app = app;
+    log('Platform notebook created');
   };
 
   async saveWorkingCopyAndGetContent() {

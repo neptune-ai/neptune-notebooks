@@ -30,3 +30,10 @@ by themselves during install.
 In order to properly build the extension you need to generate API clients from
 swagger files definitions.  Use `npm run generate-api-clients` script. This
 script is also run before `start-nb`, `start-lab` and as `prebuild` scripts.
+
+### Debugging
+
+neptune-notebooks uses `debug` npm package.
+You can set certain local storage property to enable logs.
+Try `window.localStorage['debug'] = 'neptune-notebooks*'` and refresh the page.
+See docs of `debug` module.

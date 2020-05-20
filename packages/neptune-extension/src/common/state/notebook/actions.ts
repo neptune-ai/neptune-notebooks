@@ -5,20 +5,25 @@ import { leaderboardClient } from "common/api/leaderboard-client";
 import { PlatformNotebook } from 'types/platform';
 import { addNotification } from 'common/state/notifications/actions';
 import { AppState } from 'common/state/reducers';
+import { logger } from 'common/utils/logger';
+
+const log = logger.extend('notebook-actions');
 
 export const fetchNotebook = (notebookId: string): ThunkAction<Promise<NotebookDTO | void>, {}, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+    log('fetchNotebook', notebookId);
     dispatch(fetchNotebookRequest());
 
     try {
       const notebook = await leaderboardClient.api.getNotebook({ id: notebookId });
 
       dispatch(fetchNotebookSuccess(notebook));
+      log('fetchNotebook success', notebook);
 
       return notebook;
     } catch (err) {
       dispatch(fetchNotebookFailed());
-
+      log('fetchNotebook failed', err);
       return;
     }
   };
@@ -49,11 +54,14 @@ export const uploadNotebook = (
   platformNotebook: PlatformNotebook,
 ): ThunkAction<Promise<NotebookWithNoContentDTO | void>, AppState, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+    log('uploadNotebook', projectIdentifier, checkpointMeta, content);
     dispatch(uploadNotebookRequest());
 
     try {
       const notebook = await leaderboardClient.api.createNotebook({projectIdentifier});
+      log('uploadNotebook, empty notebook created', notebook);
       await requestCheckpoint(notebook.id, checkpointMeta, content);
+      log('uploadNotebook, checkpoint created, content uploaded');
       await platformNotebook.saveNotebookId(notebook.id);
       await dispatch(fetchNotebook(notebook.id));
 
@@ -72,6 +80,7 @@ export const uploadNotebook = (
       const message = (err && err.status === 422)
         ? 'Storage limit has been reached. Notebook can\'t be created.'
         : 'Error while uploading notebook.';
+      log('uploadNotebook error', err);
       dispatch(uploadNotebookFailed());
       dispatch(addNotification({
         type: 'error',
@@ -97,6 +106,7 @@ function uploadNotebookFailed() {
 export const uploadCheckpoint = (projectIdentifier: string, notebookId: string, checkpointMeta: CheckpointMetadata, content: any)
   : ThunkAction<Promise<CheckpointDTO | void>, AppState, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
+    log('uploadCheckpoint', projectIdentifier, notebookId, checkpointMeta, content);
 
     dispatch(uploadCheckpointRequest());
 
@@ -104,6 +114,7 @@ export const uploadCheckpoint = (projectIdentifier: string, notebookId: string, 
       const checkpoint = await requestCheckpoint(notebookId, checkpointMeta, content);
       await dispatch(fetchNotebook(notebookId));
       dispatch(uploadCheckpointSuccess(checkpoint));
+      log('uploadCheckpoint success');
       dispatch(addNotification({
         type: 'checkpoint-successful',
         data: {
@@ -119,6 +130,8 @@ export const uploadCheckpoint = (projectIdentifier: string, notebookId: string, 
       const message = (err && err.status === 422)
         ? 'Storage limit has been reached. Checkpoint can\'t be uploaded.'
         : 'Error while uploading notebook.';
+
+      log('uploadCheckpoint error', err);
       dispatch(uploadCheckpointFailed());
       dispatch(addNotification({
         type: 'error',
@@ -154,15 +167,20 @@ export type NotebookActions = ReturnType<
 >
 
 async function requestCheckpoint(notebookId: string, checkpointMeta: CheckpointMetadata, content: any) {
+  log('requestCheckpoint', notebookId, checkpointMeta, content);
   const checkpoint = await leaderboardClient.api.createEmptyCheckpoint({
     notebookId,
     checkpoint: checkpointMeta,
   });
 
+  log('requestCheckpoint, empty checkpoint created', checkpoint);
+
   await leaderboardClient.api.uploadCheckpointContent({
     id: checkpoint.id,
     content,
   });
+
+  log('requestCheckpoint, content properly uploaded');
 
   return checkpoint;
 }
