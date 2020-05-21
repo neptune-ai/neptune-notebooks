@@ -13,6 +13,9 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { findButtonIdx } from './utils/iterator';
 import Notebook from './utils/notebook';
 import {BootstrapApp} from "../common/components/BootstrapApp";
+import { logger } from 'common/utils/logger';
+
+const log = logger.extend('index.js');
 
 class Extension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
   private readonly app: JupyterLab;
@@ -46,6 +49,7 @@ export default {
   id: 'neptune-notebook',
   autoStart: true,
   activate: (app: JupyterLab) => {
+    log('Activating JupyterLab extension');
     app.docRegistry.addWidgetExtension('Notebook', new Extension(app));
   },
 };

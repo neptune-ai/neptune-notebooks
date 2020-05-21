@@ -23,12 +23,15 @@ import UploadModal from 'common/components/upload-modal/UploadModal';
 import CheckoutModal from 'common/components/checkout-modal/CheckoutModal';
 import ActivationModal from 'common/components/activation-modal/ActivationModal';
 import NotificationsContainer from 'common/components/notifications/NotificationsContainer';
+import { logger } from 'common/utils/logger';
 
 type ModalName = 'configure' | 'upload' | 'checkout' | 'activation' | undefined
 
 export interface AppProps {
   platformNotebook: PlatformNotebook
 }
+
+const log = logger.extend('App');
 
 const App: React.FC<AppProps> = ({
   platformNotebook,
@@ -69,6 +72,9 @@ const App: React.FC<AppProps> = ({
    * 3. api token valid & notebook loaded
    */
   const applicationInitialized = apiToken === undefined || isApiTokenValid === false || (isApiTokenValid === true && notebookInitialized);
+
+  log(`notebookInitialized === ${notebookInitialized}`);
+  log(`applicationInitialized === ${applicationInitialized}`);
 
   if (!applicationInitialized) {
     return null;

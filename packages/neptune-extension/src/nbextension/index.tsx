@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Jupyter from 'base/js/namespace';
+import { logger } from 'common/utils/logger';
 
 import Notebook from './utils/notebook';
 import {BootstrapApp} from 'common/components/BootstrapApp';
+
+const log = logger.extend('index.js');
 
 function initializeExtension() {
   const container = document.createElement('div');
@@ -17,7 +20,7 @@ function initializeExtension() {
 }
 
 function loadJupyterExtension() {
-  console.log('Running neptune extension...'); // eslint-disable-line no-console
+  log('Running neptune extension...');
 
   return Jupyter.notebook.config.loaded.then(initializeExtension);
 }

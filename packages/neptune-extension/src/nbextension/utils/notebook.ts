@@ -8,6 +8,9 @@ import Jupyter from 'base/js/namespace';
 import CommManager from 'services/kernels/comm';
 import JupyterConfig from 'services/config';
 import JupyterContents from 'contents';
+import { logger } from 'common/utils/logger';
+
+const log = logger.extend('platform-notebook');
 
 class Notebook implements PlatformNotebook {
 
@@ -28,6 +31,8 @@ class Notebook implements PlatformNotebook {
       base_url: commonOptions.base_url,
       common_config: commonConfig,
     });
+
+    log('Platform notebook created');
   };
 
   async saveWorkingCopyAndGetContent() {

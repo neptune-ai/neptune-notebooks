@@ -1,7 +1,9 @@
 import { PlatformNotebook } from 'types/platform';
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
 import { createProjectIdentifier } from './project';
+import { logger } from './logger';
 
+const log = logger.extend('utils');
 
 export function getActivationCode(apiToken: string, notebook?: NotebookDTO): string {
   if (notebook === undefined) {
@@ -23,6 +25,6 @@ export async function executeActivationCode(platformNotebook: PlatformNotebook, 
 
   platformNotebook.executeKernelCode(code);
 
-  console.log('Executed activation code.');
+  log(`Executed activation code.\n${code}`);
 }
 
