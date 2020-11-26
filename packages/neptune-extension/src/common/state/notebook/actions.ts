@@ -63,7 +63,6 @@ export const uploadNotebook = (
       await requestCheckpoint(notebook.id, checkpointMeta, content);
       log('uploadNotebook, checkpoint created, content uploaded');
       await platformNotebook.saveNotebookId(notebook.id);
-      await dispatch(fetchNotebook(notebook.id));
 
       dispatch(uploadNotebookSuccess(notebook));
 
