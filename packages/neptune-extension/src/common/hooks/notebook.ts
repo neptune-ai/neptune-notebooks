@@ -14,14 +14,15 @@ export function loadInitialNotebook(platformNotebook: PlatformNotebook) {
 
   const { isApiTokenValid } = useSelector(getConfigurationState);
 
+  const metadata = platformNotebook.getMetadata();
+
   React.useEffect(() => {
     if (!isApiTokenValid) {
+      log('loadInitialNotebook - token invalid');
       return
     }
 
     log('loadInitialNotebook from Neptune API');
-
-    const metadata = platformNotebook.getMetadata();
 
     if (!metadata.notebookId) {
       log('Nothing to load. Notebook is not known to Neptune.');
@@ -29,6 +30,6 @@ export function loadInitialNotebook(platformNotebook: PlatformNotebook) {
     }
 
     dispatch(fetchNotebook(metadata.notebookId));
-  }, [isApiTokenValid])
+  }, [isApiTokenValid, metadata.notebookId])
 }
 
