@@ -1,8 +1,12 @@
 
 export interface PlatformNotebookMetadata {
   path: string
+  // 1 - old domain, 2 - new domain, optional for compatibility with old notebook files
+  projectVersion?: number
   notebookId?: string
 }
+
+export type EditablePlatformNotebookMetadata = Pick<PlatformNotebookMetadata, 'notebookId' | 'projectVersion'>
 
 export interface PlatformNotebook {
   /*
@@ -11,7 +15,7 @@ export interface PlatformNotebook {
    */
   saveWorkingCopyAndGetContent: () => Promise<any>
   getMetadata: () => PlatformNotebookMetadata
-  saveNotebookId: (notebookId: string) => Promise<void>
+  setMetadata: (metadata: EditablePlatformNotebookMetadata) => Promise<void>
   executeKernelCode: (code: string) => void
   registerNeptuneMessageListener: (callback: (msg: NeptuneClientMsg) => void) => void
   saveNotebookAndOpenInNewWindow: (path: string, content: any) => void
