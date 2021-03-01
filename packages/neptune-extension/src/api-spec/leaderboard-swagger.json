@@ -7,21 +7,1363 @@
     "termsOfService" : "Terms of service",
     "contact" : {
       "name" : "Neptune",
-      "url" : "https://neptune.ai",
-      "email" : "contact@neptune.ai"
+      "url" : "https://neptune.ml",
+      "email" : "contact@neptune.ml"
     },
     "license" : { }
   },
   "host" : "localhost:8070",
   "basePath" : "/",
   "tags" : [ {
+    "name" : "admin",
+    "description" : "Provides admin api"
+  }, {
+    "name" : "experiments",
+    "description" : "Provides experiments api"
+  }, {
     "name" : "leaderboard",
-    "description" : "Provides leaderboard api"
+    "description" : "Provides alias api"
   }, {
     "name" : "notebooks",
     "description" : "Provides notebooks api"
   } ],
   "paths" : {
+    "/api/backend/v1/channels/values" : {
+      "post" : {
+        "summary" : "Add values to channel",
+        "operationId" : "postChannelValues",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "channelsValues",
+          "description" : "channelsValues",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/InputChannelValues"
+            }
+          }
+        }, {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/BatchChannelValueError"
+              }
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : true
+      }
+    },
+    "/api/leaderboard/v1/admin/leaderboard/refresh" : {
+      "post" : {
+        "summary" : "Refresh leaderboard",
+        "operationId" : "refreshLeaderboard",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "organizationIdentifiers",
+          "description" : "organizationIdentifiers",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/aliases/" : {
+      "get" : {
+        "summary" : "List project aliases",
+        "operationId" : "listProjectAliases",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Alias"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "post" : {
+        "summary" : "Create alias",
+        "operationId" : "createAlias",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "aliasToCreate",
+          "description" : "aliasToCreate",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/AliasParams"
+          }
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Alias"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/aliases/{aliasId}" : {
+      "get" : {
+        "summary" : "Get alias",
+        "operationId" : "getAlias",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "aliasId",
+          "in" : "path",
+          "description" : "aliasId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Alias"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "put" : {
+        "summary" : "Update alias",
+        "operationId" : "updateAlias",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "aliasId",
+          "in" : "path",
+          "description" : "aliasId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "aliasToUpdate",
+          "description" : "aliasToUpdate",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/AliasParams"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Alias"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "delete" : {
+        "summary" : "Delete alias",
+        "operationId" : "deleteAlias",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "aliasId",
+          "in" : "path",
+          "description" : "aliasId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/audit" : {
+      "get" : {
+        "summary" : "Get organization audit data",
+        "operationId" : "getAuditInfo",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "organizationIdentifier",
+          "in" : "query",
+          "description" : "organizationIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "username",
+          "in" : "query",
+          "description" : "username",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/AuditInfo"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/channels/user" : {
+      "post" : {
+        "summary" : "Create channel in experiment",
+        "operationId" : "createChannel",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "channelToCreate",
+          "description" : "channelToCreate",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ChannelParams"
+          }
+        }, {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Channel"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/channels/values" : {
+      "post" : {
+        "summary" : "Add values to channel",
+        "operationId" : "addChannelValues",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "channelsValues",
+          "description" : "channelsValues",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/InputChannelValues"
+            }
+          }
+        }, {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/BatchChannelValueError"
+              }
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/channels/view" : {
+      "post" : {
+        "summary" : "Get series view by channel UUIDs",
+        "operationId" : "getSeriesView",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pointCount",
+          "in" : "query",
+          "description" : "pointCount",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1000,
+          "format" : "int32"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "request",
+          "description" : "request",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/SeriesViewRequestDTO"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/SeriesViewListDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/channels/{channelId}/csv" : {
+      "get" : {
+        "summary" : "Get values of a channel",
+        "operationId" : "getChannelValuesCSV",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "channelId",
+          "in" : "path",
+          "description" : "channelId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "gzipped",
+          "in" : "query",
+          "description" : "gzipped",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "file"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/channels/{channelId}/values" : {
+      "get" : {
+        "summary" : "Get values of a channel",
+        "operationId" : "getChannelValues",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "channelId",
+          "in" : "path",
+          "description" : "channelId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "description" : "offset",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/LimitedChannelValuesDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/channels/{id}/values" : {
+      "delete" : {
+        "summary" : "Delete values from channel",
+        "operationId" : "resetChannel",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/download/downloadFile" : {
+      "get" : {
+        "summary" : "Get download stream",
+        "operationId" : "download",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "file"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/download/downloadRequest" : {
+      "get" : {
+        "summary" : "Get download request",
+        "operationId" : "getDownloadPrepareRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/DownloadPrepareRequest"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments" : {
+      "get" : {
+        "summary" : "Get experiment",
+        "operationId" : "getExperiment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/RichExperiment"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "post" : {
+        "summary" : "Create experiment",
+        "operationId" : "createExperiment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "X-Neptune-CliVersion",
+          "in" : "header",
+          "description" : "X-Neptune-CliVersion",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "experimentCreationParams",
+          "description" : "experimentCreationParams",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ExperimentCreationParams"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Experiment"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "patch" : {
+        "summary" : "Update experiment",
+        "operationId" : "updateExperiment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "experimentUpdate",
+          "description" : "experimentUpdate",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/EditExperimentParams"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/RichExperiment"
+            }
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments-attributes-names" : {
+      "get" : {
+        "summary" : "getExperimentsAttributesNames",
+        "operationId" : "getExperimentsAttributesNames",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ExperimentsAttributesNamesDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/abort" : {
+      "post" : {
+        "summary" : "Abort experiment",
+        "operationId" : "abortExperiments",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "experimentIdentifiers",
+          "description" : "experimentIdentifiers",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "markOnly",
+          "in" : "query",
+          "description" : "markOnly",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/BulkOpResultDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/details" : {
+      "get" : {
+        "summary" : "Get experiment details",
+        "operationId" : "getExperimentDetails",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ExperimentDetails"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/markCompleted" : {
+      "post" : {
+        "summary" : "Mark experiment completed",
+        "operationId" : "markExperimentCompleted",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "completedExperimentParams",
+          "description" : "completedExperimentParams",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CompletedExperimentParams"
+          }
+        }, {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/ping" : {
+      "post" : {
+        "summary" : "Ping experiment",
+        "operationId" : "pingExperiment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentId",
+          "in" : "query",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/select" : {
+      "post" : {
+        "summary" : "Validate experiments clipboard",
+        "operationId" : "validateExperimentsClipboard",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "experimentIdentifiers",
+          "description" : "experimentIdentifiers",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "trashed",
+          "in" : "query",
+          "description" : "trashed",
+          "required" : true,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/BulkOpResultDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/tags" : {
+      "get" : {
+        "summary" : "Get tags defined in experiments within project",
+        "operationId" : "tagsGet",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "trashed",
+          "in" : "query",
+          "description" : "trashed",
+          "required" : false,
+          "type" : "string",
+          "default" : "all",
+          "enum" : [ "false", "true", "all" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "put" : {
+        "summary" : "Update tags in experiments (deprecated)",
+        "operationId" : "updateTags",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "updateTagsParams",
+          "description" : "updateTagsParams",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/UpdateTagsParamsDeprecatedDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/tags2" : {
+      "put" : {
+        "summary" : "Update tags in experiments",
+        "operationId" : "updateTags2",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "updateTagsParams",
+          "description" : "updateTagsParams",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/UpdateTagsParams"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/BulkOpResultDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/trash" : {
+      "post" : {
+        "summary" : "Trash experiments",
+        "operationId" : "trashExperiments",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "experimentIdentifiers",
+          "description" : "experimentIdentifiers",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/BulkOpResultDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/trash/empty" : {
+      "post" : {
+        "summary" : "Empty experiments trash",
+        "operationId" : "emptyExperimentsTrash",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "experimentIdentifiers",
+          "description" : "experimentIdentifiers",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/BulkOpResultDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/experiments/trash/restore" : {
+      "post" : {
+        "summary" : "Restore experiments from trash",
+        "operationId" : "restoreExperiments",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "experimentIdentifiers",
+          "description" : "experimentIdentifiers",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/BulkOpResultDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/images/{experimentId}/{channelId}/{fileName}" : {
+      "get" : {
+        "summary" : "Get image",
+        "operationId" : "getChannelImage",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "channelId",
+          "in" : "path",
+          "description" : "channelId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "experimentId",
+          "in" : "path",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "fileName",
+          "in" : "path",
+          "description" : "fileName",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "file"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
     "/api/leaderboard/v1/leaderboard" : {
       "get" : {
         "summary" : "Get leaderboard",
@@ -47,6 +1389,13 @@
           },
           "collectionFormat" : "multi"
         }, {
+          "name" : "customView",
+          "in" : "query",
+          "description" : "customView",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
+        }, {
           "name" : "endDate",
           "in" : "query",
           "required" : false,
@@ -58,11 +1407,9 @@
           "required" : false,
           "type" : "array",
           "items" : {
-            "type" : "string",
-            "enum" : [ "experiment", "notebook" ]
+            "type" : "string"
           },
-          "collectionFormat" : "multi",
-          "enum" : [ "experiment", "notebook" ]
+          "collectionFormat" : "multi"
         }, {
           "name" : "filterId",
           "in" : "query",
@@ -73,8 +1420,38 @@
           "name" : "flattingMode",
           "in" : "query",
           "required" : false,
-          "type" : "string",
-          "enum" : [ "all", "standaloneOnly", "inGroupOnly" ]
+          "type" : "string"
+        }, {
+          "name" : "groupBy",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "groupByFieldAggregationMode",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+        }, {
+          "name" : "groupByFieldType",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
         }, {
           "name" : "groupId",
           "in" : "query",
@@ -134,8 +1511,18 @@
           "type" : "integer",
           "format" : "int32"
         }, {
+          "name" : "openedGroups",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
           "name" : "organizationIdentifier",
           "in" : "query",
+          "description" : "organizationIdentifier",
           "required" : false,
           "type" : "string"
         }, {
@@ -150,6 +1537,7 @@
         }, {
           "name" : "projectIdentifier",
           "in" : "query",
+          "description" : "projectIdentifier",
           "required" : false,
           "type" : "string"
         }, {
@@ -196,16 +1584,34 @@
           "collectionFormat" : "multi",
           "enum" : [ "ascending", "descending" ]
         }, {
+          "name" : "sortFieldAggregationMode",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+        }, {
           "name" : "sortFieldType",
           "in" : "query",
           "required" : false,
           "type" : "array",
           "items" : {
             "type" : "string",
-            "enum" : [ "native", "parameter", "numericChannel", "textChannel", "property" ]
+            "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
           },
           "collectionFormat" : "multi",
-          "enum" : [ "native", "parameter", "numericChannel", "textChannel", "property" ]
+          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+        }, {
+          "name" : "sourceViewId",
+          "in" : "query",
+          "description" : "sourceViewId",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
         }, {
           "name" : "startDate",
           "in" : "query",
@@ -244,6 +1650,13 @@
           "required" : false,
           "type" : "string",
           "enum" : [ "false", "true", "all" ]
+        }, {
+          "name" : "viewId",
+          "in" : "query",
+          "description" : "viewId",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
         } ],
         "responses" : {
           "200" : {
@@ -252,38 +1665,8 @@
               "$ref" : "#/definitions/LeaderboardDTO"
             }
           },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "404" : {
-            "description" : "Not Found"
-          }
-        },
-        "deprecated" : false
-      }
-    },
-    "/api/leaderboard/v1/namedFilters/{namedFilterId}" : {
-      "get" : {
-        "summary" : "Get named filter by id",
-        "operationId" : "getNamedFilter",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "namedFilterId",
-          "in" : "path",
-          "description" : "namedFilterId",
-          "required" : true,
-          "type" : "string",
-          "format" : "uuid"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/NamedFilterDTO"
-            }
+          "400" : {
+            "description" : "Bad Request"
           },
           "401" : {
             "description" : "Unauthorized"
@@ -293,71 +1676,6 @@
           },
           "404" : {
             "description" : "Not Found"
-          }
-        },
-        "deprecated" : false
-      },
-      "delete" : {
-        "summary" : "Delete named filter by id",
-        "operationId" : "deleteNamedFilter",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "namedFilterId",
-          "in" : "path",
-          "description" : "namedFilterId",
-          "required" : true,
-          "type" : "string",
-          "format" : "uuid"
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "No Content"
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          }
-        },
-        "deprecated" : false
-      },
-      "patch" : {
-        "summary" : "Update named filter by id",
-        "operationId" : "updateNamedFilter",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "namedFilterId",
-          "in" : "path",
-          "description" : "namedFilterId",
-          "required" : true,
-          "type" : "string",
-          "format" : "uuid"
-        }, {
-          "in" : "body",
-          "name" : "namedFilterUpdate",
-          "description" : "namedFilterUpdate",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/NamedFilterUpdateDTO"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/NamedFilterDTO"
-            }
-          },
-          "204" : {
-            "description" : "No Content"
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
           }
         },
         "deprecated" : false
@@ -601,7 +1919,7 @@
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "id",
-          "in" : "query",
+          "in" : "path",
           "description" : "id",
           "required" : true,
           "type" : "string",
@@ -707,7 +2025,10 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "schema" : {
+              "type" : "file"
+            }
           },
           "401" : {
             "description" : "Unauthorized"
@@ -776,7 +2097,10 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "schema" : {
+              "type" : "file"
+            }
           },
           "401" : {
             "description" : "Unauthorized"
@@ -823,6 +2147,31 @@
         },
         "deprecated" : false
       },
+      "delete" : {
+        "summary" : "Delete notebook",
+        "operationId" : "deleteNotebook",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      },
       "patch" : {
         "summary" : "Update notebook",
         "operationId" : "updateNotebook",
@@ -851,33 +2200,6 @@
               "$ref" : "#/definitions/NotebookDTO"
             }
           },
-          "204" : {
-            "description" : "No Content"
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          }
-        },
-        "deprecated" : false
-      }
-    },
-    "/api/leaderboard/v1/notebooks/{id}/content" : {
-      "delete" : {
-        "summary" : "Delete notebook",
-        "operationId" : "deleteNotebook",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "id",
-          "required" : true,
-          "type" : "string",
-          "format" : "uuid"
-        } ],
-        "responses" : {
           "204" : {
             "description" : "No Content"
           },
@@ -991,146 +2313,33 @@
         "deprecated" : false
       }
     },
-    "/api/leaderboard/v1/organizations/{organizationName}/projects/{projectName}/namedFilters" : {
-      "get" : {
-        "summary" : "List named filters for project",
-        "operationId" : "listNamedFilters",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "organizationName",
-          "in" : "path",
-          "description" : "organizationName",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "projectName",
-          "in" : "path",
-          "description" : "projectName",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/NamedFilterDTO"
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "404" : {
-            "description" : "Not Found"
-          }
-        },
-        "deprecated" : false
-      },
+    "/api/leaderboard/v1/prepareForDownloadLeaderboardCsv" : {
       "post" : {
-        "summary" : "Create a named filter",
-        "operationId" : "createNamedFilter",
+        "summary" : "Prepare download leaderboard as CSV",
+        "operationId" : "prepareForDownloadLeaderboardCsv",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "in" : "body",
-          "name" : "namedFilterParams",
-          "description" : "namedFilterParams",
+          "name" : "csvExporting",
+          "description" : "csvExporting",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/NamedFilterParamsDTO"
+            "$ref" : "#/definitions/LeaderboardCsvExportParamsDTO"
           }
         }, {
-          "name" : "organizationName",
-          "in" : "path",
-          "description" : "organizationName",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "projectName",
-          "in" : "path",
-          "description" : "projectName",
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
           "required" : true,
           "type" : "string"
         } ],
         "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/NamedFilterDTO"
-            }
-          },
           "201" : {
-            "description" : "Created"
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "404" : {
-            "description" : "Not Found"
-          }
-        },
-        "deprecated" : false
-      }
-    },
-    "/api/leaderboard/v1/organizations/{organizationName}/projects/{projectName}/namedFilters/count" : {
-      "post" : {
-        "summary" : "Count matching leaderboard items",
-        "operationId" : "countMatchingLeaderboardEntries",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "flattingMode",
-          "in" : "query",
-          "description" : "flattingMode",
-          "required" : false,
-          "type" : "string",
-          "default" : "all",
-          "enum" : [ "all", "standaloneOnly", "inGroupOnly" ]
-        }, {
-          "in" : "body",
-          "name" : "namedFilterParams",
-          "description" : "namedFilterParams",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/NamedFilterParamsDTO"
-          }
-        }, {
-          "name" : "organizationName",
-          "in" : "path",
-          "description" : "organizationName",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "projectName",
-          "in" : "path",
-          "description" : "projectName",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "trashed",
-          "in" : "query",
-          "description" : "trashed",
-          "required" : false,
-          "type" : "boolean",
-          "default" : false
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
+            "description" : "Created",
             "schema" : {
-              "$ref" : "#/definitions/LeaderboardEntryCountDTO"
+              "$ref" : "#/definitions/DownloadPrepareRequest"
             }
-          },
-          "201" : {
-            "description" : "Created"
           },
           "401" : {
             "description" : "Unauthorized"
@@ -1338,24 +2547,224 @@
         "deprecated" : false
       }
     },
-    "/api/leaderboard/v1/projects/{projectId}/settings" : {
-      "get" : {
-        "summary" : "Set project leaderboard settings",
-        "operationId" : "getProjectLeaderboardSettings",
+    "/api/leaderboard/v1/query" : {
+      "post" : {
+        "summary" : "Get leaderboard",
+        "operationId" : "queryLeaderboard",
+        "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "projectId",
-          "in" : "path",
-          "description" : "projectId",
+          "name" : "groupBy",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "groupByFieldAggregationMode",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+        }, {
+          "name" : "groupByFieldType",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "openedGroups",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
           "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "query",
+          "description" : "query",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NqlQueryParamsDTO"
+          }
+        }, {
+          "name" : "sortBy",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "sortDirection",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "ascending", "descending" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "ascending", "descending" ]
+        }, {
+          "name" : "sortFieldAggregationMode",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+        }, {
+          "name" : "sortFieldType",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+          },
+          "collectionFormat" : "multi",
+          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+        }, {
+          "name" : "sourceViewId",
+          "in" : "query",
+          "description" : "sourceViewId",
+          "required" : false,
           "type" : "string",
           "format" : "uuid"
+        }, {
+          "name" : "trashed",
+          "in" : "query",
+          "description" : "trashed",
+          "required" : false,
+          "type" : "string",
+          "default" : "false",
+          "enum" : [ "false", "true", "all" ]
         } ],
         "responses" : {
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/ProjectLeaderboardSettingsDTO"
+              "$ref" : "#/definitions/LeaderboardDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/storage/deleteOutput" : {
+      "delete" : {
+        "summary" : "Delete experiment output",
+        "operationId" : "deleteExperimentOutput",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "path",
+          "in" : "query",
+          "description" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/storage/download" : {
+      "get" : {
+        "summary" : "Download project file",
+        "operationId" : "downloadPath",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pathParam",
+          "in" : "query",
+          "description" : "pathParam",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "resource",
+          "in" : "query",
+          "description" : "resource",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "output", "source" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "file"
             }
           },
           "401" : {
@@ -1369,34 +2778,516 @@
           }
         },
         "deprecated" : false
-      },
+      }
+    },
+    "/api/leaderboard/v1/storage/downloadRequest" : {
       "post" : {
-        "summary" : "Set project leaderboard settings",
-        "operationId" : "setProjectLeaderboardSettings",
+        "summary" : "Prepare directory download",
+        "operationId" : "prepareForDownload",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pathParam",
+          "in" : "query",
+          "description" : "pathParam",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "resource",
+          "in" : "query",
+          "description" : "resource",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "output", "source" ]
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "schema" : {
+              "$ref" : "#/definitions/DownloadPrepareRequest"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/storage/experiments/info" : {
+      "get" : {
+        "summary" : "Get experiment storage info",
+        "operationId" : "getExperimentStorageInfo",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ExperimentStorageInfoDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/storage/legacy/download" : {
+      "get" : {
+        "summary" : "legacyDownloadData",
+        "operationId" : "legacyDownloadDataUsingGET",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "path",
+          "in" : "query",
+          "description" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
           "name" : "projectId",
-          "in" : "path",
+          "in" : "query",
           "description" : "projectId",
           "required" : true,
           "type" : "string",
           "format" : "uuid"
-        }, {
-          "in" : "body",
-          "name" : "settings",
-          "description" : "settings",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ProjectLeaderboardSettingsDTO"
-          }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "file"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/storage/legacy/downloadRequest" : {
+      "post" : {
+        "summary" : "legacyPrepareDownload",
+        "operationId" : "legacyPrepareDownloadUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentIdentity",
+          "in" : "query",
+          "description" : "experimentIdentity",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "path",
+          "in" : "query",
+          "description" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "resource",
+          "in" : "query",
+          "description" : "resource",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "output", "source" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/DownloadPrepareRequest"
+            }
+          },
           "201" : {
             "description" : "Created"
           },
-          "204" : {
-            "description" : "No Content"
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : true
+      }
+    },
+    "/api/leaderboard/v1/storage/legacy/uploadOutput/{experimentId}" : {
+      "post" : {
+        "summary" : "uploadOutput",
+        "operationId" : "uploadOutputUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentId",
+          "in" : "path",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : true
+      }
+    },
+    "/api/leaderboard/v1/storage/legacy/uploadOutputAsTarStream/{experimentId}" : {
+      "post" : {
+        "summary" : "uploadOutputAsTarStream",
+        "operationId" : "uploadOutputAsTarStreamUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentId",
+          "in" : "path",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : true
+      }
+    },
+    "/api/leaderboard/v1/storage/legacy/uploadSource/{experimentId}" : {
+      "post" : {
+        "summary" : "uploadSource",
+        "operationId" : "uploadSourceUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentId",
+          "in" : "path",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : true
+      }
+    },
+    "/api/leaderboard/v1/storage/legacy/uploadSourceAsTarStream/{experimentId}" : {
+      "post" : {
+        "summary" : "uploadSourceAsTarStream",
+        "operationId" : "uploadSourceAsTarStreamUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentId",
+          "in" : "path",
+          "description" : "experimentId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : true
+      }
+    },
+    "/api/leaderboard/v1/storage/ls" : {
+      "get" : {
+        "summary" : "List project files in a directory",
+        "operationId" : "lsPath",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pathParam",
+          "in" : "query",
+          "description" : "pathParam",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "resource",
+          "in" : "query",
+          "description" : "resource",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "output", "source" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FileEntry"
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/storage/upload" : {
+      "post" : {
+        "summary" : "Upload experiment file",
+        "operationId" : "uploadPath",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pathParam",
+          "in" : "query",
+          "description" : "pathParam",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "resource",
+          "in" : "query",
+          "description" : "resource",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "output", "source" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/storage/uploadTarStream" : {
+      "post" : {
+        "summary" : "Upload experiment files",
+        "operationId" : "uploadTarStream",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "experimentIdentifier",
+          "in" : "query",
+          "description" : "experimentIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "resource",
+          "in" : "query",
+          "description" : "resource",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "output", "source" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/storage/usage" : {
+      "get" : {
+        "summary" : "Get storage usage",
+        "operationId" : "storageUsageFixMe",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "organizationIdentifier",
+          "in" : "query",
+          "description" : "organizationIdentifier",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/StorageUsage"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/suggestions/decline" : {
+      "post" : {
+        "summary" : "Decline column suggestion from the project",
+        "operationId" : "suggestionDecline",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "suggestion",
+          "description" : "suggestion",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/LeaderboardFieldSuggestionDTO"
+          }
+        }, {
+          "name" : "viewId",
+          "in" : "query",
+          "description" : "viewId",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
           },
           "401" : {
             "description" : "Unauthorized"
@@ -1450,6 +3341,234 @@
         "deprecated" : false
       }
     },
+    "/api/leaderboard/v1/views" : {
+      "get" : {
+        "summary" : "List views in project",
+        "operationId" : "listLeaderboardViews",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/LeaderboardViewListDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "post" : {
+        "summary" : "Create view in project",
+        "operationId" : "createLeaderboardView",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "createView",
+          "description" : "createView",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NewLeaderboardViewDTO"
+          }
+        }, {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "schema" : {
+              "$ref" : "#/definitions/LeaderboardViewDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/views/setDefault" : {
+      "post" : {
+        "summary" : "Set default",
+        "operationId" : "setDefaultView",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "setDefaultOperation",
+          "description" : "setDefaultOperation",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/LeaderboardViewSetDefaultDTO"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/api/leaderboard/v1/views/{viewId}" : {
+      "get" : {
+        "summary" : "Get view",
+        "operationId" : "getLeaderboardView",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "viewId",
+          "in" : "path",
+          "description" : "viewId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/LeaderboardViewDTO"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "put" : {
+        "summary" : "Update view",
+        "operationId" : "updateLeaderboardView",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "updateView",
+          "description" : "updateView",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/LeaderboardViewUpdateDTO"
+          }
+        }, {
+          "name" : "viewId",
+          "in" : "path",
+          "description" : "viewId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/LeaderboardViewDTO"
+            }
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          }
+        },
+        "deprecated" : false
+      },
+      "delete" : {
+        "summary" : "Delete view",
+        "operationId" : "deleteLeaderboardView",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "projectIdentifier",
+          "in" : "query",
+          "description" : "projectIdentifier",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "viewId",
+          "in" : "path",
+          "description" : "viewId",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "deprecated" : false
+      }
+    },
     "/api/leaderboard/v1/{organizationId}/running" : {
       "get" : {
         "summary" : "Get running entries in organization with costs",
@@ -1485,24 +3604,163 @@
     }
   },
   "definitions" : {
-    "BooleanFilterDTO" : {
+    "Alias" : {
       "type" : "object",
-      "required" : [ "value", "verb" ],
+      "required" : [ "channels", "id", "name", "projectId" ],
       "properties" : {
-        "value" : {
-          "type" : "boolean"
+        "channels" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         },
-        "verb" : {
+        "id" : {
           "type" : "string",
-          "enum" : [ "is" ]
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "projectId" : {
+          "type" : "string",
+          "format" : "uuid"
         }
       },
-      "title" : "BooleanFilterDTO"
+      "title" : "Alias"
+    },
+    "AliasParams" : {
+      "type" : "object",
+      "required" : [ "channels", "name" ],
+      "properties" : {
+        "channels" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "name" : {
+          "type" : "string"
+        }
+      },
+      "title" : "AliasParams"
+    },
+    "AuditInfo" : {
+      "type" : "object",
+      "properties" : {
+        "accustomedExperimentCreatedAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "firstExperimentCreatedAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      },
+      "title" : "AuditInfo"
+    },
+    "BatchChannelValueError" : {
+      "type" : "object",
+      "required" : [ "channelId", "error", "x" ],
+      "properties" : {
+        "channelId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "error" : {
+          "$ref" : "#/definitions/Error"
+        },
+        "x" : {
+          "type" : "number",
+          "format" : "double"
+        }
+      },
+      "title" : "BatchChannelValueError"
+    },
+    "BulkOpErrorDTO" : {
+      "type" : "object",
+      "required" : [ "experiment", "message", "reason" ],
+      "properties" : {
+        "experiment" : {
+          "description" : "Experiment identifiers.",
+          "$ref" : "#/definitions/ExperimentIdentifiersDTO"
+        },
+        "message" : {
+          "type" : "string",
+          "description" : "Error message."
+        },
+        "reason" : {
+          "type" : "string",
+          "description" : "Error reason.",
+          "enum" : [ "TRASHED", "ALREADY_TRASHED", "NOT_EXISTS", "NOT_IN_TRASH", "ALREADY_FINISHED" ]
+        }
+      },
+      "title" : "BulkOpErrorDTO"
+    },
+    "BulkOpResultDTO" : {
+      "type" : "object",
+      "required" : [ "errors", "updated" ],
+      "properties" : {
+        "errors" : {
+          "type" : "array",
+          "description" : "Errors.",
+          "items" : {
+            "$ref" : "#/definitions/BulkOpErrorDTO"
+          }
+        },
+        "updated" : {
+          "type" : "array",
+          "description" : "The entries updated successfully.",
+          "items" : {
+            "$ref" : "#/definitions/ExperimentIdentifiersDTO"
+          }
+        }
+      },
+      "title" : "BulkOpResultDTO"
+    },
+    "Channel" : {
+      "type" : "object",
+      "required" : [ "channelType", "id", "name" ],
+      "properties" : {
+        "channelType" : {
+          "type" : "string",
+          "enum" : [ "numeric", "text", "image" ]
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "lastX" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      },
+      "title" : "Channel"
+    },
+    "ChannelParams" : {
+      "type" : "object",
+      "required" : [ "channelType", "name" ],
+      "properties" : {
+        "channelType" : {
+          "type" : "string",
+          "enum" : [ "numeric", "text", "image" ]
+        },
+        "name" : {
+          "type" : "string"
+        }
+      },
+      "title" : "ChannelParams"
     },
     "ChannelWithValueDTO" : {
       "type" : "object",
       "required" : [ "channelId", "channelName", "channelType", "x", "y" ],
       "properties" : {
+        "averageY" : {
+          "type" : "number",
+          "format" : "double"
+        },
         "channelId" : {
           "type" : "string",
           "format" : "uuid"
@@ -1513,6 +3771,18 @@
         "channelType" : {
           "type" : "string",
           "enum" : [ "numeric", "text", "image" ]
+        },
+        "maxY" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "minY" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "varianceY" : {
+          "type" : "number",
+          "format" : "double"
         },
         "x" : {
           "type" : "number",
@@ -1598,83 +3868,224 @@
       },
       "title" : "CheckpointUpdateDTO"
     },
-    "DateTimeDurationFilterDTO" : {
+    "CompletedExperimentParams" : {
       "type" : "object",
-      "required" : [ "value", "verb" ],
+      "required" : [ "state" ],
       "properties" : {
-        "value" : {
-          "$ref" : "#/definitions/TimeDurationDTO"
-        },
-        "verb" : {
-          "type" : "string",
-          "enum" : [ "isOverTheLast" ]
-        }
-      },
-      "title" : "DateTimeDurationFilterDTO"
-    },
-    "DateTimeFilterDTO" : {
-      "type" : "object",
-      "properties" : {
-        "durationFilter" : {
-          "$ref" : "#/definitions/DateTimeDurationFilterDTO"
-        },
-        "intervalFilter" : {
-          "$ref" : "#/definitions/DateTimeIntervalFilterDTO"
-        },
-        "valueFilter" : {
-          "$ref" : "#/definitions/DateTimeValueFilterDTO"
-        }
-      },
-      "title" : "DateTimeFilterDTO"
-    },
-    "DateTimeIntervalFilterDTO" : {
-      "type" : "object",
-      "required" : [ "from", "to", "verb" ],
-      "properties" : {
-        "from" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "to" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "verb" : {
-          "type" : "string",
-          "enum" : [ "isBetween", "isNotBetween" ]
-        }
-      },
-      "title" : "DateTimeIntervalFilterDTO"
-    },
-    "DateTimeValueFilterDTO" : {
-      "type" : "object",
-      "required" : [ "value", "verb" ],
-      "properties" : {
-        "value" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "verb" : {
-          "type" : "string",
-          "enum" : [ "is", "isNot", "isAfter", "isBefore" ]
-        }
-      },
-      "title" : "DateTimeValueFilterDTO"
-    },
-    "ExperimentStateFilterDTO" : {
-      "type" : "object",
-      "required" : [ "value", "verb" ],
-      "properties" : {
-        "value" : {
+        "state" : {
           "type" : "string",
           "enum" : [ "running", "succeeded", "aborted", "failed" ]
         },
-        "verb" : {
-          "type" : "string",
-          "enum" : [ "is", "isNot" ]
+        "traceback" : {
+          "type" : "string"
         }
       },
-      "title" : "ExperimentStateFilterDTO"
+      "title" : "CompletedExperimentParams"
+    },
+    "ComponentVersion" : {
+      "type" : "object",
+      "required" : [ "name", "version" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "enum" : [ "Client" ]
+        },
+        "version" : {
+          "type" : "string"
+        }
+      },
+      "title" : "ComponentVersion"
+    },
+    "DirectoryInfo" : {
+      "type" : "object",
+      "required" : [ "size" ],
+      "properties" : {
+        "mtime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "title" : "DirectoryInfo"
+    },
+    "DownloadPrepareRequest" : {
+      "type" : "object",
+      "required" : [ "id" ],
+      "properties" : {
+        "downloadUrl" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        }
+      },
+      "title" : "DownloadPrepareRequest"
+    },
+    "EditExperimentParams" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "properties" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValueProperty"
+          }
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "title" : "EditExperimentParams"
+    },
+    "Error" : {
+      "type" : "object",
+      "required" : [ "code", "message" ],
+      "properties" : {
+        "code" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "message" : {
+          "type" : "string"
+        }
+      },
+      "title" : "Error"
+    },
+    "Experiment" : {
+      "type" : "object",
+      "required" : [ "id", "shortId" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "shortId" : {
+          "type" : "string"
+        }
+      },
+      "title" : "Experiment"
+    },
+    "ExperimentCreationParams" : {
+      "type" : "object",
+      "required" : [ "name", "parameters", "properties", "tags" ],
+      "properties" : {
+        "abortable" : {
+          "type" : "boolean"
+        },
+        "checkpointId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "enqueueCommand" : {
+          "type" : "string"
+        },
+        "entrypoint" : {
+          "type" : "string"
+        },
+        "execArgsTemplate" : {
+          "type" : "string"
+        },
+        "gitInfo" : {
+          "$ref" : "#/definitions/GitInfoDTO"
+        },
+        "hostname" : {
+          "type" : "string"
+        },
+        "monitored" : {
+          "type" : "boolean"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "notebookId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Parameter"
+          }
+        },
+        "projectId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "projectIdentifier" : {
+          "type" : "string"
+        },
+        "properties" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValueProperty"
+          }
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "title" : "ExperimentCreationParams"
+    },
+    "ExperimentDetails" : {
+      "type" : "object",
+      "required" : [ "id" ],
+      "properties" : {
+        "gitInfo" : {
+          "$ref" : "#/definitions/GitInfoDTO"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        }
+      },
+      "title" : "ExperimentDetails"
+    },
+    "ExperimentIdentifiersDTO" : {
+      "type" : "object",
+      "required" : [ "id", "qualifiedName" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid",
+          "description" : "UUID"
+        },
+        "qualifiedName" : {
+          "type" : "string",
+          "description" : "Qualified name."
+        }
+      },
+      "title" : "ExperimentIdentifiersDTO"
+    },
+    "ExperimentPaths" : {
+      "type" : "object",
+      "required" : [ "output", "source" ],
+      "properties" : {
+        "output" : {
+          "type" : "string"
+        },
+        "source" : {
+          "type" : "string"
+        }
+      },
+      "title" : "ExperimentPaths"
     },
     "ExperimentStatesDTO" : {
       "type" : "object",
@@ -1703,45 +4114,170 @@
       },
       "title" : "ExperimentStatesDTO"
     },
-    "FilteringConditionDTO" : {
+    "ExperimentStorageInfoDTO" : {
       "type" : "object",
+      "required" : [ "artifacts", "sources" ],
       "properties" : {
-        "name" : {
-          "$ref" : "#/definitions/StringFilterDTO"
+        "artifacts" : {
+          "$ref" : "#/definitions/DirectoryInfo"
         },
-        "ownerName" : {
-          "$ref" : "#/definitions/StringFilterDTO"
-        },
-        "responding" : {
-          "$ref" : "#/definitions/BooleanFilterDTO"
-        },
-        "state" : {
-          "$ref" : "#/definitions/ExperimentStateFilterDTO"
-        },
-        "tags" : {
-          "$ref" : "#/definitions/TagsFilterDTO"
-        },
-        "timeOfCreation" : {
-          "$ref" : "#/definitions/DateTimeFilterDTO"
+        "sources" : {
+          "$ref" : "#/definitions/DirectoryInfo"
         }
       },
-      "title" : "FilteringConditionDTO"
+      "title" : "ExperimentStorageInfoDTO"
     },
-    "FilteringConditionsDTO" : {
+    "ExperimentsAttributesNamesDTO" : {
       "type" : "object",
-      "required" : [ "filtersInDisjunctiveForm" ],
+      "required" : [ "numericChannelsNames", "numericParametersNames", "propertiesNames", "textChannelsNames", "textParametersNames" ],
       "properties" : {
-        "filtersInDisjunctiveForm" : {
+        "numericChannelsNames" : {
           "type" : "array",
           "items" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/FilteringConditionDTO"
-            }
+            "type" : "string"
+          }
+        },
+        "numericParametersNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "propertiesNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "textChannelsNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "textParametersNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
           }
         }
       },
-      "title" : "FilteringConditionsDTO"
+      "title" : "ExperimentsAttributesNamesDTO"
+    },
+    "FileEntry" : {
+      "type" : "object",
+      "required" : [ "fileType", "mtime", "name" ],
+      "properties" : {
+        "fileType" : {
+          "type" : "string"
+        },
+        "mtime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "title" : "FileEntry"
+    },
+    "GitCommitDTO" : {
+      "type" : "object",
+      "required" : [ "authorEmail", "authorName", "commitDate", "commitId", "message" ],
+      "properties" : {
+        "authorEmail" : {
+          "type" : "string"
+        },
+        "authorName" : {
+          "type" : "string"
+        },
+        "commitDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "commitId" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        }
+      },
+      "title" : "GitCommitDTO"
+    },
+    "GitInfoDTO" : {
+      "type" : "object",
+      "required" : [ "commit", "repositoryDirty" ],
+      "properties" : {
+        "commit" : {
+          "$ref" : "#/definitions/GitCommitDTO"
+        },
+        "currentBranch" : {
+          "type" : "string"
+        },
+        "remotes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "repositoryDirty" : {
+          "type" : "boolean"
+        }
+      },
+      "title" : "GitInfoDTO"
+    },
+    "InputChannelValues" : {
+      "type" : "object",
+      "required" : [ "channelId", "values" ],
+      "properties" : {
+        "channelId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Point"
+          }
+        }
+      },
+      "title" : "InputChannelValues"
+    },
+    "InputImage" : {
+      "type" : "object",
+      "properties" : {
+        "data" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      },
+      "title" : "InputImage"
+    },
+    "InputStream" : {
+      "type" : "object",
+      "title" : "InputStream"
+    },
+    "KeyValueProperty" : {
+      "type" : "object",
+      "required" : [ "key", "value" ],
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      },
+      "title" : "KeyValueProperty"
     },
     "KeyValuePropertyDTO" : {
       "type" : "object",
@@ -1756,6 +4292,55 @@
       },
       "title" : "KeyValuePropertyDTO"
     },
+    "LeaderboardCsvExportParamsDTO" : {
+      "type" : "object",
+      "required" : [ "exportFieldAggregations", "exportFieldNames", "exportFieldTypes", "exportFields", "zoneOffset" ],
+      "properties" : {
+        "exportFieldAggregations" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+          }
+        },
+        "exportFieldNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "exportFieldTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+          }
+        },
+        "exportFields" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "filtering" : {
+          "$ref" : "#/definitions/LeaderboardFilterParamsDTO"
+        },
+        "query" : {
+          "type" : "string"
+        },
+        "sorting" : {
+          "$ref" : "#/definitions/LeaderboardSortParamsDTO"
+        },
+        "zoneOffset" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "zoneRegion" : {
+          "type" : "string"
+        }
+      },
+      "title" : "LeaderboardCsvExportParamsDTO"
+    },
     "LeaderboardDTO" : {
       "type" : "object",
       "required" : [ "entries", "matchingItemCount", "totalItemCount" ],
@@ -1767,10 +4352,29 @@
             "$ref" : "#/definitions/LeaderboardEntryDTO"
           }
         },
+        "groups" : {
+          "type" : "array",
+          "description" : "The groups of entities matching given criteria.",
+          "items" : {
+            "$ref" : "#/definitions/LeaderboardEntryGroupDTO"
+          }
+        },
         "matchingItemCount" : {
           "type" : "integer",
           "format" : "int64",
           "description" : "The total number of entries matching the given criteria."
+        },
+        "suggestions" : {
+          "type" : "array",
+          "description" : "The column suggestions to the user, most recommended columns first.",
+          "items" : {
+            "$ref" : "#/definitions/LeaderboardFieldSuggestionDTO"
+          }
+        },
+        "totalGroupCount" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The total number of group entries."
         },
         "totalItemCount" : {
           "type" : "integer",
@@ -1780,24 +4384,9 @@
       },
       "title" : "LeaderboardDTO"
     },
-    "LeaderboardEntryCountDTO" : {
-      "type" : "object",
-      "required" : [ "matchingItemCount", "totalItemCount" ],
-      "properties" : {
-        "matchingItemCount" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalItemCount" : {
-          "type" : "integer",
-          "format" : "int64"
-        }
-      },
-      "title" : "LeaderboardEntryCountDTO"
-    },
     "LeaderboardEntryDTO" : {
       "type" : "object",
-      "required" : [ "channelsLastValues", "deleted", "description", "entryType", "experimentStates", "id", "isBestExperiment", "name", "organizationId", "organizationName", "owner", "parameters", "projectDeleted", "projectId", "projectName", "properties", "responding", "runningTime", "shortId", "size", "state", "tags", "timeOfCreation", "trashed" ],
+      "required" : [ "channelsLastValues", "deleted", "description", "entryType", "experimentStates", "id", "name", "organizationId", "organizationName", "owner", "parameters", "projectId", "projectName", "properties", "responding", "runningTime", "shortId", "size", "state", "tags", "timeOfCreation", "trashed" ],
       "properties" : {
         "channelsLastValues" : {
           "type" : "array",
@@ -1829,8 +4418,7 @@
           "type" : "string"
         },
         "entryType" : {
-          "type" : "string",
-          "enum" : [ "experiment", "notebook" ]
+          "type" : "string"
         },
         "experimentStates" : {
           "$ref" : "#/definitions/ExperimentStatesDTO"
@@ -1841,9 +4429,6 @@
         "id" : {
           "type" : "string",
           "format" : "uuid"
-        },
-        "isBestExperiment" : {
-          "type" : "boolean"
         },
         "name" : {
           "type" : "string"
@@ -1874,9 +4459,6 @@
             "$ref" : "#/definitions/ParameterDTO"
           }
         },
-        "projectDeleted" : {
-          "type" : "boolean"
-        },
         "projectId" : {
           "type" : "string",
           "format" : "uuid"
@@ -1903,7 +4485,7 @@
         "size" : {
           "type" : "integer",
           "format" : "int64",
-          "description" : "The size of all storage files in bytes."
+          "description" : "The size of all storage files, text logs and metrics in bytes."
         },
         "state" : {
           "type" : "string",
@@ -1930,12 +4512,283 @@
       },
       "title" : "LeaderboardEntryDTO"
     },
-    "NamedFilterDTO" : {
+    "LeaderboardEntryGroupDTO" : {
       "type" : "object",
-      "required" : [ "filters", "id", "name" ],
+      "required" : [ "childrenIds", "id", "itemCount", "key" ],
       "properties" : {
-        "filters" : {
-          "$ref" : "#/definitions/FilteringConditionsDTO"
+        "childrenIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the group"
+        },
+        "itemCount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "The number of entries in the group."
+        },
+        "key" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LeaderboardFieldWithValueDTO"
+          }
+        }
+      },
+      "title" : "LeaderboardEntryGroupDTO"
+    },
+    "LeaderboardFieldDTO" : {
+      "type" : "object",
+      "required" : [ "aggregation", "name", "type" ],
+      "properties" : {
+        "aggregation" : {
+          "type" : "string",
+          "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+        }
+      },
+      "title" : "LeaderboardFieldDTO"
+    },
+    "LeaderboardFieldSuggestionDTO" : {
+      "type" : "object",
+      "required" : [ "name", "type" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+        }
+      },
+      "title" : "LeaderboardFieldSuggestionDTO"
+    },
+    "LeaderboardFieldWithValueDTO" : {
+      "type" : "object",
+      "required" : [ "field" ],
+      "properties" : {
+        "field" : {
+          "$ref" : "#/definitions/LeaderboardFieldDTO"
+        },
+        "value" : {
+          "type" : "object"
+        }
+      },
+      "title" : "LeaderboardFieldWithValueDTO"
+    },
+    "LeaderboardFilterParamsDTO" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "shortId" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "state" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "running", "succeeded", "aborted", "failed" ]
+          }
+        },
+        "owner" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "notebookId" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        },
+        "notebookName" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "checkpointId" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        },
+        "checkpointName" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "startDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "endDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "searchTerm" : {
+          "type" : "string"
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagsMode" : {
+          "type" : "string",
+          "enum" : [ "and", "or" ]
+        },
+        "trashed" : {
+          "type" : "string",
+          "enum" : [ "false", "true", "all" ]
+        },
+        "minRunningTimeSeconds" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "title" : "LeaderboardFilterParamsDTO"
+    },
+    "LeaderboardGroupParamsDTO" : {
+      "type" : "object",
+      "properties" : {
+        "groupBy" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "groupByFieldType" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+          }
+        },
+        "groupByFieldAggregationMode" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+          }
+        },
+        "openedGroups" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "title" : "LeaderboardGroupParamsDTO"
+    },
+    "LeaderboardSortParamsDTO" : {
+      "type" : "object",
+      "properties" : {
+        "sortBy" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "sortFieldType" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+          }
+        },
+        "sortFieldAggregationMode" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "last", "min", "max", "average", "variance", "auto" ]
+          }
+        },
+        "sortDirection" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "ascending", "descending" ]
+          }
+        }
+      },
+      "title" : "LeaderboardSortParamsDTO"
+    },
+    "LeaderboardViewColumnDTO" : {
+      "type" : "object",
+      "required" : [ "columnType", "id", "pinned", "width" ],
+      "properties" : {
+        "columnType" : {
+          "type" : "string",
+          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "numericParameters", "textParameters", "properties" ]
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "pinned" : {
+          "type" : "boolean"
+        },
+        "width" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "aggregationMode" : {
+          "type" : "string",
+          "enum" : [ "last", "min", "max", "average", "variance" ]
+        },
+        "displayMode" : {
+          "type" : "string",
+          "enum" : [ "scientific", "decimal", "auto" ]
+        }
+      },
+      "title" : "LeaderboardViewColumnDTO"
+    },
+    "LeaderboardViewColumnListDTO" : {
+      "type" : "object",
+      "required" : [ "columns" ],
+      "properties" : {
+        "columns" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LeaderboardViewColumnDTO"
+          }
+        }
+      },
+      "title" : "LeaderboardViewColumnListDTO"
+    },
+    "LeaderboardViewDTO" : {
+      "type" : "object",
+      "required" : [ "columnList", "defaultView", "id", "name", "sortOptions", "suggestionsEnabled", "trashed" ],
+      "properties" : {
+        "columnList" : {
+          "$ref" : "#/definitions/LeaderboardViewColumnListDTO"
+        },
+        "defaultView" : {
+          "type" : "boolean"
+        },
+        "groupOptions" : {
+          "$ref" : "#/definitions/LeaderboardGroupParamsDTO"
         },
         "id" : {
           "type" : "string",
@@ -1943,50 +4796,197 @@
         },
         "name" : {
           "type" : "string"
+        },
+        "query" : {
+          "type" : "string"
+        },
+        "quickFilters" : {
+          "$ref" : "#/definitions/LeaderboardViewQuickFilterDTO"
+        },
+        "sortOptions" : {
+          "$ref" : "#/definitions/LeaderboardSortParamsDTO"
+        },
+        "suggestionsEnabled" : {
+          "type" : "boolean"
+        },
+        "trashed" : {
+          "type" : "boolean"
         }
       },
-      "title" : "NamedFilterDTO"
+      "title" : "LeaderboardViewDTO"
     },
-    "NamedFilterParamsDTO" : {
+    "LeaderboardViewListDTO" : {
       "type" : "object",
-      "required" : [ "filters", "name" ],
+      "required" : [ "views" ],
       "properties" : {
-        "filters" : {
-          "$ref" : "#/definitions/FilteringConditionsDTO"
+        "views" : {
+          "type" : "array",
+          "description" : "Leaderpoard views list",
+          "items" : {
+            "$ref" : "#/definitions/LeaderboardViewDTO"
+          }
+        }
+      },
+      "title" : "LeaderboardViewListDTO"
+    },
+    "LeaderboardViewQuickFilterDTO" : {
+      "type" : "object",
+      "properties" : {
+        "creationDateRangeEnd" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "creationDateRangeStart" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "owner" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "relativeTime" : {
+          "type" : "string",
+          "enum" : [ "lastDay", "lastWeek", "lastMonth", "lastQuarter" ]
+        },
+        "searchTerm" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "running", "succeeded", "aborted", "failed" ]
+          }
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "title" : "LeaderboardViewQuickFilterDTO"
+    },
+    "LeaderboardViewSetDefaultDTO" : {
+      "type" : "object",
+      "required" : [ "projectIdentifier" ],
+      "properties" : {
+        "projectIdentifier" : {
+          "type" : "string"
+        },
+        "viewId" : {
+          "type" : "string",
+          "format" : "uuid"
+        }
+      },
+      "title" : "LeaderboardViewSetDefaultDTO"
+    },
+    "LeaderboardViewUpdateDTO" : {
+      "type" : "object",
+      "required" : [ "columnList", "defaultView", "name", "sortOptions", "suggestionsEnabled", "trashed" ],
+      "properties" : {
+        "columnList" : {
+          "$ref" : "#/definitions/LeaderboardViewColumnListDTO"
+        },
+        "defaultView" : {
+          "type" : "boolean"
+        },
+        "groupOptions" : {
+          "$ref" : "#/definitions/LeaderboardGroupParamsDTO"
         },
         "name" : {
           "type" : "string"
-        }
-      },
-      "title" : "NamedFilterParamsDTO"
-    },
-    "NamedFilterUpdateDTO" : {
-      "type" : "object",
-      "properties" : {
-        "filters" : {
-          "$ref" : "#/definitions/FilteringConditionsDTO"
         },
-        "name" : {
+        "query" : {
           "type" : "string"
+        },
+        "quickFilters" : {
+          "$ref" : "#/definitions/LeaderboardViewQuickFilterDTO"
+        },
+        "sortOptions" : {
+          "$ref" : "#/definitions/LeaderboardSortParamsDTO"
+        },
+        "suggestionsEnabled" : {
+          "type" : "boolean"
+        },
+        "trashed" : {
+          "type" : "boolean"
         }
       },
-      "title" : "NamedFilterUpdateDTO"
+      "title" : "LeaderboardViewUpdateDTO"
+    },
+    "LimitedChannelValuesDTO" : {
+      "type" : "object",
+      "required" : [ "channelId", "totalItemCount", "values" ],
+      "properties" : {
+        "channelId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "totalItemCount" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PointValueDTO"
+          }
+        }
+      },
+      "title" : "LimitedChannelValuesDTO"
     },
     "NewCheckpointDTO" : {
       "type" : "object",
       "required" : [ "path" ],
       "properties" : {
-        "description" : {
+        "path" : {
           "type" : "string"
         },
         "name" : {
           "type" : "string"
         },
-        "path" : {
+        "description" : {
           "type" : "string"
         }
       },
       "title" : "NewCheckpointDTO"
+    },
+    "NewLeaderboardViewDTO" : {
+      "type" : "object",
+      "required" : [ "columnList", "defaultView", "name", "sortOptions", "suggestionsEnabled", "trashed" ],
+      "properties" : {
+        "columnList" : {
+          "$ref" : "#/definitions/LeaderboardViewColumnListDTO"
+        },
+        "defaultView" : {
+          "type" : "boolean"
+        },
+        "groupOptions" : {
+          "$ref" : "#/definitions/LeaderboardGroupParamsDTO"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "query" : {
+          "type" : "string"
+        },
+        "quickFilters" : {
+          "$ref" : "#/definitions/LeaderboardViewQuickFilterDTO"
+        },
+        "sortOptions" : {
+          "$ref" : "#/definitions/LeaderboardSortParamsDTO"
+        },
+        "suggestionsEnabled" : {
+          "type" : "boolean"
+        },
+        "trashed" : {
+          "type" : "boolean"
+        }
+      },
+      "title" : "NewLeaderboardViewDTO"
     },
     "NewProjectChartDTO" : {
       "type" : "object",
@@ -2138,10 +5138,41 @@
       },
       "title" : "NotebooksDataDTO"
     },
-    "ParameterDTO" : {
+    "NqlQueryParamsDTO" : {
+      "type" : "object",
+      "required" : [ "query" ],
+      "properties" : {
+        "query" : {
+          "type" : "string"
+        }
+      },
+      "title" : "NqlQueryParamsDTO"
+    },
+    "OutputImageDTO" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "imageUrl" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "thumbnailUrl" : {
+          "type" : "string"
+        }
+      },
+      "title" : "OutputImageDTO"
+    },
+    "Parameter" : {
       "type" : "object",
       "required" : [ "id", "name", "parameterType", "value" ],
       "properties" : {
+        "description" : {
+          "type" : "string"
+        },
         "id" : {
           "type" : "string",
           "format" : "uuid"
@@ -2157,7 +5188,64 @@
           "type" : "string"
         }
       },
+      "title" : "Parameter"
+    },
+    "ParameterDTO" : {
+      "type" : "object",
+      "required" : [ "id", "name", "parameterType", "value" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "parameterType" : {
+          "type" : "string",
+          "enum" : [ "string", "double" ]
+        },
+        "value" : {
+          "type" : "string"
+        }
+      },
       "title" : "ParameterDTO"
+    },
+    "Point" : {
+      "type" : "object",
+      "required" : [ "timestampMillis", "y" ],
+      "properties" : {
+        "timestampMillis" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "x" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "y" : {
+          "$ref" : "#/definitions/Y"
+        }
+      },
+      "title" : "Point"
+    },
+    "PointValueDTO" : {
+      "type" : "object",
+      "required" : [ "timestampMillis", "y" ],
+      "properties" : {
+        "timestampMillis" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "x" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "y" : {
+          "$ref" : "#/definitions/YOutput"
+        }
+      },
+      "title" : "PointValueDTO"
     },
     "ProjectChartDTO" : {
       "type" : "object",
@@ -2259,10 +5347,10 @@
         "name" : {
           "type" : "string"
         },
-        "useFunction" : {
+        "useValue" : {
           "type" : "boolean"
         },
-        "useValue" : {
+        "useFunction" : {
           "type" : "boolean"
         }
       },
@@ -2290,68 +5378,293 @@
       },
       "title" : "ProjectChartUpdateDTO"
     },
-    "ProjectLeaderboardSettingColumnDTO" : {
+    "RichExperiment" : {
       "type" : "object",
-      "required" : [ "columnType", "id", "pinned", "width" ],
+      "required" : [ "channels", "channelsLastValues", "channelsSize", "componentsVersions", "description", "id", "name", "organizationId", "organizationName", "owner", "parameters", "paths", "projectId", "projectName", "properties", "relativePaths", "responding", "runningTime", "shortId", "state", "stateTransitions", "storageSize", "tags", "timeOfCreation", "trashed" ],
       "properties" : {
-        "columnType" : {
-          "type" : "string",
-          "enum" : [ "native", "numericChannels", "textChannels", "aliases", "parameters", "properties" ]
+        "channels" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Channel"
+          }
         },
-        "id" : {
+        "channelsLastValues" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ChannelWithValueDTO"
+          }
+        },
+        "channelsSize" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "checkpointId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "componentsVersions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ComponentVersion"
+          }
+        },
+        "description" : {
           "type" : "string"
         },
-        "pinned" : {
+        "entrypoint" : {
+          "type" : "string"
+        },
+        "hostname" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "notebookId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "organizationId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "organizationName" : {
+          "type" : "string"
+        },
+        "owner" : {
+          "type" : "string"
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Parameter"
+          }
+        },
+        "paths" : {
+          "$ref" : "#/definitions/ExperimentPaths"
+        },
+        "projectId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "projectName" : {
+          "type" : "string"
+        },
+        "properties" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValueProperty"
+          }
+        },
+        "relativePaths" : {
+          "$ref" : "#/definitions/ExperimentPaths"
+        },
+        "responding" : {
           "type" : "boolean"
         },
-        "width" : {
+        "runningTime" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "shortId" : {
+          "type" : "string"
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "running", "succeeded", "aborted", "failed" ]
+        },
+        "stateTransitions" : {
+          "$ref" : "#/definitions/StateTransitionsDTO"
+        },
+        "storageSize" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "timeOfCompletion" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "timeOfCreation" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "traceback" : {
+          "type" : "string"
+        },
+        "trashed" : {
+          "type" : "boolean"
+        }
+      },
+      "title" : "RichExperiment"
+    },
+    "SeriesViewDTO" : {
+      "type" : "object",
+      "required" : [ "channelId", "channelName", "downsampled", "experimentId", "experimentShortId", "firstPointIndex", "lastPointIndex", "maxY", "minY", "projectId", "projectName", "values" ],
+      "properties" : {
+        "channelId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "channelName" : {
+          "type" : "string"
+        },
+        "downsampled" : {
+          "type" : "boolean"
+        },
+        "experimentId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "experimentShortId" : {
+          "type" : "string"
+        },
+        "firstPointIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "lastPointIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "maxY" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "minY" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "projectId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "projectName" : {
+          "type" : "string"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SeriesViewPointDTO"
+          }
+        }
+      },
+      "title" : "SeriesViewDTO"
+    },
+    "SeriesViewListDTO" : {
+      "type" : "object",
+      "required" : [ "elements" ],
+      "properties" : {
+        "elements" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SeriesViewDTO"
+          }
+        }
+      },
+      "title" : "SeriesViewListDTO"
+    },
+    "SeriesViewPointDTO" : {
+      "type" : "object",
+      "required" : [ "downsampled", "firstPointIndex", "lastPointIndex", "maxY", "minY", "timestamp", "x", "y" ],
+      "properties" : {
+        "downsampled" : {
+          "type" : "boolean"
+        },
+        "firstPointIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "lastPointIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "maxY" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "minY" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "x" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "y" : {
+          "type" : "number",
+          "format" : "double"
+        }
+      },
+      "title" : "SeriesViewPointDTO"
+    },
+    "SeriesViewRequestDTO" : {
+      "type" : "object",
+      "required" : [ "channelId", "experimentIdentifier" ],
+      "properties" : {
+        "channelId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "experimentIdentifier" : {
+          "type" : "string"
+        },
+        "firstPointIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "lastPointIndex" : {
           "type" : "integer",
           "format" : "int32"
         }
       },
-      "title" : "ProjectLeaderboardSettingColumnDTO"
+      "title" : "SeriesViewRequestDTO"
     },
-    "ProjectLeaderboardSettingsDTO" : {
+    "StateTransitionsDTO" : {
       "type" : "object",
-      "required" : [ "columns" ],
       "properties" : {
-        "columns" : {
-          "type" : "array",
-          "description" : "The columns for settings in order",
-          "items" : {
-            "$ref" : "#/definitions/ProjectLeaderboardSettingColumnDTO"
-          }
-        }
-      },
-      "title" : "ProjectLeaderboardSettingsDTO"
-    },
-    "StringFilterDTO" : {
-      "type" : "object",
-      "required" : [ "value", "verb" ],
-      "properties" : {
-        "value" : {
-          "type" : "string"
-        },
-        "verb" : {
+        "aborted" : {
           "type" : "string",
-          "enum" : [ "is", "isNot", "contains", "doesNotContain" ]
-        }
-      },
-      "title" : "StringFilterDTO"
-    },
-    "TagsFilterDTO" : {
-      "type" : "object",
-      "required" : [ "value", "verb" ],
-      "properties" : {
-        "value" : {
-          "type" : "string"
+          "format" : "date-time"
         },
-        "verb" : {
+        "failed" : {
           "type" : "string",
-          "enum" : [ "contains", "doesNotContain" ]
+          "format" : "date-time"
+        },
+        "running" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "succeeded" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       },
-      "title" : "TagsFilterDTO"
+      "title" : "StateTransitionsDTO"
+    },
+    "StorageUsage" : {
+      "type" : "object",
+      "required" : [ "usage" ],
+      "properties" : {
+        "usage" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "title" : "StorageUsage"
     },
     "TimeDurationDTO" : {
       "type" : "object",
@@ -2399,6 +5712,89 @@
         }
       },
       "title" : "TrackingDataDTO"
+    },
+    "UpdateTagsParams" : {
+      "type" : "object",
+      "required" : [ "experimentIdentifiers", "tagsToAdd", "tagsToDelete" ],
+      "properties" : {
+        "experimentIdentifiers" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagsToAdd" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagsToDelete" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "title" : "UpdateTagsParams"
+    },
+    "UpdateTagsParamsDeprecatedDTO" : {
+      "type" : "object",
+      "required" : [ "experimentIds", "tagsToAdd", "tagsToDelete" ],
+      "properties" : {
+        "experimentIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        },
+        "tagsToAdd" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagsToDelete" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "title" : "UpdateTagsParamsDeprecatedDTO"
+    },
+    "Y" : {
+      "type" : "object",
+      "properties" : {
+        "inputImageValue" : {
+          "$ref" : "#/definitions/InputImage"
+        },
+        "numericValue" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "textValue" : {
+          "type" : "string"
+        }
+      },
+      "title" : "Y"
+    },
+    "YOutput" : {
+      "type" : "object",
+      "properties" : {
+        "imageValue" : {
+          "$ref" : "#/definitions/OutputImageDTO"
+        },
+        "numericValue" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "textValue" : {
+          "type" : "string"
+        }
+      },
+      "title" : "YOutput"
     }
   }
 }
