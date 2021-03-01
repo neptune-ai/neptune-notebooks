@@ -62,9 +62,11 @@ class LeaderboardApi extends DefaultApi {
 
 class ApiWrapper {
   protected client: LeaderboardApi
+  protected clientAlpha: LeaderboardApi
 
   constructor() {
     this.client = this.createClient(getBasePath());
+    this.clientAlpha = this.createClient(getBasePath());
   }
 
   createClient(basePath: string) {
@@ -80,9 +82,18 @@ class ApiWrapper {
     return this.client;
   }
 
+  get alphaApi () {
+    return this.clientAlpha;
+  }
+
   setBasePath(path: string) {
     // reinitialize client as there is no way to override base path after it was created
     this.client = this.createClient(path)
+  }
+
+  setBasePathAlpha(path: string) {
+    // reinitialize client as there is no way to override base path after it was created
+    this.clientAlpha = this.createClient(path);
   }
 }
 

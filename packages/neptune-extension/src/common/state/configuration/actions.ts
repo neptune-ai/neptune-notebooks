@@ -29,4 +29,17 @@ export function setTokenUsername(username?: string) {
   } as const;
 }
 
-export type ConfigurationActions = ReturnType<typeof setApiToken | typeof setApiTokenValid | typeof setTokenUsername>
+type ClientConfig = {apiUrl: string, applicationUrl: string}
+export function setClientConfig(clientConfig: { newDomain: ClientConfig, oldDomain: ClientConfig }) {
+  return {
+    type: 'CLIENT_CONFIG_SET',
+    payload: clientConfig,
+  } as const;
+}
+
+export type ConfigurationActions = ReturnType<
+  | typeof setApiToken
+  | typeof setApiTokenValid
+  | typeof setTokenUsername
+  | typeof setClientConfig
+>
