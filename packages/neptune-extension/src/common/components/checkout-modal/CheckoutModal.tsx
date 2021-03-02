@@ -26,6 +26,7 @@ import { getNotebookState } from 'common/state/notebook/selectors'
 import { addNotification } from 'common/state/notifications/actions';
 
 import { findNonExistantPath } from 'common/utils/path';
+import { createProjectIdentifier } from 'common/utils/project';
 
 import {
   fetchProjectOptions,
@@ -53,21 +54,24 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const initialProjectId = () => notebook ? notebook.projectId : getDefaultProjectId();
   const initialNotebookId = notebook ? notebook.id : undefined;
 
-  const [ projectId, projectLabel, projectInputProps, projectMetaProps ] = useSelectInputValue(
+  const [ projectId, selectedProject, projectInputProps, projectMetaProps ] = useSelectInputValue(
     initialProjectId,
     () => fetchProjectOptions('readable'),
+    option => option.id,
     []
   );
 
-  const [ notebookId, notebookLabel, notebookInputProps, notebookMetaProps ] = useSelectInputValue(
+  const [ notebookId, selectedNotebookOption, notebookInputProps, notebookMetaProps ] = useSelectInputValue(
     initialNotebookId,
     () => fetchNotebookOptions(projectId),
+    (option => option[0]),
     [projectId]
   );
 
-  const [ checkpointId, checkpointLabel, checkpointInputProps, checkpointMetaProps ] = useSelectInputValue(
+  const [ checkpointId, selectedCheckpointOption, checkpointInputProps, checkpointMetaProps ] = useSelectInputValue(
     undefined,
     () => fetchCheckpointOptions(notebookId),
+    (option => option[0]),
     [notebookId]
   );
 
@@ -118,6 +122,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <SelectInput
             className={block('input')}
             placeholder="No projects to select"
+            getLabel={option => createProjectIdentifier(option.organizationName, option.name)}
             {...projectInputProps}
             {...projectMetaProps}
           />
@@ -128,6 +133,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <SelectInput
             className={block('input')}
             placeholder="No notebooks to select"
+            getLabel={option => option[1]}
             {...notebookInputProps}
             {...notebookMetaProps}
           />
@@ -138,6 +144,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <SelectInput
             className={block('input')}
             placeholder="No checkpoints to select"
+            getLabel={option => option[1]}
             {...checkpointInputProps}
             {...checkpointMetaProps}
           />
