@@ -49,6 +49,7 @@ interface CheckpointMetadata {
 
 export const uploadNotebook = (
   projectIdentifier: string,
+  projectVersion: number | undefined,
   checkpointMeta: CheckpointMetadata,
   content: any,
   platformNotebook: PlatformNotebook,
@@ -62,7 +63,10 @@ export const uploadNotebook = (
       log('uploadNotebook, empty notebook created', notebook);
       await requestCheckpoint(notebook.id, checkpointMeta, content);
       log('uploadNotebook, checkpoint created, content uploaded');
-      await platformNotebook.saveNotebookId(notebook.id);
+      await platformNotebook.setMetadata({
+        notebookId: notebook.id,
+        projectVersion,
+      });
 
       dispatch(uploadNotebookSuccess(notebook));
 

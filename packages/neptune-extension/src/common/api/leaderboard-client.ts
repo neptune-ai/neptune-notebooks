@@ -6,6 +6,9 @@ import {
 } from 'generated/leaderboard-client/src';
 import * as runtime from "generated/leaderboard-client/src/runtime";
 
+export * from 'generated/leaderboard-client/src/apis';
+export * from 'generated/leaderboard-client/src/models';
+
 import { getBasePath } from "./auth";
 import { updateTokenMiddleware } from "./update-token-middleware";
 

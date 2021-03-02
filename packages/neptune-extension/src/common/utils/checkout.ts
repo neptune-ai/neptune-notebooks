@@ -1,4 +1,7 @@
-import {backendClient} from 'common/api/backend-client';
+import {
+  backendClient,
+  ProjectWithRoleDTO
+} from 'common/api/backend-client';
 import {leaderboardClient} from 'common/api/leaderboard-client';
 
 import moment from 'moment';
@@ -8,7 +11,7 @@ import {ListNotebooksSortByEnum, ListNotebooksSortDirectionEnum} from 'generated
 
 type ProjectOptionsFetchMode = 'readable' | 'writable'
 
-export async function fetchProjectOptions(mode: ProjectOptionsFetchMode) {
+export async function fetchProjectOptions(mode: ProjectOptionsFetchMode): Promise<ProjectWithRoleDTO[]> {
   const { entries } = mode === 'readable'
     ? await backendClient.api.listProjects({
         userRelation: 'any',
@@ -18,10 +21,12 @@ export async function fetchProjectOptions(mode: ProjectOptionsFetchMode) {
 
 
   return entries
-    .map(entry =>
-      [ entry.id, createProjectIdentifier(entry.organizationName, entry.name) ]
-    )
-    .sort((a, b) => naturalStringComparator(a[1], b[1]));
+    .sort((left, right) => {
+      const leftIdentifier = createProjectIdentifier(left.organizationName, left.name)
+      const rightIdentifier = createProjectIdentifier(right.organizationName, right.name)
+
+      return naturalStringComparator(leftIdentifier, rightIdentifier);
+    })
 }
 
 export async function fetchNotebookOptions(projectIdentifier?: string) {

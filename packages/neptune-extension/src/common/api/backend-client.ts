@@ -5,6 +5,9 @@ import {
   ProjectListDTO,
 } from 'generated/backend-client/src';
 
+export * from 'generated/backend-client/src/apis';
+export * from 'generated/backend-client/src/models';
+
 import { getBasePath } from "./auth";
 import { updateTokenMiddleware } from "./update-token-middleware";
 
