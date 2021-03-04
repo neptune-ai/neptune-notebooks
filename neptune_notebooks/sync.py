@@ -124,9 +124,11 @@ def verify_file(path):
 
 
 def print_link_to_notebook(project, notebook_name, notebook_id):
+    base_url = project.client.api_address if hasattr(
+        project,"client") else project._backend.api_address  # pylint: disable=protected-access
     try:
         print("{base_url}/{project}/n/{notebook_name}-{notebook_id}".format(
-            base_url=project.client.api_address,
+            base_url=base_url,
             project=project.full_id,
             notebook_name=notebook_name,
             notebook_id=notebook_id
