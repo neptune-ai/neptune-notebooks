@@ -29,7 +29,7 @@ export function loadInitialNotebook(platformNotebook: PlatformNotebook) {
       return;
     }
 
-    dispatch(fetchNotebook(metadata.notebookId));
-  }, [isApiTokenValid, metadata.notebookId])
+    dispatch(fetchNotebook(metadata.projectVersion, metadata.notebookId));
+  }, [isApiTokenValid, metadata.notebookId, metadata.projectVersion])
 }
 

@@ -125,7 +125,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       );
     } else {
       returnValue = await dispatch(
-        uploadCheckpoint(projectIdentifier, metadata.notebookId, checkpointMeta, content),
+        uploadCheckpoint(projectIdentifier, selectedProject.version, metadata.notebookId, checkpointMeta, content),
       );
     }
     if (returnValue) {

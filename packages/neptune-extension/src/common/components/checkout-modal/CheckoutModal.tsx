@@ -61,29 +61,32 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     []
   );
 
+  // todo upgrade typescript so we can use optional chaining (obj?.smth)
+  const selectedProjectVersion: number | undefined = selectedProject && selectedProject.version;
+
   const [ notebookId, selectedNotebookOption, notebookInputProps, notebookMetaProps ] = useSelectInputValue(
     initialNotebookId,
-    () => fetchNotebookOptions(projectId),
+    () => fetchNotebookOptions(projectId, selectedProjectVersion),
     (option => option[0]),
-    [projectId]
+    [projectId, selectedProjectVersion]
   );
 
   const [ checkpointId, selectedCheckpointOption, checkpointInputProps, checkpointMetaProps ] = useSelectInputValue(
     undefined,
-    () => fetchCheckpointOptions(notebookId),
+    () => fetchCheckpointOptions(selectedProject && selectedProject.version, notebookId,),
     (option => option[0]),
-    [notebookId]
+    [notebookId, selectedProjectVersion]
   );
 
   const dispatch = useDispatch();
 
   async function checkoutNotebook() {
-    if (checkpointId === undefined || notebookId === undefined || projectId === undefined) {
+    if (checkpointId === undefined || notebookId === undefined || projectId === undefined || selectedProject === undefined) {
       return;
     }
 
-    const notebook = await leaderboardClient.api.getNotebook({ id: notebookId });
-    const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId });
+    const notebook = await leaderboardClient.getApi(selectedProjectVersion).getNotebook({ id: notebookId });
+    const content = await leaderboardClient.getApi(selectedProjectVersion).getCheckpointContent({ id: checkpointId });
 
     setDefaultProjectId(projectId);
 

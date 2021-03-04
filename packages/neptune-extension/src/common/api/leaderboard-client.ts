@@ -89,6 +89,19 @@ class ApiWrapper {
     return this.clientAlpha;
   }
 
+
+  /**
+   * Warning: only notebooks related API is the same between version 1 and version 2
+   * Do not use version 2 for other endpoints (like experiments) until we fully migrate to version 2
+   */
+  getApi(projectVersion: number | undefined) {
+    if (projectVersion === 2) {
+      return this.clientAlpha;
+    }
+
+    return this.client;
+  }
+
   setBasePath(path: string) {
     // reinitialize client as there is no way to override base path after it was created
     this.client = this.createClient(path)
