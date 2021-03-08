@@ -74,6 +74,7 @@ export const uploadNotebook = (
         type: 'checkpoint-successful',
         data: {
           projectIdentifier,
+          projectVersion,
           notebookId: notebook.id,
         }
       }));
@@ -122,6 +123,7 @@ export const uploadCheckpoint = (projectIdentifier: string, projectVersion: numb
         type: 'checkpoint-successful',
         data: {
           projectIdentifier,
+          projectVersion,
           notebookId,
           checkpointId: checkpoint.id,
         }

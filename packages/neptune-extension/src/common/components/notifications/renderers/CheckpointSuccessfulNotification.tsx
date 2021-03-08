@@ -3,26 +3,24 @@ import React from 'react';
 import {useSelector} from "react-redux";
 
 // App
+import {AppState} from 'common/state/reducers';
 import {CheckpointSuccessful} from 'common/state/notifications/actions';
 import Toast from 'common/components/toast/Toast';
-import {NotificationLink} from "./link/NotificationLink";
+import {NotificationLink} from './link/NotificationLink';
 import {createCheckpointUrl} from 'common/utils/createCheckpointUrl';
-import {getConfigurationState} from 'common/state/configuration/selectors';
+import {getApplicationUrl} from 'common/state/configuration/selectors';
 
 // Module
 type Props = CheckpointSuccessful & { onClose: () => void };
 
 export const CheckpointSuccessfulNotification: React.FC<Props> = ({ data, onClose }) => {
-  const {
-    apiTokenParsed
-  } = useSelector(getConfigurationState);
-
-  if (!apiTokenParsed) {
+  const applicationUrl = useSelector((state: AppState) => getApplicationUrl(state, data.projectVersion));
+  if (!applicationUrl) {
     return null;
   }
 
   const url = createCheckpointUrl({
-    api_address: apiTokenParsed.api_address,
+    applicationUrl,
     ...data
   });
 

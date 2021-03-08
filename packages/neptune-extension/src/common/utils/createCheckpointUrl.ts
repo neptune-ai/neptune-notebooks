@@ -6,7 +6,7 @@ export interface CheckpointPathArgs {
 }
 
 interface UrlArgs extends CheckpointPathArgs {
-  api_address: string
+  applicationUrl: string
 }
 
 export function createCheckpointPath({
@@ -27,7 +27,7 @@ export function createCheckpointPath({
 }
 
 export function createCheckpointUrl(options: UrlArgs):string | undefined {
-  if (options.api_address) {
-    return `${options.api_address}${createCheckpointPath(options)}`;
+  if (options.applicationUrl) {
+    return `${options.applicationUrl}${createCheckpointPath(options)}`;
   }
 }

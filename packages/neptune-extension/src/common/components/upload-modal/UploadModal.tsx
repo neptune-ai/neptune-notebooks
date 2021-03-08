@@ -1,7 +1,5 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AnyAction } from 'redux';
-import { ThunkDispatch } from "redux-thunk";
 
 import { bemBlock} from "common/utils/bem";
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
@@ -23,22 +21,22 @@ import Input from 'common/components/input/Input';
 import Textarea from 'common/components/input/Textarea';
 import Button from 'common/components/button/Button';
 import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
-import ValidationIcon from "common/components/validation-icon/ValidationIcon";
-import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
-import Warning from "common/components/warning/Warning";
-import ModalHeader from "common/components/modal/ModalHeader";
+import ValidationIcon from 'common/components/validation-icon/ValidationIcon';
+import ValidationWrapper from 'common/components/validation-wrapper/ValidationWrapper';
+import Warning from 'common/components/warning/Warning';
+import ModalHeader from 'common/components/modal/ModalHeader';
 
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import {
   getNotebookState,
   getNotebookLoadingState,
 } from 'common/state/notebook/selectors'
-import useSelectInputValue from "common/hooks/useSelectInputValue";
-import {fetchProjectOptions} from "common/utils/checkout";
-import SelectInput from "common/components/input/SelectInput";
+import useSelectInputValue from 'common/hooks/useSelectInputValue';
+import {fetchProjectOptions} from 'common/utils/checkout';
+import {createProjectIdentifier} from 'common/utils/project';
+import SelectInput from 'common/components/input/SelectInput';
 
 import './UploadModal.less';
-import {createProjectIdentifier} from "../../utils/project";
 
 interface UploadModalProps {
   platformNotebook: PlatformNotebook
