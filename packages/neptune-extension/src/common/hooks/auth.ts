@@ -2,7 +2,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import React from 'react';
 
 import {getConfigurationState} from 'common/state/configuration/selectors';
-import {setApiTokenValid, setTokenUsername} from 'common/state/configuration/actions';
+import {setApiTokenValid, setClientConfig, setTokenUsername} from 'common/state/configuration/actions';
 import {authClient} from 'common/api/auth';
 import {backendClient} from 'common/api/backend-client';
 import {leaderboardClient} from 'common/api/leaderboard-client';
@@ -29,13 +29,19 @@ export function validateGlobalApiToken() {
 
       authClient
         .validateToken(apiToken)
-        .then(({ accessToken, apiTokenParsed }) => {
+        .then(({
+          accessToken,
+          apiTokenParsed,
+          oldDomainClientConfig,
+          newDomainClientConfig,
+         }) => {
           log('Api token successfully validated and parsed', apiTokenParsed);
 
           // everything set up properly, lets set all API clients to use proper base bath
           authClient.setBasePath(apiTokenParsed.api_address);
           backendClient.setBasePath(apiTokenParsed.api_address);
-          leaderboardClient.setBasePath(apiTokenParsed.api_address);
+          leaderboardClient.setBasePath(oldDomainClientConfig.apiUrl);
+          leaderboardClient.setBasePathAlpha(newDomainClientConfig.apiUrl);
 
           /*
            * Hint: The code below will trigger immediate re-render and should
@@ -43,6 +49,10 @@ export function validateGlobalApiToken() {
            */
           dispatch(setApiTokenValid(true));
           dispatch(setTokenUsername(accessToken.username));
+          dispatch(setClientConfig({
+            newDomain: newDomainClientConfig,
+            oldDomain: oldDomainClientConfig,
+          }));
           dispatch(addNotification({
             type: 'success',
             data: 'Successfully connected to Neptune!',

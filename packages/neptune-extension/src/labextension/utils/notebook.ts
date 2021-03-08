@@ -5,13 +5,15 @@ import { Contents, Kernel, KernelMessage, Session } from '@jupyterlab/services';
 
 import { get } from 'lodash';
 import {
-  PlatformNotebook,
+  EditablePlatformNotebookMetadata,
   NeptuneClientMsg,
+  PlatformNotebook,
 } from "types/platform";
 import { logger } from 'common/utils/logger';
 
 interface NeptuneContextMetadata {
   notebookId?: string
+  projectVersion?: number
 }
 
 const log = logger.extend('platform-notebook');
@@ -40,21 +42,23 @@ class Notebook implements PlatformNotebook {
   getMetadata() {
     const neptuneMetadata = this.context.model.metadata.get('neptune');
     const notebookId = get(neptuneMetadata, 'notebookId');
+    const projectVersion = get(neptuneMetadata, 'projectVersion');
 
     return {
       path: this.context.path,
       notebookId,
+      projectVersion,
     };
   };
 
-  async saveNotebookId(notebookId: string) {
-    const metadata = this.context.model.metadata;
+  async setMetadata(metadata: EditablePlatformNotebookMetadata) {
+    const contextMetadata = this.context.model.metadata;
 
-    const neptuneMetadata = metadata.has('neptune')
-      ? metadata.get('neptune') as NeptuneContextMetadata
+    const neptuneMetadata = contextMetadata.has('neptune')
+      ? contextMetadata.get('neptune') as NeptuneContextMetadata
       : {};
 
-    metadata.set('neptune', { ...neptuneMetadata, notebookId });
+    contextMetadata.set('neptune', { ...neptuneMetadata, ...metadata });
 
     return this.context.save();
   };

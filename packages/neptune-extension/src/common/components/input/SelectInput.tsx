@@ -3,23 +3,27 @@ import Select from './Select';
 import ValidationWrapper from "../validation-wrapper/ValidationWrapper";
 import ValidationIcon from "../validation-icon/ValidationIcon";
 
-interface SelectInputProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+interface SelectInputProps<T> extends React.SelectHTMLAttributes<HTMLSelectElement> {
   valid?: boolean,
   loading?: boolean,
-  options: string[][]
+  options: T[]
+  getKey: (option: T) => string
+  getLabel: (option: T) => string
   placeholder?: string
 }
 
-const SelectInput: React.FC<SelectInputProps> = ({
+function SelectInput<T>({
   value,
   disabled,
   valid,
   loading,
   options,
+  getKey,
+  getLabel,
   onChange,
   placeholder,
   ...rest
-}) => {
+}: SelectInputProps<T>): React.ReactElement {
   const endStatus = valid ? 'success' : 'error';
   const status = loading ? 'pending' : endStatus;
   const isDisabled = disabled || status === 'pending' || options.length === 0;
@@ -36,18 +40,18 @@ const SelectInput: React.FC<SelectInputProps> = ({
       >
         {showPlaceholder ? (
           <option value="" hidden>{ placeholder }</option>
-        ) : options.map(([ key, value ]) => (
+        ) : options.map((option) => (
           <option
-            key={key}
-            value={key}
-            children={value}
+            key={getKey(option)}
+            value={getKey(option)}
+            children={getLabel(option)}
           />
         ))}
       </Select>
       <ValidationIcon status={status} />
     </ValidationWrapper>
   );
-};
+}
 
 export default SelectInput;
 

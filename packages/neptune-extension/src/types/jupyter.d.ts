@@ -57,6 +57,7 @@ interface NbMetadata {
 
 interface NbNeptuneMetadata {
   notebookId?: string
+  projectVersion?: number | undefined
 }
 
 interface NbKernel {

@@ -11,7 +11,9 @@ interface NotificationWithData<T, D> extends BaseNotification<T> {
 
 export type SuccessNotification = NotificationWithData<'success', string>
 export type ErrorNotification = NotificationWithData<'error', string>
-export type CheckpointSuccessful = NotificationWithData<'checkpoint-successful', CheckpointPathArgs>
+export type CheckpointSuccessful = NotificationWithData<
+  'checkpoint-successful', CheckpointPathArgs & {projectVersion: number | undefined}
+>
 export type UpgradeAvailable = BaseNotification<'upgrade-available'>
 
 export type Notification = SuccessNotification | ErrorNotification| CheckpointSuccessful | UpgradeAvailable

@@ -1,7 +1,5 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AnyAction } from 'redux';
-import { ThunkDispatch } from "redux-thunk";
 
 import { bemBlock} from "common/utils/bem";
 import { NotebookDTO } from 'generated/leaderboard-client/src/models';
@@ -23,19 +21,20 @@ import Input from 'common/components/input/Input';
 import Textarea from 'common/components/input/Textarea';
 import Button from 'common/components/button/Button';
 import ButtonWithLoading from 'common/components/button-with-loading/ButtonWithLoading';
-import ValidationIcon from "common/components/validation-icon/ValidationIcon";
-import ValidationWrapper from "common/components/validation-wrapper/ValidationWrapper";
-import Warning from "common/components/warning/Warning";
-import ModalHeader from "common/components/modal/ModalHeader";
+import ValidationIcon from 'common/components/validation-icon/ValidationIcon';
+import ValidationWrapper from 'common/components/validation-wrapper/ValidationWrapper';
+import Warning from 'common/components/warning/Warning';
+import ModalHeader from 'common/components/modal/ModalHeader';
 
 import { getConfigurationState } from 'common/state/configuration/selectors';
 import {
   getNotebookState,
   getNotebookLoadingState,
 } from 'common/state/notebook/selectors'
-import useSelectInputValue from "common/hooks/useSelectInputValue";
-import {fetchProjectOptions} from "common/utils/checkout";
-import SelectInput from "common/components/input/SelectInput";
+import useSelectInputValue from 'common/hooks/useSelectInputValue';
+import {fetchProjectOptions} from 'common/utils/checkout';
+import {createProjectIdentifier} from 'common/utils/project';
+import SelectInput from 'common/components/input/SelectInput';
 
 import './UploadModal.less';
 
@@ -85,9 +84,10 @@ const UploadModal: React.FC<UploadModalProps> = ({
     ? notebook.projectId
     : window.localStorage.getItem(PROJECT_LOCAL_STORAGE_KEY) || '';
 
-  const [ projectId, projectIdentifier, projectInputProps, projectMetaProps, setProjectId ] = useSelectInputValue(
+  const [ projectId, selectedProject, projectInputProps, projectMetaProps, setProjectId ] = useSelectInputValue(
     initialProjectId,
     () => fetchProjectOptions('writable'),
+    option => option.id,
     []
   );
 
@@ -103,7 +103,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   }
 
   async function handleSubmit() {
-    if (!projectId || !projectIdentifier) {
+    if (selectedProject == null) {
       return;
     }
     const content = await platformNotebook.saveWorkingCopyAndGetContent();
@@ -116,10 +116,15 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
     let returnValue;
 
+    const projectIdentifier = createProjectIdentifier(selectedProject.organizationName, selectedProject.name);
     if (mode === 'notebook' || metadata.notebookId === undefined) {
-      returnValue = await dispatch(uploadNotebook(projectIdentifier, checkpointMeta, content, platformNotebook));
+      returnValue = await dispatch(
+        uploadNotebook(projectIdentifier, selectedProject.version, checkpointMeta, content, platformNotebook),
+      );
     } else {
-      returnValue = await dispatch(uploadCheckpoint(projectIdentifier, metadata.notebookId, checkpointMeta, content));
+      returnValue = await dispatch(
+        uploadCheckpoint(projectIdentifier, selectedProject.version, metadata.notebookId, checkpointMeta, content),
+      );
     }
     if (returnValue) {
       onClose();
@@ -212,6 +217,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             className={block('input')}
             {...projectInputProps}
             {...projectMetaProps}
+            getLabel={option => createProjectIdentifier(option.organizationName, option.name)}
             disabled={mode === 'checkpoint'}
             placeholder="No projects to select"
           />

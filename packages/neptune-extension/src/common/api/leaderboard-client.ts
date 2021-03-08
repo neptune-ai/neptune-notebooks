@@ -6,6 +6,9 @@ import {
 } from 'generated/leaderboard-client/src';
 import * as runtime from "generated/leaderboard-client/src/runtime";
 
+export * from 'generated/leaderboard-client/src/apis';
+export * from 'generated/leaderboard-client/src/models';
+
 import { getBasePath } from "./auth";
 import { updateTokenMiddleware } from "./update-token-middleware";
 
@@ -62,9 +65,11 @@ class LeaderboardApi extends DefaultApi {
 
 class ApiWrapper {
   protected client: LeaderboardApi
+  protected clientAlpha: LeaderboardApi
 
   constructor() {
     this.client = this.createClient(getBasePath());
+    this.clientAlpha = this.createClient(getBasePath());
   }
 
   createClient(basePath: string) {
@@ -80,9 +85,31 @@ class ApiWrapper {
     return this.client;
   }
 
+  get alphaApi () {
+    return this.clientAlpha;
+  }
+
+
+  /**
+   * Warning: only notebooks related API is the same between version 1 and version 2
+   * Do not use version 2 for other endpoints (like experiments) until we fully migrate to version 2
+   */
+  getApi(projectVersion: number | undefined) {
+    if (projectVersion === 2) {
+      return this.clientAlpha;
+    }
+
+    return this.client;
+  }
+
   setBasePath(path: string) {
     // reinitialize client as there is no way to override base path after it was created
     this.client = this.createClient(path)
+  }
+
+  setBasePathAlpha(path: string) {
+    // reinitialize client as there is no way to override base path after it was created
+    this.clientAlpha = this.createClient(path);
   }
 }
 

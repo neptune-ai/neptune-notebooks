@@ -6,6 +6,10 @@ interface ConfigurationState {
   apiTokenParsed?: ApiTokenParsed
   isApiTokenValid?: boolean
   inferredUsername?: string
+  oldDomainApiUrl?: string
+  newDomainApiUrl?: string
+  oldDomainApplicationUrl?: string
+  newDomainApplicationUrl?: string
 }
 
 const dummyInitialState: ConfigurationState = {};
@@ -48,6 +52,20 @@ export function configurationReducer(state: ConfigurationState = dummyInitialSta
       return {
         ...state,
         isApiTokenValid: action.payload.valid,
+      }
+    }
+
+    case "CLIENT_CONFIG_SET": {
+      const {
+        newDomain,
+        oldDomain,
+      } = action.payload;
+      return {
+        ...state,
+        newDomainApiUrl: newDomain.apiUrl,
+        newDomainApplicationUrl: newDomain.applicationUrl,
+        oldDomainApiUrl: oldDomain.apiUrl,
+        oldDomainApplicationUrl: oldDomain.applicationUrl,
       }
     }
 

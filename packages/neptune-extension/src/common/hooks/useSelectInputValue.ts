@@ -2,9 +2,10 @@ import React from 'react';
 
 export type SelectOption = Array<string>
 
-export interface SelectInputProps {
+export interface SelectInputProps<T> {
   value: string | undefined
-  options: Array<SelectOption>
+  options: T[]
+  getKey: (option: T) => string
   onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
 }
 
@@ -13,14 +14,15 @@ export interface SelectMetaProps {
   loading?: boolean
 }
 
-export default function useSelectInputValue(
+export default function useSelectInputValue<T>(
   initialValue: undefined | string | (() => string | undefined),
-  fetchFn: () => Promise<Array<SelectOption>>,
+  fetchFn: () => Promise<T[]>,
+  getKey: (option: T) => string,
   deps: ReadonlyArray<any>,
-): [string | undefined, string | undefined, SelectInputProps, SelectMetaProps, (text?: string) => string | void]  {
+): [string | undefined, T | undefined, SelectInputProps<T>, SelectMetaProps, (text?: string) => string | void]  {
 
-  const [ value, setValue ] = React.useState(initialValue)
-  const [ options, setOptions ] = React.useState<Array<SelectOption>>([]);
+  const [ value, setValue ] = React.useState<string | undefined>(initialValue)
+  const [ options, setOptions ] = React.useState<T[]>([]);
 
   const [ loading, setLoading ] = React.useState(false);
 
@@ -33,12 +35,12 @@ export default function useSelectInputValue(
       setLoading(false);
       setOptions(newOptions)
 
-      const valid = newOptions.some(([ key ]) => key === value);
+      const valid = newOptions.some(option => getKey(option) === value);
 
       // select first value after reload if default does not match or exist.
       if (!valid) {
         if (newOptions.length) {
-          setValue(newOptions[0][0])
+          setValue(getKey(newOptions[0]))
         } else {
           setValue(undefined)
         }
@@ -55,19 +57,19 @@ export default function useSelectInputValue(
   }, deps);
 
   // During options reload old value is automatically invalidated.
-  const validOption = React.useMemo(() => options.find(([ key ]) => key === value),
+  const validOption = React.useMemo(() => options.find(option => getKey(option) === value),
     [value, options]);
 
   const valid = validOption != null;
-  const label = validOption && validOption[1];
 
   function onChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     setValue(event.target.value);
   }
 
-  const inputProps: SelectInputProps = {
+  const inputProps: SelectInputProps<T> = {
     value,
     options,
+    getKey,
     onChange,
   };
 
@@ -76,6 +78,8 @@ export default function useSelectInputValue(
     loading,
   };
 
-  return [ value, label, inputProps, metaProps, setValue ];
+  const selectedOption = options.find(option => getKey(option) === value);
+
+  return [ value, selectedOption, inputProps, metaProps, setValue ];
 }
 

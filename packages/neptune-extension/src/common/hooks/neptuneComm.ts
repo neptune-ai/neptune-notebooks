@@ -15,7 +15,8 @@ async function handleCreateCheckpoint(platformNotebook: PlatformNotebook, checkp
   const content = await platformNotebook.saveWorkingCopyAndGetContent();
   log('saved checkpoint', content);
 
-  await leaderboardClient.api.uploadCheckpointContent({
+  const metadata = platformNotebook.getMetadata();
+  await leaderboardClient.getApi(metadata.projectVersion).uploadCheckpointContent({
     id: checkpointId,
     content,
   });

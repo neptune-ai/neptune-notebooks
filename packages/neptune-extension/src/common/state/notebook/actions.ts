@@ -9,13 +9,13 @@ import { logger } from 'common/utils/logger';
 
 const log = logger.extend('notebook-actions');
 
-export const fetchNotebook = (notebookId: string): ThunkAction<Promise<NotebookDTO | void>, {}, {}, NotebookActions> => {
+export const fetchNotebook = (projectVersion: number | undefined, notebookId: string): ThunkAction<Promise<NotebookDTO | void>, {}, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     log('fetchNotebook', notebookId);
     dispatch(fetchNotebookRequest());
 
     try {
-      const notebook = await leaderboardClient.api.getNotebook({ id: notebookId });
+      const notebook = await leaderboardClient.getApi(projectVersion).getNotebook({ id: notebookId });
 
       dispatch(fetchNotebookSuccess(notebook));
       log('fetchNotebook success', notebook);
@@ -49,6 +49,7 @@ interface CheckpointMetadata {
 
 export const uploadNotebook = (
   projectIdentifier: string,
+  projectVersion: number | undefined,
   checkpointMeta: CheckpointMetadata,
   content: any,
   platformNotebook: PlatformNotebook,
@@ -58,11 +59,14 @@ export const uploadNotebook = (
     dispatch(uploadNotebookRequest());
 
     try {
-      const notebook = await leaderboardClient.api.createNotebook({projectIdentifier});
+      const notebook = await leaderboardClient.getApi(projectVersion).createNotebook({projectIdentifier});
       log('uploadNotebook, empty notebook created', notebook);
-      await requestCheckpoint(notebook.id, checkpointMeta, content);
+      await requestCheckpoint(projectVersion, notebook.id, checkpointMeta, content);
       log('uploadNotebook, checkpoint created, content uploaded');
-      await platformNotebook.saveNotebookId(notebook.id);
+      await platformNotebook.setMetadata({
+        notebookId: notebook.id,
+        projectVersion,
+      });
 
       dispatch(uploadNotebookSuccess(notebook));
 
@@ -70,6 +74,7 @@ export const uploadNotebook = (
         type: 'checkpoint-successful',
         data: {
           projectIdentifier,
+          projectVersion,
           notebookId: notebook.id,
         }
       }));
@@ -102,7 +107,7 @@ function uploadNotebookFailed() {
   return { type: 'NOTEBOOK_UPLOAD_FAILED' } as const;
 }
 
-export const uploadCheckpoint = (projectIdentifier: string, notebookId: string, checkpointMeta: CheckpointMetadata, content: any)
+export const uploadCheckpoint = (projectIdentifier: string, projectVersion: number | undefined, notebookId: string, checkpointMeta: CheckpointMetadata, content: any)
   : ThunkAction<Promise<CheckpointDTO | void>, AppState, {}, NotebookActions> => {
   return async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
     log('uploadCheckpoint', projectIdentifier, notebookId, checkpointMeta, content);
@@ -110,14 +115,15 @@ export const uploadCheckpoint = (projectIdentifier: string, notebookId: string, 
     dispatch(uploadCheckpointRequest());
 
     try {
-      const checkpoint = await requestCheckpoint(notebookId, checkpointMeta, content);
-      await dispatch(fetchNotebook(notebookId));
+      const checkpoint = await requestCheckpoint(projectVersion, notebookId, checkpointMeta, content);
+      await dispatch(fetchNotebook(projectVersion, notebookId));
       dispatch(uploadCheckpointSuccess(checkpoint));
       log('uploadCheckpoint success');
       dispatch(addNotification({
         type: 'checkpoint-successful',
         data: {
           projectIdentifier,
+          projectVersion,
           notebookId,
           checkpointId: checkpoint.id,
         }
@@ -165,16 +171,16 @@ export type NotebookActions = ReturnType<
   | typeof uploadCheckpointFailed
 >
 
-async function requestCheckpoint(notebookId: string, checkpointMeta: CheckpointMetadata, content: any) {
+async function requestCheckpoint(projectVersion: number | undefined, notebookId: string, checkpointMeta: CheckpointMetadata, content: any) {
   log('requestCheckpoint', notebookId, checkpointMeta, content);
-  const checkpoint = await leaderboardClient.api.createEmptyCheckpoint({
+  const checkpoint = await leaderboardClient.getApi(projectVersion).createEmptyCheckpoint({
     notebookId,
     checkpoint: checkpointMeta,
   });
 
   log('requestCheckpoint, empty checkpoint created', checkpoint);
 
-  await leaderboardClient.api.uploadCheckpointContent({
+  await leaderboardClient.getApi(projectVersion).uploadCheckpointContent({
     id: checkpoint.id,
     content,
   });

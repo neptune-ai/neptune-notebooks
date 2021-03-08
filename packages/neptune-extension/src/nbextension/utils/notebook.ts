@@ -1,7 +1,8 @@
 import { get } from 'lodash';
 import {
-  PlatformNotebook,
+  EditablePlatformNotebookMetadata,
   NeptuneClientMsg,
+  PlatformNotebook,
 } from 'types/platform';
 
 import Jupyter from 'base/js/namespace';
@@ -48,17 +49,20 @@ class Notebook implements PlatformNotebook {
       notebook_path,
     } = notebook;
 
-    const notebookId = get(notebook, 'metadata.neptune.notebookId');
+    const notebookId: string | undefined = get(notebook, 'metadata.neptune.notebookId');
+    const projectVersion: number | undefined = get(notebook, 'metadata.neptune.projectVersion');
 
     return {
       path: notebook_path,
       notebookId,
+      projectVersion,
     };
   }
 
-  async saveNotebookId(notebookId: string) {
+  async setMetadata(metadata: EditablePlatformNotebookMetadata) {
     Jupyter.notebook.metadata.neptune = {
-      notebookId,
+      notebookId: metadata.notebookId,
+      projectVersion: metadata.projectVersion,
     };
     Jupyter.notebook.save_checkpoint();
   }

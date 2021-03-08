@@ -26,6 +26,7 @@ import { getNotebookState } from 'common/state/notebook/selectors'
 import { addNotification } from 'common/state/notifications/actions';
 
 import { findNonExistantPath } from 'common/utils/path';
+import { createProjectIdentifier } from 'common/utils/project';
 
 import {
   fetchProjectOptions,
@@ -53,33 +54,39 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const initialProjectId = () => notebook ? notebook.projectId : getDefaultProjectId();
   const initialNotebookId = notebook ? notebook.id : undefined;
 
-  const [ projectId, projectLabel, projectInputProps, projectMetaProps ] = useSelectInputValue(
+  const [ projectId, selectedProject, projectInputProps, projectMetaProps ] = useSelectInputValue(
     initialProjectId,
     () => fetchProjectOptions('readable'),
+    option => option.id,
     []
   );
 
-  const [ notebookId, notebookLabel, notebookInputProps, notebookMetaProps ] = useSelectInputValue(
+  // todo upgrade typescript so we can use optional chaining (obj?.smth)
+  const selectedProjectVersion: number | undefined = selectedProject && selectedProject.version;
+
+  const [ notebookId, selectedNotebookOption, notebookInputProps, notebookMetaProps ] = useSelectInputValue(
     initialNotebookId,
-    () => fetchNotebookOptions(projectId),
-    [projectId]
+    () => fetchNotebookOptions(projectId, selectedProjectVersion),
+    (option => option[0]),
+    [projectId, selectedProjectVersion]
   );
 
-  const [ checkpointId, checkpointLabel, checkpointInputProps, checkpointMetaProps ] = useSelectInputValue(
+  const [ checkpointId, selectedCheckpointOption, checkpointInputProps, checkpointMetaProps ] = useSelectInputValue(
     undefined,
-    () => fetchCheckpointOptions(notebookId),
-    [notebookId]
+    () => fetchCheckpointOptions(selectedProject && selectedProject.version, notebookId,),
+    (option => option[0]),
+    [notebookId, selectedProjectVersion]
   );
 
   const dispatch = useDispatch();
 
   async function checkoutNotebook() {
-    if (checkpointId === undefined || notebookId === undefined || projectId === undefined) {
+    if (checkpointId === undefined || notebookId === undefined || projectId === undefined || selectedProject === undefined) {
       return;
     }
 
-    const notebook = await leaderboardClient.api.getNotebook({ id: notebookId });
-    const content = await leaderboardClient.api.getCheckpointContent({ id: checkpointId });
+    const notebook = await leaderboardClient.getApi(selectedProjectVersion).getNotebook({ id: notebookId });
+    const content = await leaderboardClient.getApi(selectedProjectVersion).getCheckpointContent({ id: checkpointId });
 
     setDefaultProjectId(projectId);
 
@@ -118,6 +125,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <SelectInput
             className={block('input')}
             placeholder="No projects to select"
+            getLabel={option => createProjectIdentifier(option.organizationName, option.name)}
             {...projectInputProps}
             {...projectMetaProps}
           />
@@ -128,6 +136,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <SelectInput
             className={block('input')}
             placeholder="No notebooks to select"
+            getLabel={option => option[1]}
             {...notebookInputProps}
             {...notebookMetaProps}
           />
@@ -138,6 +147,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <SelectInput
             className={block('input')}
             placeholder="No checkpoints to select"
+            getLabel={option => option[1]}
             {...checkpointInputProps}
             {...checkpointMetaProps}
           />
