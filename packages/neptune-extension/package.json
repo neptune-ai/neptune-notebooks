@@ -7,7 +7,7 @@
     "jupyterlab-extension",
     "notebooks"
   ],
-  "version": "0.0.19",
+  "version": "0.0.20",
   "license": "Apache-2.0",
   "author": "Neptune Labs",
   "homepage": "https://neptune.ai",
