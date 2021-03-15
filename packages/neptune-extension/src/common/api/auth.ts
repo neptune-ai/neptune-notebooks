@@ -54,11 +54,11 @@ class AuthClient {
     }));
 
     const accessToken = await exchangeApiTokenWithTimeout(localBackendClient, apiToken);
-    const oldDomainClientConfig = await this.backendClient.getClientConfig({
+    const oldDomainClientConfig = await localBackendClient.getClientConfig({
       xNeptuneApiToken: apiToken,
     });
 
-    const newDomainClientConfig = await this.backendClient.getClientConfig({
+    const newDomainClientConfig = await localBackendClient.getClientConfig({
       xNeptuneApiToken: apiToken,
       alpha: String(true),
     });
