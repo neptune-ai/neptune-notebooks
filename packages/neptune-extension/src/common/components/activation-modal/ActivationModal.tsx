@@ -63,7 +63,7 @@ const ActivationModal: React.FC<ActivationModalProps> = ({
       <Layout.Column spacedChildren="lg">
         <ModalHeader>Activate neptune-client configuration</ModalHeader>
         <span>
-          Activate configuration to create Neptune experiments and see them all linked to this notebook. Click "Activate" to run the code below, then just "import neptune" and work as usual.
+          Activate configuration to create Neptune runs and see them all linked to this notebook. Click "Activate" to run the code below, then just "import neptune" and work as usual.
         </span>
 
         <SyntaxHighlighter language="python">
