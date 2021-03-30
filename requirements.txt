@@ -1,5 +1,5 @@
 click>=7.0
 future>=0.17.1
-neptune-client>=0.4.92
+neptune-client>=0.9.0
 notebook>=4.3.0
 path.py
