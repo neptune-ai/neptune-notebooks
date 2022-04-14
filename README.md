@@ -42,21 +42,26 @@ jupyter nbextension enable --py neptune-notebooks
 pip install neptune-client
 ```
 
-A Neptune icon appears in your Jupyter Notebook environment. Click the icon to connect with Neptune.
-```python
-# In the Jupyter notebook, import Neptune and start a run
+In your Jupyter Notebook environment, some Neptune items appear in your toolbar.
+1. Click the Neptune icon to connect with Neptune.
+2. Click **Upload** to create a first notebook checkpoint in Neptune.
+3. In the Jupyter notebook, import Neptune and start a run:
 
+```python
 import neptune.new as neptune
-run = neptune.init(api_token="NEPTUNE_API_TOKEN",
-                   project="WORKSPACE_NAME/PROJECT_NAME")
-...
+run = neptune.init(
+    api_token="NEPTUNE_API_TOKEN",
+    project="WORKSPACE_NAME/PROJECT_NAME"
+)
+
+# Log metadata
+run["f1_score"] = 0.66
 
 # Stop the run
 run.stop()
 
 # See notebook snapshots in Neptune under "Source code"
 ```
-
 
 ## Support
 
