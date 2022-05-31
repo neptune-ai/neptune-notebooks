@@ -114,7 +114,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       description,
     };
 
-    let returnValue;
+    let returnValue: unknown;
 
     const projectIdentifier = createProjectIdentifier(selectedProject.organizationName, selectedProject.name);
     if (mode === 'notebook' || metadata.notebookId === undefined) {
