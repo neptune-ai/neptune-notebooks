@@ -1,7 +1,7 @@
 # Neptune + Jupyter Lab and Jupyter Notebook Integration
 [![Build Status](https://travis-ci.org/neptune-ai/neptune-notebooks.svg?branch=master)](https://travis-ci.org/neptune-ai/neptune-notebooks)
 
-Neptune is a tool for experiment tracking, model registry, data versioning, and live model monitoring. 
+Neptune is a lightweight experiment tracker that offers a single place to track, compare, store, and collaborate on experiments and models. 
 
 This Jupyter Notebooks extension lets you version, manage, and share notebook checkpoints in your projects.
 
@@ -15,8 +15,8 @@ This Jupyter Notebooks extension lets you version, manage, and share notebook ch
 * share Notebook checkpoints or diffs with persistent links
 * download Notebook checkpoints directly from the UI or Jupyter 
 
-![image](https://user-images.githubusercontent.com/97611089/160645173-d42d4436-f309-4b51-b583-518ce19948f1.png)
-*The Notebooks tab in the Neptune UI provides a table of all the Notebooks in the current project.*
+![image](https://docs.neptune.ai/img/app/notebook_comparison.png)
+*Side-by-side comparison of Notebooks.*
 
 Technically Neptune + Jupyter integration is implemented as a neptune-notebooks Python package which includes:
 * Standard Jupyter extension - The extension is written in Javascript and is visible in the web-based Jupyter UI. 
@@ -25,7 +25,7 @@ Technically Neptune + Jupyter integration is implemented as a neptune-notebooks 
 
 ## Resources
 
-* [Documentation](https://docs.neptune.ai/integrations-and-supported-tools/ide-and-notebooks/jupyter-lab-and-jupyter-notebook)
+* [Documentation](https://docs.neptune.ai/tools/jupyter/overview/)
 * [Example notebook in the Neptune app](https://app.neptune.ai/neptune-ai/credit-default-prediction/n/exploring-application-table-ac75c237-1630-4109-b532-dd125badec0e/ca1df3be-b2e4-4b26-99d6-b7e98a3d4273)
 
 ## Example
