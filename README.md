@@ -1,75 +1,80 @@
-# Neptune + Jupyter Lab and Jupyter Notebook Integration
-[![Build Status](https://travis-ci.org/neptune-ai/neptune-notebooks.svg?branch=master)](https://travis-ci.org/neptune-ai/neptune-notebooks)
+# Neptune-Jupyter integration
 
 Neptune is a lightweight experiment tracker that offers a single place to track, compare, store, and collaborate on experiments and models. 
 
-This Jupyter Notebooks extension lets you version, manage, and share notebook checkpoints in your projects.
+The Neptune-Jupyter extension lets you version, manage, and share notebook checkpoints in your projects.
 
-## What will you get with this integration? 
+**Note:** The extension currently works for JupyterLab `<4.0`.
 
-* log and display notebook checkpoints either manually or automatically during model training
-* connect notebook checkpoints with model training Runs in Neptune
-* organize checkpoints with names and descriptions 
-* browse checkpoints history across all Notebooks in the project
-* compare Notebooks side-by-side, with diffs for source, markdown, output, and execution count cells
-* share Notebook checkpoints or diffs with persistent links
-* download Notebook checkpoints directly from the UI or Jupyter 
+## What will you get with this integration?
 
-![image](https://docs.neptune.ai/img/app/notebook_comparison.png)
-*Side-by-side comparison of Notebooks.*
+* Log and display notebook checkpoints either manually or automatically during model training
+* Connect notebook checkpoints with model training runs in Neptune
+* Organize checkpoints with names and descriptions 
+* Browse checkpoints history across all notebooks in the project
+* Compare Notebooks side-by-side, with diffs for source, markdown, output, and execution count cells
+* Share Notebook checkpoints or diffs with persistent links
+* Download Notebook checkpoints directly from Neptune or Jupyter 
 
-Technically Neptune + Jupyter integration is implemented as a neptune-notebooks Python package which includes:
-* Standard Jupyter extension - The extension is written in Javascript and is visible in the web-based Jupyter UI. 
-* JupyterLab extension - The extension is written in Javascript and is visible in the web-based Jupyter UI.
-* A very basic CLI (command line interface) for uploading notebooks.
+![Jupyter Notebook rendered in Neptune](https://docs.neptune.ai/img/app/notebook_view.png)
 
 ## Resources
 
 * [Documentation](https://docs.neptune.ai/tools/jupyter/overview/)
-* [Example notebook in the Neptune app](https://app.neptune.ai/neptune-ai/credit-default-prediction/n/exploring-application-table-ac75c237-1630-4109-b532-dd125badec0e/ca1df3be-b2e4-4b26-99d6-b7e98a3d4273)
+* [Example notebook in Neptune](https://app.neptune.ai/neptune-ai/credit-default-prediction/n/exploring-application-table-ac75c237-1630-4109-b532-dd125badec0e/ca1df3be-b2e4-4b26-99d6-b7e98a3d4273)
 
-## Example
+## Setup
 
-```python
-# On the command line, install the neptune-notebooks extension
+Install the extension:
+
+```sh
 pip install neptune-notebooks
+```
 
-# Enable the extension for Jupyter
+Enable the extension for Jupyter:
+
+```sh
 jupyter nbextension enable --py neptune-notebooks
-
-
-# Install the Neptune client
-pip install neptune-client
 ```
 
 In your Jupyter Notebook environment, some Neptune items appear in your toolbar.
-1. Click the Neptune icon to connect with Neptune.
-2. Click **Upload** to create a first notebook checkpoint in Neptune.
-3. In the Jupyter notebook, import Neptune and start a run:
+
+1. To connect with Neptune, click the Neptune **Configure** button.
+2. Enter your [Neptune credentials](https://docs.neptune.ai/setup/setting_credentials/#finding-your-credentials).
+3. To register the notebook in Neptune, click **Upload**.
+4. To log metadata from the notebook automatically, in the top navigation menu, click **Activate**.
+
+For detailed instructions, see the [Neptune documentation](https://docs.neptune.ai/tools/jupyter/installing_extension/).
+
+## Usage
+
+In a notebook cell, import neptune and start a run:
 
 ```python
-import neptune.new as neptune
-run = neptune.init(
-    api_token="NEPTUNE_API_TOKEN",
-    project="WORKSPACE_NAME/PROJECT_NAME"
-)
+import neptune
 
-# Log metadata
-run["f1_score"] = 0.66
-
-# Stop the run
-run.stop()
-
-# See notebook snapshots in Neptune under "Source code"
+run = neptune.init_run()
 ```
+
+Log model-building metadata that you care about:
+
+```python
+run["f1_score"] = 0.66
+```
+
+When you're done with the logging, stop the run:
+
+```python
+run.stop()
+```
+
+For what else you can track, see [What you can log and display](https://docs.neptune.ai/logging/what_you_can_log/) in the Neptune docs.
 
 ## Support
 
 If you got stuck or simply want to talk to us, here are your options:
 
 * Check our [FAQ page](https://docs.neptune.ai/getting-started/getting-help#frequently-asked-questions)
-* You can submit bug reports, feature requests, or contributions directly to the repository.
-* Chat! When in the Neptune application click on the blue message icon in the bottom-right corner and send a message. A real person will talk to you ASAP (typically very ASAP),
+* You can submit bug reports, feature requests, or contributions directly to this repository
+* Chat! When in the Neptune application click on the blue message icon in the bottom-right corner and send a message. A real person will talk to you ASAP (typically very ASAP)
 * You can just shoot us an email at support@neptune.ai
-
-
