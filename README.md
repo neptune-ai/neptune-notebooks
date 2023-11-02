@@ -42,7 +42,8 @@ In your Jupyter Notebook environment, some Neptune items appear in your toolbar.
 1. To connect with Neptune, click the Neptune **Configure** button.
 2. Enter your [Neptune credentials](https://docs.neptune.ai/setup/setting_credentials/#finding-your-credentials).
 3. To register the notebook in Neptune, click **Upload**.
-4. To log metadata from the notebook automatically, in the top navigation menu, click **Activate**.
+
+This uploads a first checkpoint of the notebook. Every time you start a Neptune run in the notebook, a checkpoint is uploaded automatically.
 
 For detailed instructions, see the [Neptune documentation](https://docs.neptune.ai/tools/jupyter/installing_extension/).
 
