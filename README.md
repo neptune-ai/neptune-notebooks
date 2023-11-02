@@ -63,13 +63,15 @@ Log model-building metadata that you care about:
 run["f1_score"] = 0.66
 ```
 
+For what else you can track, see [What you can log and display](https://docs.neptune.ai/logging/what_you_can_log/) in the Neptune docs.
+
 When you're done with the logging, stop the run:
 
 ```python
 run.stop()
 ```
 
-For what else you can track, see [What you can log and display](https://docs.neptune.ai/logging/what_you_can_log/) in the Neptune docs.
+You can view the notebook snapshot in the run's **Source code** dashboard or the project's **Notebooks** section.
 
 ## Support
 
